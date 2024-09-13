@@ -1,0 +1,136 @@
+/* General styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #2b2d42; /* Dark background for military feel */
+    color: #ffffff; /* White text for contrast */
+    margin: 0;
+    padding: 0;
+  }
+  
+  h1, h2, h3, p {
+    margin: 0;
+    padding: 0.5em 0;
+  }
+  
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  /* Header styles */
+  header {
+    background-color: #1f2029; /* Darker shade for header */
+    padding: 20px 0;
+    text-align: center;
+  }
+  
+  header h1 {
+    font-size: 2.5em;
+    color: #81b29a; /* Military green */
+  }
+  
+  header p {
+    font-size: 1.2em;
+    color: #f2e9e4; /* Lighter contrast text */
+  }
+  
+  nav ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  nav ul li {
+    display: inline;
+    margin-right: 20px;
+  }
+  
+  nav ul li a {
+    color: #81b29a;
+    text-decoration: none;
+    font-size: 1.1em;
+  }
+  
+  nav ul li a:hover {
+    text-decoration: underline;
+  }
+  
+  /* Section styles */
+  .section {
+    padding: 50px 0;
+    border-bottom: 1px solid #3d405b;
+  }
+  
+  .section h2 {
+    font-size: 2em;
+    color: #e07a5f; /* Burnt orange accent */
+  }
+  
+  .section h3 {
+    font-size: 1.5em;
+    color: #f4f1de; /* Light beige for contrast */
+  }
+  
+  .section p, .section ul {
+    font-size: 1.2em;
+  }
+  
+  .section ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .section ul li {
+    padding: 10px 0;
+  }
+  
+  .section ul li:before {
+    content: "•";
+    color: #81b29a;
+    padding-right: 10px;
+  }
+  
+  /* Footer styles */
+  footer {
+    background-color: #1f2029;
+    text-align: center;
+    padding: 20px 0;
+  }
+  
+  footer p {
+    color: #81b29a;
+    font-size: 1em;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    header h1 {
+      font-size: 2em;
+    }
+  
+    nav ul li {
+      display: block;
+      margin: 10px 0;
+    }
+  
+    .container {
+      padding: 10px;
+    }
+  
+    .section {
+      padding: 30px 0;
+    }
+  
+    .section h2 {
+      font-size: 1.8em;
+    }
+  
+    .section h3 {
+      font-size: 1.3em;
+    }
+  
+    .section p {
+      font-size: 1em;
+    }
+  }
+  
