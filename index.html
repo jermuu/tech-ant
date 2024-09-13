@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Carrier-ant - Cutting-edge modular all-terrain vehicle for military use">
-    <title>Tech-Ant - Carrier-ant</title>
+    <title>Tech-Ant - Home</title>
     <style>
         body {
-            font-family: 'Helvetica Neue', Arial, sans-serif;
+            font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
             background-color: #f4f4f4;
@@ -15,13 +15,29 @@
         }
         header {
             background: linear-gradient(135deg, #2e8b57, #006400);
-            color: #fff;
+            color: white;
             padding: 40px;
             text-align: center;
         }
-        header h1 {
-            font-size: 36px;
+        nav ul {
+            list-style: none;
+            padding: 0;
             margin: 0;
+            display: flex;
+            justify-content: center;
+            background-color: #444;
+        }
+        nav ul li {
+            margin: 0 15px;
+        }
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            display: block;
+        }
+        nav ul li a:hover {
+            background-color: #555;
         }
         main {
             max-width: 1200px;
@@ -29,34 +45,15 @@
             padding: 20px;
         }
         h2 {
-            color: #006400;
-            font-size: 28px;
-            margin-bottom: 10px;
+            color: #2e8b57;
         }
         p {
             font-size: 18px;
-            line-height: 1.8;
-            margin-bottom: 20px;
-        }
-        ul {
-            list-style-type: disc;
-            padding-left: 20px;
-        }
-        ul li {
-            font-size: 18px;
-            margin-bottom: 10px;
-        }
-        footer {
-            background-color: #333;
-            color: #fff;
-            text-align: center;
-            padding: 15px 0;
-            margin-top: 40px;
-            font-size: 14px;
+            line-height: 1.6;
         }
         .cta {
             background-color: #28a745;
-            color: #fff;
+            color: white;
             padding: 15px 30px;
             text-decoration: none;
             font-weight: bold;
@@ -66,72 +63,51 @@
         .cta:hover {
             background-color: #218838;
         }
-        .container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 30px;
-        }
-        .feature {
-            background: #fff;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            padding: 20px;
-            flex: 1 1 calc(33.333% - 40px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        footer {
+            background-color: #333;
+            color: white;
             text-align: center;
-        }
-        @media (max-width: 768px) {
-            .feature {
-                flex: 1 1 100%;
-            }
-            header h1 {
-                font-size: 28px;
-            }
+            padding: 15px 0;
+            margin-top: 40px;
         }
     </style>
 </head>
 <body>
     <header>
-        <h1>Carrier-ant - Advanced Modular All-Terrain Vehicle</h1>
+        <h1>Welcome to Tech-Ant - Carrier-ant Project</h1>
+        <p>Discover the future of military mobility with our modular, electric, all-terrain vehicle designed for defense operations.</p>
     </header>
+
+    <nav>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="technology.html">Technology</a></li>
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="contact.html">Contact</a></li>
+        </ul>
+    </nav>
 
     <main>
         <section>
-            <h2>About the Carrier-ant</h2>
-            <p>The Carrier-ant represents the forefront of military technology, providing a modular and terrain-adaptive vehicle specifically designed for defense operations. Developed with cutting-edge innovations, it meets the demands of modern military missions with enhanced mobility, stealth, and environmental sustainability.</p>
+            <h2>What is the Carrier-ant?</h2>
+            <p>The Carrier-ant is an innovative, modular all-terrain vehicle specifically designed for modern defense needs. With cutting-edge technology, it combines adaptability, stealth, and eco-friendliness to meet the challenges of today's military operations.</p>
         </section>
 
         <section>
-            <h2>Key Technologies</h2>
-            <div class="container">
-                <div class="feature">
-                    <h3>Modular Design</h3>
-                    <p>With its adaptable modules, the Carrier-ant can transform to suit diverse mission requirements, from transport to command units.</p>
-                </div>
-                <div class="feature">
-                    <h3>Electric Powertrain</h3>
-                    <p>Optimized for silent operations and minimal thermal footprint, the electric powertrain provides unmatched stealth and operational efficiency.</p>
-                </div>
-                <div class="feature">
-                    <h3>Terrain-Adaptable Chassis</h3>
-                    <p>Built to conquer challenging environments, the Carrier-ant's chassis dynamically adjusts to varying terrains, enhancing performance and safety.</p>
-                </div>
-                <div class="feature">
-                    <h3>Remote Controllability</h3>
-                    <p>Ensuring safety in hazardous conditions, remote control capabilities allow for unmanned operations and greater tactical flexibility.</p>
-                </div>
-            </div>
+            <h2>Key Features</h2>
+            <ul>
+                <li><strong>Modular Design:</strong> Adaptable for diverse missions, from transport to command operations.</li>
+                <li><strong>Electric Powertrain:</strong> Quiet and efficient, reducing thermal emissions and increasing stealth capabilities.</li>
+                <li><strong>Terrain-Adaptive Chassis:</strong> Optimized for challenging environments, ensuring superior mobility.</li>
+                <li><strong>Remote Controllability:</strong> Allows for unmanned operations in dangerous environments.</li>
+            </ul>
+            <a href="technology.html" class="cta">Learn More About the Technology</a>
         </section>
 
         <section>
-            <h2>Environmental and Operational Benefits</h2>
-            <p>The Carrier-ant's design incorporates sustainability as a core principle, using local energy sources to reduce its carbon footprint. Its eco-friendly electric powertrain, combined with a modular design, ensures efficient resource use and long-term operational effectiveness.</p>
-        </section>
-
-        <section>
-            <h2>Contact Us</h2>
-            <p>Interested in learning more or exploring collaboration opportunities? Reach out to us for further details:</p>
-            <a class="cta" href="mailto:info@tech-ant.fi">Contact Us</a>
+            <h2>Get in Touch</h2>
+            <p>If you’re interested in learning more or discussing potential collaboration, we’d love to hear from you.</p>
+            <a href="contact.html" class="cta">Contact Us</a>
         </section>
     </main>
 
