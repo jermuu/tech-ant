@@ -7,45 +7,86 @@
     <title>Tech-Ant - Carrier-ant</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
             margin: 0;
             padding: 0;
             background-color: #f4f4f4;
+            color: #333;
         }
         header {
-            background-color: #333;
+            background: linear-gradient(135deg, #2e8b57, #006400);
             color: #fff;
-            padding: 20px;
+            padding: 40px;
             text-align: center;
         }
+        header h1 {
+            font-size: 36px;
+            margin: 0;
+        }
         main {
+            max-width: 1200px;
+            margin: 0 auto;
             padding: 20px;
         }
-        h1, h2 {
-            color: #333;
+        h2 {
+            color: #006400;
+            font-size: 28px;
+            margin-bottom: 10px;
         }
         p {
             font-size: 18px;
-            line-height: 1.6;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+        ul {
+            list-style-type: disc;
+            padding-left: 20px;
+        }
+        ul li {
+            font-size: 18px;
+            margin-bottom: 10px;
         }
         footer {
             background-color: #333;
             color: #fff;
             text-align: center;
-            padding: 10px 0;
-            position: fixed;
-            width: 100%;
-            bottom: 0;
+            padding: 15px 0;
+            margin-top: 40px;
+            font-size: 14px;
         }
         .cta {
             background-color: #28a745;
             color: #fff;
-            padding: 10px 20px;
+            padding: 15px 30px;
             text-decoration: none;
+            font-weight: bold;
             border-radius: 5px;
+            transition: background-color 0.3s ease;
         }
         .cta:hover {
             background-color: #218838;
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+        .feature {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            flex: 1 1 calc(33.333% - 40px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        @media (max-width: 768px) {
+            .feature {
+                flex: 1 1 100%;
+            }
+            header h1 {
+                font-size: 28px;
+            }
         }
     </style>
 </head>
@@ -56,23 +97,31 @@
 
     <main>
         <section>
-            <h2>Welcome to the Tech-Ant Website</h2>
-            <p>The Carrier-ant is a modular and electric all-terrain vehicle designed for defense operations. Its ability to adapt to various terrains and its eco-friendly technology make it a unique solution for modern military challenges.</p>
+            <h2>Welcome to Tech-Ant</h2>
+            <p>The Carrier-ant is a modular, electric all-terrain vehicle designed for defense operations. Its adaptive technology and eco-friendly design make it the ideal solution for modern military challenges.</p>
         </section>
 
         <section>
             <h2>Key Features</h2>
-            <ul>
-                <li>Modular design – adaptable for various missions</li>
-                <li>Electric powertrain – silent and eco-friendly</li>
-                <li>Remote controllability – ensuring safety and flexibility</li>
-                <li>Terrain-adaptive chassis – optimized for challenging conditions</li>
-            </ul>
+            <div class="container">
+                <div class="feature">
+                    <h3>Modular Design</h3>
+                    <p>Adaptable for various missions, ensuring versatility in the field.</p>
+                </div>
+                <div class="feature">
+                    <h3>Electric Powertrain</h3>
+                    <p>Quiet, eco-friendly, and optimized for stealth operations.</p>
+                </div>
+                <div class="feature">
+                    <h3>Remote Controllability</h3>
+                    <p>Ensuring safety and operational flexibility in hostile environments.</p>
+                </div>
+            </div>
         </section>
 
         <section>
             <h2>Contact Us</h2>
-            <p>Are you interested in collaboration or want more information? Get in touch with us:</p>
+            <p>If you're interested in collaborating or want more information, get in touch with us:</p>
             <a class="cta" href="mailto:info@tech-ant.fi">Contact Us</a>
         </section>
     </main>
