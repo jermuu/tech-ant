@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tech-Ant Oy — Inventor, 3D Printing, Innovation</title>
+  <meta name="description" content="Tech-Ant Oy — Jere Nevalainen. Finnish engineer and inventor. 3D-printed products, own inventions and YouTube content about innovations." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:      #0c0b09;
+      --bg2:     #131210;
+      --bg3:     #1c1a16;
+      --border:  rgba(245,158,11,.15);
+      --amber:   #f59e0b;
+      --amber2:  #fbbf24;
+      --coral:   #ff6b35;
+      --text:    #f0ede6;
+      --muted:   #7a7570;
+      --card-bg: rgba(245,158,11,.04);
+      --r:       12px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg); color: var(--text);
+      font-family: 'DM Sans', sans-serif; font-weight: 300;
+      line-height: 1.7; overflow-x: hidden;
+    }
+    img { display: block; max-width: 100%; }
+    a { color: inherit; text-decoration: none; }
+
+    body::before {
+      content: ''; position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+      opacity: .025; pointer-events: none; z-index: 0;
+    }
+
+    /* ── LANGUAGE SYSTEM ──────────────────────────────────── */
+    [data-fi] { display: none; }
+    [data-lang="fi"] [data-en] { display: none !important; }
+    [data-lang="fi"] [data-fi] { display: revert !important; }
+
+    .lang-btn {
+      display: flex; align-items: center; gap: .2rem;
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 999px; padding: .25rem .3rem; cursor: pointer;
+    }
+    .lang-opt {
+      font-size: .75rem; font-weight: 500; letter-spacing: .05em;
+      padding: .25rem .6rem; border-radius: 999px;
+      transition: background .15s, color .15s; color: var(--muted); user-select: none;
+    }
+    .lang-opt.active { background: var(--amber); color: #000; }
+
+    /* ── TYPE ─────────────────────────────────────────────── */
+    h1,h2,h3 { font-family: 'Syne', sans-serif; line-height: 1.1; }
+    .display { font-size: clamp(3rem,8vw,7rem); font-weight: 800; letter-spacing: -.02em; }
+    .section-label {
+      font-size: .75rem; font-weight: 500; letter-spacing: .2em;
+      text-transform: uppercase; color: var(--amber); margin-bottom: 1rem;
+    }
+    .section-title { font-size: clamp(1.8rem,4vw,3rem); font-weight: 700; margin-bottom: 1rem; }
+
+    /* ── NAV ──────────────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 5%; gap: 1rem;
+      background: linear-gradient(to bottom, rgba(12,11,9,.95), transparent);
+      backdrop-filter: blur(8px); border-bottom: 1px solid var(--border);
+    }
+    .nav-logo { display: flex; align-items: center; flex-shrink: 0; }
+    .nav-logo img { height: 36px; width: auto; object-fit: contain; }
+    .nav-links { display: flex; gap: 2rem; list-style: none; font-size: .9rem; }
+    .nav-links a { opacity: .7; transition: opacity .2s, color .2s; }
+    .nav-links a:hover { opacity: 1; color: var(--amber); }
+    .nav-right { display: flex; align-items: center; gap: .75rem; flex-shrink: 0; }
+    .nav-cta {
+      background: var(--amber); color: #000; font-weight: 500;
+      font-size: .85rem; padding: .5rem 1.2rem; border-radius: 999px;
+      transition: background .2s, transform .15s; white-space: nowrap;
+    }
+    .nav-cta:hover { background: var(--amber2); transform: translateY(-1px); }
+
+    /* ── HERO ─────────────────────────────────────────────── */
+    .hero {
+      min-height: 100svh; display: flex; flex-direction: column;
+      justify-content: flex-end; padding: 10rem 5% 5rem;
+      position: relative; overflow: hidden;
+    }
+    .hero-glow {
+      position: absolute; width: 700px; height: 700px;
+      background: radial-gradient(circle, rgba(245,158,11,.18) 0%, transparent 70%);
+      top: -100px; right: -100px;
+      animation: breathe 6s ease-in-out infinite;
+    }
+    .hero-glow2 {
+      position: absolute; width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(255,107,53,.12) 0%, transparent 70%);
+      bottom: 100px; left: 10%;
+      animation: breathe 8s ease-in-out infinite reverse;
+    }
+    @keyframes breathe { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.15);opacity:.7} }
+    .hero-content { position: relative; z-index: 1; max-width: 900px; }
+    .hero-tag {
+      display: inline-flex; align-items: center; gap: .5rem;
+      font-size: .8rem; font-weight: 500; letter-spacing: .15em; text-transform: uppercase;
+      color: var(--amber); border: 1px solid var(--border); padding: .4rem 1rem;
+      border-radius: 999px; margin-bottom: 2rem; animation: fadeUp .8s ease both;
+    }
+    .dot { width: 6px; height: 6px; background: var(--amber); border-radius: 50%; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+    .hero h1 { animation: fadeUp .8s .1s ease both; margin-bottom: 1.5rem; }
+    .hero h1 em { font-style: normal; color: var(--amber); }
+    .hero-sub { font-size: 1.15rem; max-width: 520px; opacity: .75; animation: fadeUp .8s .2s ease both; margin-bottom: 2.5rem; }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 1rem; animation: fadeUp .8s .3s ease both; }
+    .btn-primary {
+      background: var(--amber); color: #000; font-weight: 500;
+      padding: .85rem 2rem; border-radius: var(--r);
+      transition: background .2s, transform .15s;
+      display: inline-flex; align-items: center; gap: .5rem;
+    }
+    .btn-primary:hover { background: var(--amber2); transform: translateY(-2px); }
+    .btn-ghost {
+      border: 1px solid var(--border); padding: .85rem 2rem; border-radius: var(--r);
+      transition: border-color .2s, background .2s;
+      display: inline-flex; align-items: center; gap: .5rem;
+    }
+    .btn-ghost:hover { border-color: var(--amber); background: var(--card-bg); }
+    .hero-scroll {
+      position: absolute; bottom: 2rem; right: 5%;
+      font-size: .75rem; letter-spacing: .1em; opacity: .4;
+      writing-mode: vertical-rl; display: flex; align-items: center; gap: .5rem;
+      animation: fadeUp .8s .5s ease both;
+    }
+    .scroll-line {
+      width: 1px; height: 50px;
+      background: linear-gradient(to bottom, transparent, var(--amber));
+      animation: scrollAnim 2s ease-in-out infinite;
+    }
+    @keyframes scrollAnim { 0%,100%{opacity:.4} 50%{opacity:1} }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+
+    /* ── STATS ────────────────────────────────────────────── */
+    .stats {
+      border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+      background: var(--bg2); display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px,1fr)); text-align: center;
+    }
+    .stat { padding: 2rem 1rem; border-right: 1px solid var(--border); }
+    .stat:last-child { border-right: none; }
+    .stat-num { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; color: var(--amber); }
+    .stat-label { font-size: .8rem; opacity: .55; margin-top: .2rem; }
+
+    /* ── SECTIONS ─────────────────────────────────────────── */
+    section { padding: 6rem 5%; position: relative; z-index: 1; }
+    .section-inner { max-width: 1100px; margin: 0 auto; }
+
+    /* ── YOUTUBE ──────────────────────────────────────────── */
+    .youtube-section { background: var(--bg2); }
+    .yt-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; margin-top: 3rem; }
+    .yt-card {
+      background: var(--bg3); border: 1px solid var(--border); border-radius: var(--r);
+      overflow: hidden; transition: border-color .3s, transform .3s;
+    }
+    .yt-card:hover { border-color: var(--amber); transform: translateY(-4px); }
+    .yt-thumb {
+      background: linear-gradient(135deg, #1a1208 0%, #2a1e0a 100%);
+      aspect-ratio: 16/9; display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden;
+    }
+    .yt-thumb::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(12,11,9,.8) 0%, transparent 50%);
+    }
+    .yt-play {
+      width: 64px; height: 64px; background: rgba(245,158,11,.9); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; font-size: 1.5rem;
+      position: relative; z-index: 1; transition: background .2s, transform .2s;
+    }
+    .yt-card:hover .yt-play { background: var(--amber2); transform: scale(1.1); }
+    .yt-info { padding: 1.2rem 1.5rem; }
+    .yt-tag { font-size: .7rem; color: var(--amber); letter-spacing: .1em; text-transform: uppercase; margin-bottom: .3rem; }
+    .yt-info h3 { font-size: 1rem; font-weight: 500; margin-bottom: .3rem; }
+    .yt-info p { font-size: .85rem; opacity: .5; }
+    .yt-text p { opacity: .7; margin-bottom: 1.5rem; line-height: 1.8; }
+    .yt-series { display: flex; flex-direction: column; gap: .75rem; margin-bottom: 2rem; }
+    .series-item { display: flex; align-items: center; gap: .75rem; font-size: .9rem; opacity: .7; }
+    .series-item::before { content: ''; width: 24px; height: 2px; background: var(--amber); flex-shrink: 0; }
+
+    /* ── PRODUCTS ─────────────────────────────────────────── */
+    .products-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px,1fr)); gap: 1.5rem; margin-top: 3rem; }
+    .product-card {
+      background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--r);
+      padding: 2rem; position: relative; overflow: hidden;
+      transition: border-color .3s, transform .3s;
+    }
+    .product-card:hover { border-color: var(--amber); transform: translateY(-4px); }
+    .product-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(to right, var(--amber), var(--coral));
+      transform: scaleX(0); transform-origin: left; transition: transform .3s;
+    }
+    .product-card:hover::before { transform: scaleX(1); }
+    .product-icon { font-size: 2.5rem; margin-bottom: 1.2rem; }
+    .product-status {
+      display: inline-block; font-size: .7rem; letter-spacing: .1em; text-transform: uppercase;
+      padding: .25rem .75rem; border-radius: 999px; margin-bottom: 1rem;
+    }
+    .status-ready { background: rgba(34,197,94,.15); color: #4ade80; }
+    .status-proto { background: rgba(245,158,11,.15); color: var(--amber); }
+    .product-card h3 { font-size: 1.4rem; margin-bottom: .75rem; }
+    .product-card p { opacity: .65; font-size: .95rem; margin-bottom: 1.5rem; }
+    .product-tags { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 1.5rem; }
+    .tag { font-size: .7rem; padding: .25rem .75rem; border-radius: 999px; border: 1px solid rgba(245,158,11,.2); opacity: .7; }
+    .product-link { display: inline-flex; align-items: center; gap: .4rem; font-size: .85rem; font-weight: 500; color: var(--amber); transition: gap .2s; }
+    .product-link:hover { gap: .75rem; }
+
+    /* ── ABOUT ────────────────────────────────────────────── */
+    .about-section { background: var(--bg2); }
+    .about-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 4rem; align-items: center; margin-top: 3rem; }
+    .about-portrait {
+      aspect-ratio: 3/4; background: linear-gradient(135deg, var(--bg3) 0%, #1f1a10 100%);
+      border-radius: var(--r); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 5rem; position: relative; overflow: hidden;
+    }
+    .about-portrait::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(245,158,11,.08) 0%, transparent 60%); }
+    .about-content p { opacity: .7; margin-bottom: 1.2rem; line-height: 1.85; }
+    .skills-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; margin-top: 2rem; }
+    .skill-item { display: flex; align-items: center; gap: .75rem; font-size: .85rem; opacity: .7; }
+    .skill-dot { width: 8px; height: 8px; background: var(--amber); border-radius: 50%; flex-shrink: 0; }
+
+    /* ── CONTACT ──────────────────────────────────────────── */
+    .contact-card {
+      background: linear-gradient(135deg, var(--bg3) 0%, #1a1508 100%);
+      border: 1px solid var(--border); border-radius: calc(var(--r)*1.5);
+      padding: 3.5rem; text-align: center; position: relative; overflow: hidden;
+    }
+    .contact-card::before {
+      content: ''; position: absolute; top: -50%; left: 50%; transform: translateX(-50%);
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(245,158,11,.08) 0%, transparent 70%);
+    }
+    .contact-card h2 { font-size: clamp(1.8rem,3vw,2.8rem); margin-bottom: 1rem; position: relative; }
+    .contact-card > p { opacity: .6; max-width: 520px; margin: 0 auto 2rem; position: relative; }
+    .contact-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; position: relative; }
+    .sponsor-box {
+      background: rgba(245,158,11,.06); border: 1px solid var(--border);
+      border-radius: var(--r); padding: 1.5rem 2rem;
+      max-width: 500px; margin: 3rem auto 0; text-align: center; position: relative;
+    }
+    .sponsor-box p { font-size: .9rem; opacity: .6; margin-bottom: 0; }
+
+    /* ── FOOTER ───────────────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border); padding: 2rem 5%;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 1rem; font-size: .8rem; opacity: .4;
+    }
+
+    /* ── MOBILE ───────────────────────────────────────────── */
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .yt-grid, .about-grid { grid-template-columns: 1fr; }
+      .about-portrait { display: none; }
+      .skills-grid { grid-template-columns: 1fr; }
+      .contact-card { padding: 2rem 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-logo">
+      <img src="tech-antLOGO.png" alt="Tech-Ant Oy" />
+    </div>
+    <ul class="nav-links">
+      <li><a href="#youtube">YouTube</a></li>
+      <li>
+        <a href="#products" data-en>Products</a>
+        <a href="#products" data-fi>Tuotteet</a>
+      </li>
+      <li>
+        <a href="#about" data-en>About</a>
+        <a href="#about" data-fi>Keksijästä</a>
+      </li>
+      <li>
+        <a href="#contact" data-en>Collab</a>
+        <a href="#contact" data-fi>Yhteistyö</a>
+      </li>
+    </ul>
+    <div class="nav-right">
+      <div class="lang-btn" id="langBtn">
+        <span class="lang-opt active" data-switch="en">EN</span>
+        <span class="lang-opt" data-switch="fi">FI</span>
+      </div>
+      <a href="https://www.youtube.com/@jermu85" target="_blank" class="nav-cta">
+        <span data-en>▶ Watch Channel</span>
+        <span data-fi>▶ Katso kanavaa</span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-glow"></div>
+    <div class="hero-glow2"></div>
+    <div class="hero-content">
+      <div class="hero-tag">
+        <span class="dot"></span>
+        <span data-en>Finnish Engineer &amp; Inventor</span>
+        <span data-fi>Suomalainen Insinööri &amp; Keksijä</span>
+      </div>
+      <h1 class="display">
+        <span data-en>Invent.<br/>Print.<br/><em>Share.</em></span>
+        <span data-fi>Keksin.<br/>Tulostan.<br/><em>Jaan.</em></span>
+      </h1>
+      <p class="hero-sub" data-en>
+        Tech-Ant Oy builds innovative physical products where 3D printing capabilities,
+        engineering expertise and a relentless drive to invent collide.
+      </p>
+      <p class="hero-sub" data-fi>
+        Tech-Ant Oy rakentaa innovatiivisia fyysisiä tuotteita joissa yhdistyvät
+        3D-tulostuksen mahdollisuudet, insinööriosaaminen ja hullu into keksiä uutta.
+      </p>
+      <div class="hero-actions">
+        <a href="https://www.youtube.com/@jermu85" target="_blank" class="btn-primary">
+          <span data-en>▶ YouTube Channel</span>
+          <span data-fi>▶ YouTube-kanava</span>
+        </a>
+        <a href="#products" class="btn-ghost">
+          <span data-en>🔧 See Products</span>
+          <span data-fi>🔧 Katso tuotteet</span>
+        </a>
+      </div>
+    </div>
+    <div class="hero-scroll">SCROLL <div class="scroll-line"></div></div>
+  </section>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-num">3+</div>
+      <div class="stat-label" data-en>Product Concepts</div>
+      <div class="stat-label" data-fi>Tuotekonseptia</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">2</div>
+      <div class="stat-label" data-en>Languages on YouTube</div>
+      <div class="stat-label" data-fi>Kieltä videoissa</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">RTX</div>
+      <div class="stat-label" data-en>AI Image Generation</div>
+      <div class="stat-label" data-fi>AI-kuvagenerointia</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">∞</div>
+      <div class="stat-label" data-en>Ideas in Pipeline</div>
+      <div class="stat-label" data-fi>Ideoita jonossa</div>
+    </div>
+  </div>
+
+  <!-- YOUTUBE -->
+  <section class="youtube-section" id="youtube">
+    <div class="section-inner">
+      <div class="section-label">▶ YouTube @jermu85</div>
+      <div class="yt-grid">
+        <div>
+          <div class="yt-card" style="margin-bottom:1.5rem;">
+            <a href="https://www.youtube.com/@jermu85" target="_blank">
+              <div class="yt-thumb"><div class="yt-play">▶</div></div>
+              <div class="yt-info">
+                <div class="yt-tag" data-en>Main Series</div>
+                <div class="yt-tag" data-fi>Pääsarja</div>
+                <h3 data-en>Finnish Inventors</h3>
+                <h3 data-fi>Suomalaiset keksijät</h3>
+                <p data-en>The stories of those who changed the world</p>
+                <p data-fi>Heidän tarinansa jotka muuttivat maailmaa</p>
+              </div>
+            </a>
+          </div>
+          <div class="yt-card">
+            <a href="https://www.youtube.com/@jermu85" target="_blank">
+              <div class="yt-thumb" style="background:linear-gradient(135deg,#0f1a12,#0d1f15);">
+                <div class="yt-play">▶</div>
+              </div>
+              <div class="yt-info">
+                <div class="yt-tag" data-en>Project Log</div>
+                <div class="yt-tag" data-fi>Projektilog</div>
+                <h3 data-en>Tech-Ant Builds</h3>
+                <h3 data-fi>Tech-Ant kehittää</h3>
+                <p data-en>Behind the scenes — idea to prototype</p>
+                <p data-fi>Kulissien takana — idea prototyypiksi</p>
+              </div>
+            </a>
+          </div>
+        </div>
+        <div class="yt-text">
+          <h2 class="section-title">
+            <span data-en>Videos about inventors,<br/>by an inventor.</span>
+            <span data-fi>Videoita keksijöistä,<br/>keksijältä.</span>
+          </h2>
+          <p data-en>An engineer talking about engineers. I explore Finnish inventors, innovations and my own journey as a product developer — in two languages, AI-assisted.</p>
+          <p data-fi>Insinööri kertoo insinööreistä. Tutkin suomalaisia keksijöitä, innovaatioita ja omaa matkaani tuotekehittäjänä — kahdella kielellä, tekoälyavusteisesti.</p>
+          <div class="yt-series">
+            <div class="series-item" data-en>Finnish Inventors — evergreen series</div>
+            <div class="series-item" data-fi>Suomalaiset keksijät — ikivihreä sarja</div>
+            <div class="series-item" data-en>Tech-Ant Project Log — behind the scenes</div>
+            <div class="series-item" data-fi>Tech-Ant projektilog — oma kehitystyö</div>
+            <div class="series-item" data-en>Inventor's Journey — process videos</div>
+            <div class="series-item" data-fi>Keksijän matka — prosessivideot</div>
+            <div class="series-item" data-en>EN + FI audio — double the audience</div>
+            <div class="series-item" data-fi>EN + FI ääniraidat — kaksinkertainen yleisö</div>
+          </div>
+          <a href="https://www.youtube.com/@jermu85" target="_blank" class="btn-primary">
+            <span data-en>▶ Subscribe</span>
+            <span data-fi>▶ Tilaa kanava</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRODUCTS -->
+  <section id="products">
+    <div class="section-inner">
+      <div class="section-label">
+        <span data-en>🔧 Products</span>
+        <span data-fi>🔧 Tuotteet</span>
+      </div>
+      <h2 class="section-title">
+        <span data-en>Physical innovation.<br/>No electronics needed.</span>
+        <span data-fi>Fyysistä innovaatiota.<br/>Ilman elektroniikkaa.</span>
+      </h2>
+      <div class="products-grid">
+
+        <div class="product-card">
+          <div class="product-icon">🎰</div>
+          <span class="product-status status-ready" data-en>Coming Soon</span>
+          <span class="product-status status-ready" data-fi>Tulossa pian</span>
+          <h3>Secret Containers</h3>
+          <p data-en>3D-printed secret compartment objects that look like ordinary items. For tech nerds, gamers and nature lovers.</p>
+          <p data-fi>3D-tulostettuja salalokero-tuotteita jotka näyttävät normaaleilta esineiltä. Keksijöille, tekniikkanörteille, luontoihmisille.</p>
+          <div class="product-tags">
+            <span class="tag">Poker Chip Stack</span>
+            <span class="tag">Robot Handshake</span>
+            <span class="tag">Ladybug</span>
+          </div>
+          <a href="https://www.etsy.com" target="_blank" class="product-link">
+            <span data-en>View on Etsy →</span>
+            <span data-fi>Katso Etsyssä →</span>
+          </a>
+        </div>
+
+        <div class="product-card">
+          <div class="product-icon">💪</div>
+          <span class="product-status status-proto" data-en>In Development</span>
+          <span class="product-status status-proto" data-fi>Kehitteillä</span>
+          <h3>Myhierotin</h3>
+          <p data-en>A self-care trigger point massager for deep back relief. No hand strength, no electricity, no awkward positions — just your body weight.</p>
+          <p data-fi>Itsehoitoon tarkoitettu hierontalaite triggerpisteiden syvähierontaan. Ei käsivoimaa, ei sähköä, ei haastavia asentoja — vain kehon oma paino.</p>
+          <div class="product-tags">
+            <span class="tag" data-en>Back Pain</span><span class="tag" data-fi>Selkäkivut</span>
+            <span class="tag" data-en>Trigger Points</span><span class="tag" data-fi>Triggerpisteet</span>
+            <span class="tag">30–70 €</span>
+          </div>
+          <span class="product-link" style="opacity:.5;cursor:default;" data-en>Coming 2026</span>
+          <span class="product-link" style="opacity:.5;cursor:default;" data-fi>Tulossa 2026</span>
+        </div>
+
+        <div class="product-card">
+          <div class="product-icon">🦒</div>
+          <span class="product-status status-proto" data-en>In Development</span>
+          <span class="product-status status-proto" data-fi>Kehitteillä</span>
+          <h3 data-en>Neck &amp; Shoulder Massager</h3>
+          <h3 data-fi>Niska/Hartiahieronta</h3>
+          <p data-en>Relief for neck tension and shoulder stiffness. A natural extension of the Myhierotin family — same philosophy, different muscle group.</p>
+          <p data-fi>Niska- ja hartiajännityksen hoito. Luonteva laajennus Myhierotin-tuoteperheeseen — sama filosofia, eri kehon osa.</p>
+          <div class="product-tags">
+            <span class="tag" data-en>Desk Workers</span><span class="tag" data-fi>Istumatyö</span>
+            <span class="tag" data-en>Neck Pain</span><span class="tag" data-fi>Niskakivut</span>
+            <span class="tag" data-en>Shoulders</span><span class="tag" data-fi>Hartiat</span>
+          </div>
+          <span class="product-link" style="opacity:.5;cursor:default;" data-en>Coming 2026</span>
+          <span class="product-link" style="opacity:.5;cursor:default;" data-fi>Tulossa 2026</span>
+        </div>
+
+        <div class="product-card">
+          <div class="product-icon">🖨️</div>
+          <span class="product-status status-ready" data-en>Active</span>
+          <span class="product-status status-ready" data-fi>Aktiivinen</span>
+          <h3 data-en>3D Models &amp; Prototypes</h3>
+          <h3 data-fi>3D-mallit &amp; Prototyypit</h3>
+          <p data-en>Custom 3D design on request. From prototype to small-batch production — engineering expertise combined with FDM printing.</p>
+          <p data-fi>Suunnittelen 3D-malleja tilauksesta. Prototyypistä piensarjaan — insinööriosaaminen + FDM-tulostus yhdistettynä.</p>
+          <div class="product-tags">
+            <span class="tag">PETG</span>
+            <span class="tag" data-en>Multi-colour</span><span class="tag" data-fi>Moniväritulostus</span>
+            <span class="tag" data-en>Custom Order</span><span class="tag" data-fi>Tilaustyö</span>
+          </div>
+          <a href="mailto:jere.nevalainen@tech-ant.fi" class="product-link">
+            <span data-en>Request a quote →</span>
+            <span data-fi>Kysy tarjousta →</span>
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="about-section" id="about">
+    <div class="section-inner">
+      <div class="section-label">
+        <span data-en>👤 About the Inventor</span>
+        <span data-fi>👤 Keksijästä</span>
+      </div>
+      <div class="about-grid">
+        <div class="about-portrait">🧑‍🔧</div>
+        <div class="about-content">
+          <h2 class="section-title">
+            <span data-en>Jere Nevalainen<br/>— engineer, inventor.</span>
+            <span data-fi>Jere Nevalainen<br/>— insinööri, keksijä.</span>
+          </h2>
+          <p data-en>I'm a Finnish engineer and inventor. I build products where mechanical ingenuity meets the speed of 3D printing and the entrepreneurial drive to take ideas all the way to market.</p>
+          <p data-fi>Olen suomalainen insinööri ja keksijä. Rakennan tuotteita joissa yhdistyy mekaaninen keksijänmieli, 3D-tulostuksen nopeus ja yrittäjän halu viedä ideat markkinoille.</p>
+          <p data-en>Every product solves a real problem — often born from my own back pain, an inventor's frustration, or a simple everyday observation.</p>
+          <p data-fi>Jokainen tuote ratkaisee oikean ongelman — usein oman selkäkivun, keksijänärsyttymisen tai arjen harmituksen kautta syntyneen havainnon.</p>
+          <p data-en>Tech-Ant Oy is an innovation pipeline where ideas flow from sudden inspiration to the print bed and from there into customers' hands.</p>
+          <p data-fi>Tech-Ant Oy on innovaatioputki jossa ideat kulkevat päähän pälkähtämisestä tulostusalustalle ja sieltä asiakkaan käsiin.</p>
+          <div class="skills-grid">
+            <div class="skill-item"><span class="skill-dot"></span><span data-en>3D Design &amp; Printing</span><span data-fi>3D-suunnittelu &amp; tulostus</span></div>
+            <div class="skill-item"><span class="skill-dot"></span><span data-en>Mechanical Innovation</span><span data-fi>Mekaaninen innovaatio</span></div>
+            <div class="skill-item"><span class="skill-dot"></span><span data-en>Product Dev 0 → Market</span><span data-fi>Tuotekehitys 0 → markkinat</span></div>
+            <div class="skill-item"><span class="skill-dot"></span><span data-en>AI Video Production</span><span data-fi>AI-videotuotanto</span></div>
+            <div class="skill-item"><span class="skill-dot"></span><span data-en>IPR &amp; Patents</span><span data-fi>IPR &amp; patentointi</span></div>
+            <div class="skill-item"><span class="skill-dot"></span><span data-en>Multilingual Content</span><span data-fi>Monikielinen sisältö</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="section-inner">
+      <div class="contact-card">
+        <h2 class="section-title">
+          <span data-en>Let's work together.</span>
+          <span data-fi>Tehdään yhteistyötä.</span>
+        </h2>
+        <p data-en>Sponsorships, custom orders, 3D modelling or just to say hi — drop a message and let's talk.</p>
+        <p data-fi>Sponsoriyhteistyöt, tilaustyöt, 3D-mallinnus tai ihan muuten vaan — kirjoita niin jutellaan.</p>
+        <div class="contact-actions">
+          <a href="mailto:jere.nevalainen@tech-ant.fi" class="btn-primary">
+            <span data-en>✉ Send Email</span>
+            <span data-fi>✉ Lähetä sähköposti</span>
+          </a>
+          <a href="https://www.youtube.com/@jermu85" target="_blank" class="btn-ghost">
+            <span data-en>▶ YouTube Channel</span>
+            <span data-fi>▶ YouTube-kanava</span>
+          </a>
+        </div>
+        <div class="sponsor-box">
+          <div class="section-label">
+            <span data-en>🤝 Sponsorship</span>
+            <span data-fi>🤝 Sponsoriyhteistyö</span>
+          </div>
+          <p data-en>Two languages on the channel = double the audience. Great fit for 3D printing, CAD, wellness and innovation companies.</p>
+          <p data-fi>Kanavalla kaksi kieltä = kaksinkertainen yleisö. Sopii 3D-tulostus-, CAD-, hyvinvointi- ja innovaatioalan yrityksille.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div>© 2026 Tech-Ant Oy — Jere Nevalainen</div>
+    <div>jere.nevalainen@tech-ant.fi</div>
+    <div>Finland</div>
+  </footer>
+
+  <script>
+    const html = document.documentElement;
+    const opts = document.querySelectorAll('[data-switch]');
+    function setLang(lang) {
+      html.setAttribute('data-lang', lang);
+      html.lang = lang;
+      opts.forEach(o => o.classList.toggle('active', o.dataset.switch === lang));
+      try { localStorage.setItem('ta-lang', lang); } catch(e) {}
+    }
+    try { const s = localStorage.getItem('ta-lang'); if (s === 'fi') setLang('fi'); } catch(e) {}
+    opts.forEach(o => o.addEventListener('click', () => setLang(o.dataset.switch)));
+  </script>
+
+</body>
+</html>
