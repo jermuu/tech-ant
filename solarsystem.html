@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Solar System Simulation</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000000;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+        }
+        
+        canvas {
+            display: block;
+        }
+        
+        #backButton {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: 1px solid white;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: Arial, sans-serif;
+            text-decoration: none;
+        }
+
+        #backButton:hover {
+            background: rgba(0, 0, 0, 0.9);
+        }
+
+        #info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: white;
+            font-size: 14px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border-radius: 5px;
+            width: 200px;
+        }
+        
+        #speedControl {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: white;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        
+        .speed-slider {
+            width: 150px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="solarCanvas"></canvas>
+    <div id="info">
+        <strong>Solar System Simulation</strong><br>
+        Click and drag planets to move them<br>
+        Saturn has rings, Jupiter is largest<br>
+        All planets orbit at correct relative speeds
+    </div>
+    
+    <div id="speedControl">
+        <strong>Simulation Speed</strong><br>
+        <input type="range" id="speedSlider" class="speed-slider" min="0" max="5" step="0.1" value="1">
+        <div id="speedValue">1.0x</div>
+    </div>
+    <a href="index.html" id="backButton">Back to Main Page</a>
+    <script>
+        const canvas = document.getElementById('solarCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        let width, height, cx, cy;
+        const stars = [];
+        const planets = [];
+        let draggedPlanet = null;
+        let mouse = { x: 0, y: 0 };
+        let dragOffset = { x: 0, y: 0 };
+        let speedMultiplier = 1.0;
+
+        // Initialize canvas size
+        function resizeCanvas() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = width;
+            canvas.height = height;
+            cx = width / 2;
+            cy = height / 2;
+            
+            // Generate stars
+            stars.length = 0;
+            for (let i = 0; i < 400; i++) {
+                stars.push({
+                    x: Math.random() * width,
+                    y: Math.random() * height,
+                    size: Math.random() * 2,
+                    opacity: Math.random()
+                });
+            }
+        }
+
+        // Planet data with accurate relative sizes and orbital periods
+        class Planet {
+            constructor(name, size, distance, speed, color, hasRings = false, orbitOffset = 0) {
+                this.name = name;
+                this.size = size;
+                this.distance = distance;
+                this.originalSpeed = speed;
+                this.speed = speed;
+                this.color = color;
+                this.hasRings = hasRings;
+                this.angle = orbitOffset;
+                this.x = 0;
+                this.y = 0;
+                this.isDragging = false;
+            }
+
+            update() {
+                if (!this.isDragging) {
+                    this.angle += this.speed * speedMultiplier;
+                    this.x = cx + Math.cos(this.angle) * this.distance;
+                    this.y = cy + Math.sin(this.angle) * this.distance;
+                }
+            }
+
+            draw() {
+                // Draw rings for Saturn
+                if (this.hasRings) {
+                    ctx.beginPath();
+                    ctx.strokeStyle = 'rgba(200, 180, 150, 0.6)';
+                    ctx.lineWidth = 4;
+                    ctx.ellipse(this.x, this.y, this.size * 2.2, this.size * 0.8, Math.PI / 6, 0, Math.PI * 2);
+                    ctx.stroke();
+                    
+                    ctx.beginPath();
+                    ctx.strokeStyle = 'rgba(180, 160, 130, 0.8)';
+                    ctx.lineWidth = 2;
+                    ctx.ellipse(this.x, this.y, this.size * 1.8, this.size * 0.6, Math.PI / 6, 0, Math.PI * 2);
+                    ctx.stroke();
+                }
+
+                // Draw planet
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                
+                // Draw planet name
+                ctx.fillStyle = 'white';
+                ctx.font = '10px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(this.name, this.x, this.y - this.size - 5);
+            }
+        }
+
+        function initPlanets() {
+            // Planet data: [name, size, distance, speed, color, hasRings, orbitOffset]
+            // Sizes are relative to Earth (Earth = 1)
+            // Distances are relative for visual representation
+            // Speeds are relative orbital speeds (Mercury fastest, Neptune slowest)
+            
+            planets.push(new Planet("Mercury", 4, 80, 0.02, '#A5A5A5', false, Math.random() * Math.PI * 2));
+            planets.push(new Planet("Venus", 8, 120, 0.015, '#E3BB76', false, Math.random() * Math.PI * 2));
+            planets.push(new Planet("Earth", 9, 160, 0.01, '#4B69D9', false, Math.random() * Math.PI * 2));
+            planets.push(new Planet("Mars", 6, 200, 0.008, '#C1440E', false, Math.random() * Math.PI * 2));
+            planets.push(new Planet("Jupiter", 25, 280, 0.004, '#D9A868', false, Math.random() * Math.PI * 2));
+            planets.push(new Planet("Saturn", 20, 350, 0.003, '#E6D698', true, Math.random() * Math.PI * 2));
+            planets.push(new Planet("Uranus", 14, 410, 0.002, '#D9F7FF', false, Math.random() * Math.PI * 2));
+            planets.push(new Planet("Neptune", 14, 460, 0.0015, '#4B70D9', false, Math.random() * Math.PI * 2));
+        }
+
+        function drawSun() {
+            // Sun glow effect
+            const gradient = ctx.createRadialGradient(cx, cy, 15, cx, cy, 60);
+            gradient.addColorStop(0, '#FFFF66');
+            gradient.addColorStop(0.5, '#FFAA00');
+            gradient.addColorStop(1, 'rgba(255, 165, 0, 0)');
+
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.arc(cx, cy, 60, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Sun core
+            ctx.beginPath();
+            ctx.arc(cx, cy, 15, 0, Math.PI * 2);
+            ctx.fillStyle = '#FFFF00';
+            ctx.fill();
+        }
+
+        function drawStars() {
+            ctx.fillStyle = 'white';
+            stars.forEach(star => {
+                ctx.globalAlpha = star.opacity;
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            ctx.globalAlpha = 1.0;
+        }
+
+        function drawOrbits() {
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.lineWidth = 1;
+            
+            planets.forEach(planet => {
+                ctx.beginPath();
+                ctx.arc(cx, cy, planet.distance, 0, Math.PI * 2);
+                ctx.stroke();
+            });
+        }
+
+        function checkCollisionWithSun(planet) {
+            const dx = planet.x - cx;
+            const dy = planet.y - cy;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            if (distance < 30) { // Sun radius is 15, give some leeway
+                return true;
+            }
+            return false;
+        }
+
+        function respawnPlanet(planet) {
+            // Reset planet to a random position in its orbit
+            planet.angle = Math.random() * Math.PI * 2;
+            planet.x = cx + Math.cos(planet.angle) * planet.distance;
+            planet.y = cy + Math.sin(planet.angle) * planet.distance;
+            
+            // Show flash effect
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+            ctx.beginPath();
+            ctx.arc(planet.x, planet.y, planet.size * 3, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        function animate() {
+            // Clear canvas with black background
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, width, height);
+
+            // Draw stars
+            drawStars();
+
+            // Draw sun
+            drawSun();
+
+            // Draw orbits
+            drawOrbits();
+
+            // Update and draw planets
+            planets.forEach(planet => {
+                if (!planet.isDragging) {
+                    planet.update();
+                }
+
+                // Check if dragged planet collided with sun
+                if (planet.isDragging && checkCollisionWithSun(planet)) {
+                    planet.isDragging = false;
+                    respawnPlanet(planet);
+                }
+
+                planet.draw();
+            });
+
+            requestAnimationFrame(animate);
+        }
+
+        // Mouse event handlers
+        canvas.addEventListener('mousedown', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            // Check if clicking on a planet
+            planets.forEach(planet => {
+                const dx = mouseX - planet.x;
+                const dy = mouseY - planet.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance < planet.size + 5) {
+                    draggedPlanet = planet;
+                    planet.isDragging = true;
+                    dragOffset.x = mouseX - planet.x;
+                    dragOffset.y = mouseY - planet.y;
+                }
+            });
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            mouse.x = e.clientX - rect.left;
+            mouse.y = e.clientY - rect.top;
+
+            if (draggedPlanet) {
+                draggedPlanet.x = mouse.x - dragOffset.x;
+                draggedPlanet.y = mouse.y - dragOffset.y;
+            }
+        });
+
+        canvas.addEventListener('mouseup', () => {
+            if (draggedPlanet) {
+                draggedPlanet.isDragging = false;
+                draggedPlanet = null;
+            }
+        });
+
+        canvas.addEventListener('mouseleave', () => {
+            if (draggedPlanet) {
+                draggedPlanet.isDragging = false;
+                draggedPlanet = null;
+            }
+        });
+
+        window.addEventListener('resize', resizeCanvas);
+
+        // Speed control event listener
+        const speedSlider = document.getElementById('speedSlider');
+        const speedValue = document.getElementById('speedValue');
+        
+        speedSlider.addEventListener('input', (e) => {
+            speedMultiplier = parseFloat(e.target.value);
+            speedValue.textContent = speedMultiplier.toFixed(1) + 'x';
+        });
+
+        // Initialize and start
+        resizeCanvas();
+        initPlanets();
+        animate();
+    </script>
+</body>
+</html>
