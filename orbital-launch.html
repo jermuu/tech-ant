@@ -1,0 +1,1435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tech-Ant Lab | Orbital Launch Trainer</title>
+    <meta name="description" content="A lightweight orbital physics game from Tech-Ant where players tune injection energy, burnout angle and simulation speed to reach Earth orbit or lunar orbit.">
+    <meta name="theme-color" content="#050816">
+    <link rel="canonical" href="https://tech-ant.fi/orbital-launch.html">
+    <link rel="icon" type="image/png" href="tech-antLOGO.png">
+    <meta property="og:title" content="Tech-Ant Lab | Orbital Launch Trainer">
+    <meta property="og:description" content="Launch from the pad, tune injection energy and angle, then learn orbital basics through a lightweight Earth-to-Moon physics game.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://tech-ant.fi/orbital-launch.html">
+    <meta property="og:image" content="https://tech-ant.fi/tech-antLOGO.png">
+    <meta property="og:image:alt" content="Tech-Ant Oy logo">
+    <meta name="twitter:card" content="summary">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #050816;
+            --panel: rgba(8, 15, 30, 0.8);
+            --line: rgba(113, 245, 255, 0.16);
+            --line-strong: rgba(113, 245, 255, 0.32);
+            --cyan: #71f5ff;
+            --cyan-soft: #d5fdff;
+            --text: #eef5ff;
+            --muted: #9ca9c2;
+            --acid: #c4ff67;
+            --danger: #ff7c9a;
+            --warning: #ffd166;
+            --shadow: 0 24px 80px rgba(2, 8, 20, 0.38);
+            --r: 18px;
+            --r-sm: 12px;
+        }
+
+        * , *::before, *::after { box-sizing: border-box; }
+        html, body { height: 100%; }
+        body {
+            margin: 0;
+            overflow: hidden;
+            color: var(--text);
+            font-family: "Space Grotesk", sans-serif;
+            background:
+                radial-gradient(circle at 18% 0%, rgba(113, 245, 255, 0.1), transparent 30%),
+                radial-gradient(circle at 85% 10%, rgba(196, 255, 103, 0.06), transparent 18%),
+                linear-gradient(180deg, #050816 0%, #060b18 50%, #091024 100%);
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(113, 245, 255, 0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(113, 245, 255, 0.04) 1px, transparent 1px);
+            background-size: 72px 72px;
+            opacity: 0.4;
+            pointer-events: none;
+        }
+
+        canvas {
+            display: block;
+        }
+
+        .ui-shell {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+        }
+
+        .panel,
+        .nav-button,
+        .mission-btn,
+        .action-btn {
+            pointer-events: auto;
+            border: 1px solid var(--line);
+            background: var(--panel);
+            backdrop-filter: blur(18px);
+            box-shadow: var(--shadow);
+        }
+
+        .panel {
+            position: absolute;
+            border-radius: var(--r);
+            overflow: hidden;
+        }
+
+        .panel::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, var(--cyan), transparent 70%);
+            opacity: 0.78;
+        }
+
+        .panel-inner {
+            position: relative;
+            padding: 1.15rem 1.2rem;
+        }
+
+        .mono,
+        .panel-kicker,
+        .label,
+        .telemetry-item span,
+        .nav-button,
+        .mission-btn,
+        .action-btn {
+            font-family: "IBM Plex Mono", monospace;
+        }
+
+        .panel-kicker {
+            color: var(--cyan);
+            font-size: 0.72rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            margin-bottom: 0.85rem;
+        }
+
+        .hero-panel {
+            top: 1rem;
+            left: 1rem;
+            width: min(450px, calc(100vw - 2rem));
+        }
+
+        .hero-panel h1 {
+            margin: 0 0 0.8rem;
+            font-size: clamp(1.8rem, 5vw, 2.45rem);
+            line-height: 1.02;
+        }
+
+        .hero-panel p,
+        .lesson-text,
+        .telemetry-note,
+        .setup-copy {
+            margin: 0;
+            color: var(--muted);
+            font-size: 0.94rem;
+            line-height: 1.72;
+        }
+
+        .meta-strip {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.55rem;
+            margin-top: 1rem;
+        }
+
+        .meta-pill {
+            padding: 0.48rem 0.72rem;
+            border-radius: 999px;
+            border: 1px solid rgba(113, 245, 255, 0.12);
+            background: rgba(7, 14, 28, 0.54);
+            color: var(--muted);
+            font-size: 0.68rem;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
+
+        .setup-panel {
+            top: 1rem;
+            right: 1rem;
+            width: min(360px, calc(100vw - 2rem));
+        }
+
+        .setup-copy {
+            margin-bottom: 1rem;
+        }
+
+        .mission-switch {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.65rem;
+            margin-bottom: 1rem;
+        }
+
+        .mission-btn,
+        .action-btn,
+        .nav-button {
+            border-radius: 999px;
+            color: var(--text);
+            cursor: pointer;
+            transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease, color 0.18s ease;
+        }
+
+        .mission-btn {
+            min-height: 44px;
+            padding: 0.75rem 0.9rem;
+            font-size: 0.72rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .mission-btn.active {
+            background: rgba(113, 245, 255, 0.12);
+            border-color: var(--line-strong);
+            color: var(--cyan-soft);
+        }
+
+        .control-group + .control-group {
+            margin-top: 1rem;
+        }
+
+        .control-head {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 0.55rem;
+        }
+
+        .label {
+            font-size: 0.72rem;
+            color: var(--cyan);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+
+        .value {
+            color: var(--text);
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--cyan);
+        }
+
+        .range-note {
+            margin-top: 0.4rem;
+            color: var(--muted);
+            font-size: 0.82rem;
+            line-height: 1.6;
+        }
+
+        .action-row {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1.2rem;
+        }
+
+        .action-btn {
+            min-height: 48px;
+            padding: 0.85rem 1rem;
+            flex: 1;
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .action-btn.primary {
+            background: linear-gradient(135deg, var(--cyan), #a4fbff);
+            color: #04121e;
+            border-color: transparent;
+        }
+
+        .action-btn:disabled {
+            opacity: 0.5;
+            cursor: default;
+            transform: none;
+        }
+
+        .telemetry-panel {
+            left: 1rem;
+            bottom: 1rem;
+            width: min(420px, calc(100vw - 2rem));
+        }
+
+        .telemetry-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .telemetry-item {
+            padding: 0.8rem 0.85rem;
+            border-radius: var(--r-sm);
+            border: 1px solid rgba(113, 245, 255, 0.1);
+            background: rgba(7, 14, 28, 0.55);
+        }
+
+        .telemetry-item span {
+            display: block;
+            font-size: 0.66rem;
+            color: var(--cyan);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin-bottom: 0.45rem;
+        }
+
+        .telemetry-item strong {
+            display: block;
+            font-size: 1rem;
+            line-height: 1.35;
+        }
+
+        .speed-box {
+            margin-top: 0.95rem;
+            padding-top: 0.95rem;
+            border-top: 1px solid rgba(113, 245, 255, 0.1);
+        }
+
+        .lesson-panel {
+            right: 1rem;
+            bottom: 1rem;
+            width: min(340px, calc(100vw - 2rem));
+        }
+
+        .result-banner {
+            position: absolute;
+            left: 50%;
+            top: 1rem;
+            transform: translate(-50%, -14px);
+            width: min(540px, calc(100vw - 2rem));
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
+        }
+
+        .result-banner.visible {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, 0);
+        }
+
+        .result-layout {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .result-copy strong {
+            display: block;
+            font-size: 1.2rem;
+            margin-bottom: 0.35rem;
+        }
+
+        .result-copy p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 0.92rem;
+            line-height: 1.65;
+        }
+
+        .result-banner.success {
+            border-color: rgba(196, 255, 103, 0.26);
+        }
+
+        .result-banner.fail {
+            border-color: rgba(255, 124, 154, 0.28);
+        }
+
+        .result-banner.success::before {
+            background: linear-gradient(90deg, var(--acid), transparent 70%);
+        }
+
+        .result-banner.fail::before {
+            background: linear-gradient(90deg, var(--danger), transparent 70%);
+        }
+
+        .nav-actions {
+            position: absolute;
+            right: 1rem;
+            top: 1rem;
+            display: flex;
+            gap: 0.75rem;
+            pointer-events: auto;
+        }
+
+        .nav-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 46px;
+            padding: 0.8rem 1rem;
+            font-size: 0.72rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .nav-button.primary {
+            background: linear-gradient(135deg, rgba(113, 245, 255, 0.16), rgba(113, 245, 255, 0.06));
+            color: var(--cyan-soft);
+        }
+
+        .mission-btn:hover,
+        .action-btn:hover,
+        .nav-button:hover {
+            transform: translateY(-2px);
+            border-color: var(--line-strong);
+        }
+
+        @media (max-width: 980px) {
+            .hero-panel,
+            .setup-panel,
+            .telemetry-panel,
+            .lesson-panel {
+                width: min(420px, calc(100vw - 1.5rem));
+            }
+
+            .setup-panel {
+                top: auto;
+                bottom: 1rem;
+                right: 1rem;
+            }
+
+            .lesson-panel {
+                top: auto;
+                right: 1rem;
+                bottom: calc(1rem + 420px);
+            }
+
+            .telemetry-panel {
+                left: 1rem;
+                bottom: 1rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero-panel,
+            .setup-panel,
+            .telemetry-panel,
+            .lesson-panel {
+                position: absolute;
+                left: 0.75rem;
+                right: 0.75rem;
+                width: auto;
+            }
+
+            .hero-panel { top: 0.75rem; }
+            .setup-panel { top: 11.4rem; bottom: auto; }
+            .telemetry-panel { top: 34.3rem; bottom: auto; }
+            .lesson-panel { top: 58rem; bottom: auto; }
+
+            .nav-actions {
+                left: 0.75rem;
+                right: 0.75rem;
+                top: auto;
+                bottom: 0.75rem;
+                justify-content: flex-end;
+                flex-wrap: wrap;
+            }
+
+            .result-banner {
+                top: 7.5rem;
+            }
+
+            .action-row,
+            .result-layout,
+            .mission-switch {
+                grid-template-columns: 1fr;
+                flex-direction: column;
+            }
+
+            .telemetry-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="missionCanvas"></canvas>
+
+    <div class="ui-shell">
+        <section class="panel hero-panel">
+            <div class="panel-inner">
+                <div class="panel-kicker">Tech-Ant Lab // Physics Game 01</div>
+                <h1>Orbital Launch Trainer</h1>
+                <p>Launch from the pad, ride the ascent to injection altitude, then learn how burnout energy and angle shape the orbit. Start with Earth orbit and push further toward Moon orbit when you are ready.</p>
+                <div class="meta-strip">
+                    <div class="meta-pill">Low-bandwidth canvas game</div>
+                    <div class="meta-pill">Earth + Moon gravity</div>
+                    <div class="meta-pill">Speed control included</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="panel setup-panel">
+            <div class="panel-inner">
+                <div class="panel-kicker">Mission Setup</div>
+                <p class="setup-copy">Pick a target, choose the injection energy and burnout angle, then see whether your spacecraft closes into Earth orbit or reaches a workable Moon capture window.</p>
+
+                <div class="mission-switch">
+                    <button class="mission-btn active" type="button" data-mission="earth">Earth Orbit</button>
+                    <button class="mission-btn" type="button" data-mission="moon">Moon Orbit</button>
+                </div>
+
+                <div class="control-group">
+                    <div class="control-head">
+                        <span class="label">Fuel / Launch Energy</span>
+                        <span class="value" id="energyValue">8.00 km/s</span>
+                    </div>
+                    <input id="energySlider" type="range" min="7.60" max="11.10" step="0.05" value="8.00">
+                    <p class="range-note" id="energyHint">Enough energy creates orbital speed. Too little falls back. Too much escapes.</p>
+                </div>
+
+                <div class="control-group">
+                    <div class="control-head">
+                        <span class="label">Burnout Angle</span>
+                        <span class="value" id="angleValue">2°</span>
+                    </div>
+                    <input id="angleSlider" type="range" min="0" max="10" step="1" value="2">
+                    <p class="range-note" id="angleHint">The angle is measured above the local horizon at injection. Small angles favor orbit building.</p>
+                </div>
+
+                <div class="action-row">
+                    <button id="launchBtn" class="action-btn primary" type="button">Launch Mission</button>
+                    <button id="resetBtn" class="action-btn" type="button">Reset</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="panel telemetry-panel">
+            <div class="panel-inner">
+                <div class="panel-kicker">Telemetry</div>
+                <div class="telemetry-grid">
+                    <div class="telemetry-item">
+                        <span>Status</span>
+                        <strong id="statusValue">Ready on the pad</strong>
+                    </div>
+                    <div class="telemetry-item">
+                        <span>Mission Time</span>
+                        <strong id="timeValue">T+00:00</strong>
+                    </div>
+                    <div class="telemetry-item">
+                        <span id="altitudeLabel">Altitude</span>
+                        <strong id="altitudeValue">0 km</strong>
+                    </div>
+                    <div class="telemetry-item">
+                        <span id="velocityLabel">Velocity</span>
+                        <strong id="velocityValue">0.00 km/s</strong>
+                    </div>
+                    <div class="telemetry-item">
+                        <span id="periapsisLabel">Periapsis</span>
+                        <strong id="periapsisValue">-</strong>
+                    </div>
+                    <div class="telemetry-item">
+                        <span id="apoapsisLabel">Apoapsis</span>
+                        <strong id="apoapsisValue">-</strong>
+                    </div>
+                </div>
+                <p class="telemetry-note" id="telemetryNote">Watch how periapsis and apoapsis respond to the balance between vertical climb and horizontal speed.</p>
+
+                <div class="speed-box">
+                    <div class="control-head">
+                        <span class="label">Simulation Speed</span>
+                        <span class="value" id="speedValue">1.0x</span>
+                    </div>
+                    <input id="speedSlider" type="range" min="0.5" max="120" step="0.5" value="1">
+                </div>
+            </div>
+        </section>
+
+        <section class="panel lesson-panel">
+            <div class="panel-inner">
+                <div class="panel-kicker">Physics Insight</div>
+                <p class="lesson-text" id="lessonText">A rocket does not stay up just by going high. It must gain enough sideways velocity that the planet curves away beneath it.</p>
+            </div>
+        </section>
+
+        <section class="panel result-banner" id="resultBanner">
+            <div class="panel-inner result-layout">
+                <div class="result-copy">
+                    <strong id="resultTitle">Mission Result</strong>
+                    <p id="resultCopy">Adjust energy and angle, then launch again.</p>
+                </div>
+                <button id="retryBtn" class="action-btn primary" type="button" style="max-width: 170px;">Try Again</button>
+            </div>
+        </section>
+
+        <div class="nav-actions">
+            <a href="index.html#lab" class="nav-button">Back to Lab</a>
+            <a href="solarsystem.html" class="nav-button primary">Open Basic Solar Demo</a>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById("missionCanvas");
+        const ctx = canvas.getContext("2d");
+
+        const missionButtons = document.querySelectorAll(".mission-btn");
+        const energySlider = document.getElementById("energySlider");
+        const angleSlider = document.getElementById("angleSlider");
+        const speedSlider = document.getElementById("speedSlider");
+        const launchBtn = document.getElementById("launchBtn");
+        const resetBtn = document.getElementById("resetBtn");
+        const retryBtn = document.getElementById("retryBtn");
+
+        const energyValue = document.getElementById("energyValue");
+        const angleValue = document.getElementById("angleValue");
+        const speedValue = document.getElementById("speedValue");
+        const energyHint = document.getElementById("energyHint");
+        const angleHint = document.getElementById("angleHint");
+        const statusValue = document.getElementById("statusValue");
+        const timeValue = document.getElementById("timeValue");
+        const altitudeLabel = document.getElementById("altitudeLabel");
+        const altitudeValue = document.getElementById("altitudeValue");
+        const velocityLabel = document.getElementById("velocityLabel");
+        const velocityValue = document.getElementById("velocityValue");
+        const periapsisLabel = document.getElementById("periapsisLabel");
+        const periapsisValue = document.getElementById("periapsisValue");
+        const apoapsisLabel = document.getElementById("apoapsisLabel");
+        const apoapsisValue = document.getElementById("apoapsisValue");
+        const telemetryNote = document.getElementById("telemetryNote");
+        const lessonText = document.getElementById("lessonText");
+        const resultBanner = document.getElementById("resultBanner");
+        const resultTitle = document.getElementById("resultTitle");
+        const resultCopy = document.getElementById("resultCopy");
+
+        const EARTH = {
+            x: 0,
+            y: 0,
+            radius: 6371,
+            mu: 398600,
+            atmosphere: 140
+        };
+
+        const MOON_PHASE = -90 * Math.PI / 180;
+        const MOON = {
+            x: Math.cos(MOON_PHASE) * 384400,
+            y: Math.sin(MOON_PHASE) * 384400,
+            radius: 1737,
+            mu: 4904.8695
+        };
+
+        const INJECTION_ALTITUDE = 220;
+        const INJECTION_THETA = 78 * Math.PI / 180;
+        const EARTH_TARGET_ALT = 260;
+        const MOON_TARGET_ALT = 8000;
+        const ASCENT_DURATION = 120;
+        const SIM_STEP = 4;
+        const SIM_SECONDS_PER_SECOND = 18;
+        const TRAIL_INTERVAL = 10;
+        const MAX_TRAIL_POINTS = 480;
+
+        let width = 0;
+        let height = 0;
+        const stars = [];
+        const camera = { x: 0, y: EARTH.radius + 2100, scale: 0.055 };
+
+        const state = {
+            mission: "earth",
+            speed: 1,
+            energy: 8.0,
+            angle: 2,
+            mode: "ready",
+            time: 0,
+            stability: 0,
+            captureAssistUsed: false,
+            lastTelemetry: {},
+            rocket: null
+        };
+
+        function clamp(value, min, max) {
+            return Math.max(min, Math.min(max, value));
+        }
+
+        function lerp(a, b, t) {
+            return a + (b - a) * t;
+        }
+
+        function smoothstep(t) {
+            const x = clamp(t, 0, 1);
+            return x * x * (3 - 2 * x);
+        }
+
+        function formatMissionTime(seconds) {
+            const total = Math.max(0, Math.floor(seconds));
+            const mins = String(Math.floor(total / 60)).padStart(2, "0");
+            const secs = String(total % 60).padStart(2, "0");
+            return `T+${mins}:${secs}`;
+        }
+
+        function formatAltitude(value) {
+            if (!Number.isFinite(value)) return "-";
+            return `${Math.round(value)} km`;
+        }
+
+        function formatOrbitValue(value, referenceRadius) {
+            if (!Number.isFinite(value)) return "Escape";
+            return `${Math.round(value - referenceRadius)} km`;
+        }
+
+        function worldToScreen(x, y) {
+            return {
+                x: (x - camera.x) * camera.scale + width / 2,
+                y: height / 2 - (y - camera.y) * camera.scale
+            };
+        }
+
+        function addStars() {
+            stars.length = 0;
+            for (let i = 0; i < 280; i++) {
+                stars.push({
+                    x: Math.random() * width,
+                    y: Math.random() * height,
+                    size: Math.random() * 1.8 + 0.2,
+                    alpha: Math.random() * 0.75 + 0.2
+                });
+            }
+        }
+
+        function resizeCanvas() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = width;
+            canvas.height = height;
+            addStars();
+        }
+
+        function getInjectionPoint() {
+            const radius = EARTH.radius + INJECTION_ALTITUDE;
+            return {
+                x: Math.cos(INJECTION_THETA) * radius,
+                y: Math.sin(INJECTION_THETA) * radius
+            };
+        }
+
+        function getInjectionVelocity() {
+            const point = getInjectionPoint();
+            const radialLength = Math.hypot(point.x, point.y);
+            const radial = { x: point.x / radialLength, y: point.y / radialLength };
+            const tangent = { x: radial.y, y: -radial.x };
+            const angle = state.angle * Math.PI / 180;
+            return {
+                vx: tangent.x * Math.cos(angle) * state.energy + radial.x * Math.sin(angle) * state.energy,
+                vy: tangent.y * Math.cos(angle) * state.energy + radial.y * Math.sin(angle) * state.energy
+            };
+        }
+
+        function getAscentState(progress) {
+            const eased = smoothstep(progress);
+            const radius = lerp(EARTH.radius + 12, EARTH.radius + INJECTION_ALTITUDE, Math.pow(eased, 0.78));
+            const theta = lerp(Math.PI / 2, INJECTION_THETA, eased);
+            return {
+                x: Math.cos(theta) * radius,
+                y: Math.sin(theta) * radius
+            };
+        }
+
+        function createRocket() {
+            return {
+                x: 0,
+                y: EARTH.radius + 12,
+                vx: 0,
+                vy: 0,
+                heading: Math.PI / 2,
+                ascentTime: 0,
+                trail: [],
+                trailTimer: 0
+            };
+        }
+
+        function resetMission() {
+            state.mode = "ready";
+            state.time = 0;
+            state.stability = 0;
+            state.captureAssistUsed = false;
+            state.lastTelemetry = {};
+            state.rocket = createRocket();
+            resultBanner.classList.remove("visible", "success", "fail");
+            updateLessons();
+            updateTelemetry();
+        }
+
+        function updateControlLabels() {
+            energyValue.textContent = `${state.energy.toFixed(2)} km/s`;
+            angleValue.textContent = `${Math.round(state.angle)}°`;
+            speedValue.textContent = `${state.speed.toFixed(1)}x`;
+
+            if (state.mission === "earth") {
+                energyHint.textContent = "Try roughly 7.8 to 8.4 km/s. Stable Earth orbit needs enough sideways injection speed.";
+                angleHint.textContent = "Start around 0° to 3°. Higher burnout angles waste energy climbing instead of orbiting.";
+            } else {
+                energyHint.textContent = "Try roughly 10.9 to 11.0 km/s. The Moon mission needs a much stronger transfer injection.";
+                angleHint.textContent = "Moon transfer works best with a very shallow burnout. Start around 0° to 3°.";
+            }
+        }
+
+        function setMission(mission) {
+            state.mission = mission;
+            missionButtons.forEach(button => {
+                button.classList.toggle("active", button.dataset.mission === mission);
+            });
+
+            if (mission === "earth") {
+                state.energy = 8.0;
+                state.angle = 2;
+            } else {
+                state.energy = 10.95;
+                state.angle = 0;
+            }
+
+            energySlider.value = state.energy.toFixed(2);
+            angleSlider.value = String(state.angle);
+            updateControlLabels();
+            resetMission();
+        }
+
+        function gravityFromBody(body, x, y) {
+            const dx = body.x - x;
+            const dy = body.y - y;
+            const distSq = dx * dx + dy * dy;
+            const dist = Math.sqrt(distSq);
+            const force = body.mu / distSq;
+            return {
+                ax: (dx / dist) * force,
+                ay: (dy / dist) * force,
+                dist
+            };
+        }
+
+        function computeOrbit(body) {
+            const rocket = state.rocket;
+            const rx = rocket.x - body.x;
+            const ry = rocket.y - body.y;
+            const r = Math.hypot(rx, ry);
+            const v2 = rocket.vx * rocket.vx + rocket.vy * rocket.vy;
+            const energy = v2 / 2 - body.mu / r;
+            const h = rx * rocket.vy - ry * rocket.vx;
+            const eccentricityTerm = 1 + (2 * energy * h * h) / (body.mu * body.mu);
+            const e = eccentricityTerm > 0 ? Math.sqrt(eccentricityTerm) : 0;
+            const a = energy < 0 ? -body.mu / (2 * energy) : Infinity;
+            const periapsis = Number.isFinite(a) ? a * (1 - e) : Infinity;
+            const apoapsis = Number.isFinite(a) ? a * (1 + e) : Infinity;
+            return {
+                r,
+                speed: Math.sqrt(v2),
+                energy,
+                eccentricity: e,
+                periapsis,
+                apoapsis
+            };
+        }
+
+        function setResult(type, title, copy) {
+            if (state.mode === "success" || state.mode === "fail") return;
+            state.mode = type;
+            resultTitle.textContent = title;
+            resultCopy.textContent = copy;
+            resultBanner.classList.add("visible", type === "success" ? "success" : "fail");
+            resultBanner.classList.remove(type === "success" ? "fail" : "success");
+            updateLessons();
+            updateTelemetry();
+        }
+
+        function updateLessons() {
+            if (state.mode === "ready") {
+                lessonText.textContent = state.mission === "earth"
+                    ? "The ascent gets you above the atmosphere, but orbit is decided at injection. Sideways speed is what keeps the spacecraft falling around Earth instead of into it."
+                    : "Moon missions begin as an Earth orbit problem. First you need a strong transfer injection, then you must arrive near the Moon slow enough for capture.";
+                return;
+            }
+
+            if (state.mode === "ascent") {
+                lessonText.textContent = "Launch is underway. The camera pulls back during ascent, but the playable physics challenge begins at orbital injection altitude.";
+                return;
+            }
+
+            if (state.mode === "success") {
+                lessonText.textContent = state.mission === "earth"
+                    ? "You balanced altitude and sideways speed well enough to form a closed Earth orbit. That is the core idea behind orbital insertion."
+                    : "You reached the Moon with a controlled enough arrival for capture. Transfer energy and arrival geometry worked together.";
+                return;
+            }
+
+            if (state.mode === "fail") {
+                lessonText.textContent = state.mission === "earth"
+                    ? "Missed orbit? The usual fix is more sideways speed or a shallower burnout angle. Height alone does not keep you in space."
+                    : "Moon missions fail when transfer energy and arrival speed do not match the capture window. Adjust the injection and try again.";
+                return;
+            }
+
+            const earthOrbit = state.lastTelemetry.earthOrbit || computeOrbit(EARTH);
+            const moonOrbit = state.lastTelemetry.moonOrbit || computeOrbit(MOON);
+
+            if (state.captureAssistUsed) {
+                lessonText.textContent = "Lunar insertion burn has executed because you arrived inside the capture window. The Moon mission now becomes a local orbit problem instead of a flyby.";
+            } else if (state.mission === "earth" && earthOrbit.energy < 0 && earthOrbit.periapsis - EARTH.radius > 120) {
+                lessonText.textContent = "This is a closed Earth orbit candidate. Stable orbit needs both periapsis and apoapsis above the atmosphere.";
+            } else if (state.mission === "moon" && moonOrbit.r - MOON.radius < 40000) {
+                lessonText.textContent = "You are approaching the Moon. Arrival speed matters: too fast becomes a flyby, controlled speed becomes a capture opportunity.";
+            } else {
+                lessonText.textContent = "Watch the path: vertical energy raises altitude, but orbital success is still mostly about horizontal velocity at injection.";
+            }
+        }
+
+        function maybeApplyMoonCapture(moonOrbit) {
+            if (state.mission !== "moon" || state.captureAssistUsed || state.mode !== "coast") return false;
+
+            const closeWindow =
+                (moonOrbit.r - MOON.radius < 12000 && moonOrbit.speed < 3.2) ||
+                (moonOrbit.r - MOON.radius < 40000 && moonOrbit.speed < 1.7);
+
+            if (!closeWindow) return false;
+
+            const rocket = state.rocket;
+            const rx = rocket.x - MOON.x;
+            const ry = rocket.y - MOON.y;
+            const radius = Math.hypot(rx, ry);
+            const radial = { x: rx / radius, y: ry / radius };
+            let tangent = { x: -radial.y, y: radial.x };
+            const angularMomentum = rx * rocket.vy - ry * rocket.vx;
+            if (angularMomentum < 0) {
+                tangent = { x: radial.y, y: -radial.x };
+            }
+
+            const targetAltitude = clamp(moonOrbit.r - MOON.radius, 4000, MOON_TARGET_ALT);
+            const targetRadius = MOON.radius + targetAltitude;
+            const circularSpeed = Math.sqrt(MOON.mu / targetRadius);
+
+            rocket.x = MOON.x + radial.x * targetRadius;
+            rocket.y = MOON.y + radial.y * targetRadius;
+            rocket.vx = tangent.x * circularSpeed;
+            rocket.vy = tangent.y * circularSpeed;
+            rocket.heading = Math.atan2(rocket.vy, rocket.vx);
+            rocket.trail = [{ x: rocket.x, y: rocket.y }];
+            rocket.trailTimer = 0;
+            state.captureAssistUsed = true;
+            state.stability = 0;
+            return true;
+        }
+
+        function checkMissionState(dt) {
+            let earthOrbit = computeOrbit(EARTH);
+            let moonOrbit = computeOrbit(MOON);
+
+            if (state.mode === "coast" && state.mission === "moon" && maybeApplyMoonCapture(moonOrbit)) {
+                earthOrbit = computeOrbit(EARTH);
+                moonOrbit = computeOrbit(MOON);
+            }
+
+            const earthAlt = earthOrbit.r - EARTH.radius;
+            const moonAlt = moonOrbit.r - MOON.radius;
+
+            state.lastTelemetry = { earthOrbit, moonOrbit, earthAlt, moonAlt };
+
+            if (earthOrbit.r <= EARTH.radius) {
+                setResult("fail", "Earth Impact", "The spacecraft returned to Earth. Try a little more injection speed or a shallower burnout angle.");
+                return;
+            }
+
+            if (moonOrbit.r <= MOON.radius) {
+                setResult("fail", "Moon Impact", "The Moon intercept was too direct. Arrive slower or with a softer angle so the Moon can capture the spacecraft.");
+                return;
+            }
+
+            if (earthOrbit.r > 1000000) {
+                setResult("fail", "Escape Trajectory", "The spacecraft escaped the Earth-Moon system. Lower the injection energy or reduce the burnout angle.");
+                return;
+            }
+
+            if (state.mission === "earth") {
+                const stableEarthOrbit =
+                    state.mode === "coast" &&
+                    earthOrbit.energy < 0 &&
+                    earthOrbit.periapsis - EARTH.radius > 120 &&
+                    earthOrbit.apoapsis - EARTH.radius > 140 &&
+                    earthOrbit.apoapsis - EARTH.radius < 30000 &&
+                    earthOrbit.eccentricity < 0.35;
+
+                state.stability = stableEarthOrbit ? state.stability + dt : 0;
+
+                if (state.stability > 80) {
+                    setResult("success", "Earth Orbit Achieved", "You injected enough sideways speed to keep periapsis above the atmosphere and close the orbit around Earth.");
+                }
+            } else {
+                const stableMoonOrbit =
+                    state.captureAssistUsed &&
+                    state.mode === "coast" &&
+                    moonOrbit.energy < 0 &&
+                    moonAlt < MOON_TARGET_ALT + 10000 &&
+                    moonOrbit.periapsis - MOON.radius > 400 &&
+                    moonOrbit.apoapsis - MOON.radius < MOON_TARGET_ALT + 9000 &&
+                    moonOrbit.eccentricity < 0.35;
+
+                state.stability = stableMoonOrbit ? state.stability + dt : 0;
+
+                if (state.stability > 160) {
+                    setResult("success", "Moon Orbit Achieved", "You reached the Moon inside the capture window and settled into lunar orbit. That is the transfer-and-capture principle in action.");
+                }
+            }
+
+            if (state.time > 700000 && (state.mode === "coast" || state.mode === "ascent")) {
+                setResult("fail", "Mission Timeout", "The mission ran too long without settling into a target orbit. Reset and try a cleaner injection.");
+            }
+        }
+
+        function pushTrailPoint() {
+            const rocket = state.rocket;
+            rocket.trail.push({ x: rocket.x, y: rocket.y });
+            if (rocket.trail.length > MAX_TRAIL_POINTS) {
+                rocket.trail.shift();
+            }
+        }
+
+        function beginInjection() {
+            const rocket = state.rocket;
+            const point = getInjectionPoint();
+            const velocity = getInjectionVelocity();
+            rocket.x = point.x;
+            rocket.y = point.y;
+            rocket.vx = velocity.vx;
+            rocket.vy = velocity.vy;
+            rocket.heading = Math.atan2(rocket.vy, rocket.vx);
+            rocket.trailTimer = 0;
+            pushTrailPoint();
+            state.mode = "coast";
+        }
+
+        function stepSimulation(dt) {
+            const rocket = state.rocket;
+            if (state.mode !== "ascent" && state.mode !== "coast") return;
+
+            if (state.mode === "ascent") {
+                const previous = { x: rocket.x, y: rocket.y };
+                rocket.ascentTime += dt;
+                const progress = clamp(rocket.ascentTime / ASCENT_DURATION, 0, 1);
+                const ascent = getAscentState(progress);
+                rocket.x = ascent.x;
+                rocket.y = ascent.y;
+                rocket.vx = (rocket.x - previous.x) / dt;
+                rocket.vy = (rocket.y - previous.y) / dt;
+                rocket.heading = Math.atan2(rocket.vy, rocket.vx);
+                rocket.trailTimer += dt;
+                if (rocket.trailTimer >= TRAIL_INTERVAL) {
+                    rocket.trailTimer = 0;
+                    pushTrailPoint();
+                }
+                state.time += dt;
+                if (progress >= 1) beginInjection();
+                checkMissionState(dt);
+                updateLessons();
+                return;
+            }
+
+            const earthGravity = gravityFromBody(EARTH, rocket.x, rocket.y);
+            const moonGravity = gravityFromBody(MOON, rocket.x, rocket.y);
+
+            let ax = earthGravity.ax + moonGravity.ax;
+            let ay = earthGravity.ay + moonGravity.ay;
+
+            const earthAltitude = earthGravity.dist - EARTH.radius;
+            if (earthAltitude < EARTH.atmosphere) {
+                const speed = Math.hypot(rocket.vx, rocket.vy);
+                const dragStrength = ((EARTH.atmosphere - earthAltitude) / EARTH.atmosphere) ** 2 * 0.00001;
+                ax -= rocket.vx * speed * dragStrength;
+                ay -= rocket.vy * speed * dragStrength;
+            }
+
+            rocket.vx += ax * dt;
+            rocket.vy += ay * dt;
+            rocket.x += rocket.vx * dt;
+            rocket.y += rocket.vy * dt;
+            rocket.heading = Math.atan2(rocket.vy, rocket.vx);
+
+            rocket.trailTimer += dt;
+            if (rocket.trailTimer >= TRAIL_INTERVAL) {
+                rocket.trailTimer = 0;
+                pushTrailPoint();
+            }
+
+            state.time += dt;
+            checkMissionState(dt);
+            updateLessons();
+        }
+
+        function launchMission() {
+            if (state.mode === "ascent" || state.mode === "coast") return;
+            resetMission();
+            state.mode = "ascent";
+            state.rocket.trail = [{ x: state.rocket.x, y: state.rocket.y }];
+            updateLessons();
+            updateTelemetry();
+        }
+
+        function getMissionFrame() {
+            const rocket = state.rocket;
+
+            if (state.mode === "ready") {
+                return { x: 0, y: EARTH.radius + 2200, scale: 0.058 };
+            }
+
+            if (state.mode === "ascent") {
+                const progress = clamp(state.rocket.ascentTime / ASCENT_DURATION, 0, 1);
+                const close = { x: rocket.x, y: rocket.y - 2600, scale: 0.07 };
+                const medium = { x: 0, y: EARTH.radius + 1000, scale: 0.045 };
+                const mix = smoothstep(progress);
+                return {
+                    x: lerp(close.x, medium.x, mix),
+                    y: lerp(close.y, medium.y, mix),
+                    scale: lerp(close.scale, medium.scale, mix)
+                };
+            }
+
+            const includeMoon = state.mission === "moon" || Math.hypot(rocket.x - MOON.x, rocket.y - MOON.y) < 180000 || state.captureAssistUsed;
+            const targets = [
+                { x: EARTH.x, y: EARTH.y, r: EARTH.radius * 1.2 },
+                { x: rocket.x, y: rocket.y, r: 4000 }
+            ];
+
+            if (includeMoon) {
+                targets.push({ x: MOON.x, y: MOON.y, r: Math.max(MOON.radius + MOON_TARGET_ALT, MOON.radius * 3) });
+            }
+
+            let minX = Infinity;
+            let maxX = -Infinity;
+            let minY = Infinity;
+            let maxY = -Infinity;
+
+            targets.forEach(target => {
+                minX = Math.min(minX, target.x - target.r);
+                maxX = Math.max(maxX, target.x + target.r);
+                minY = Math.min(minY, target.y - target.r);
+                maxY = Math.max(maxY, target.y + target.r);
+            });
+
+            return {
+                x: (minX + maxX) / 2,
+                y: (minY + maxY) / 2,
+                scale: clamp(
+                    Math.min((width * 0.68) / Math.max(maxX - minX, 1), (height * 0.68) / Math.max(maxY - minY, 1)),
+                    0.00085,
+                    0.05
+                )
+            };
+        }
+
+        function updateCamera() {
+            const target = getMissionFrame();
+            camera.x += (target.x - camera.x) * 0.08;
+            camera.y += (target.y - camera.y) * 0.08;
+            camera.scale += (target.scale - camera.scale) * 0.08;
+        }
+
+        function drawBackground() {
+            ctx.fillStyle = "#030711";
+            ctx.fillRect(0, 0, width, height);
+
+            stars.forEach(star => {
+                ctx.globalAlpha = star.alpha;
+                ctx.fillStyle = "#f4fbff";
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            ctx.globalAlpha = 1;
+        }
+
+        function drawTargetRing(body, radius, color) {
+            const screen = worldToScreen(body.x, body.y);
+            ctx.beginPath();
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 1.2;
+            ctx.setLineDash([8, 6]);
+            ctx.arc(screen.x, screen.y, radius * camera.scale, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.setLineDash([]);
+        }
+
+        function drawEarth() {
+            const screen = worldToScreen(EARTH.x, EARTH.y);
+            const radius = EARTH.radius * camera.scale;
+
+            const atmosphere = ctx.createRadialGradient(screen.x, screen.y, radius, screen.x, screen.y, radius * 1.16);
+            atmosphere.addColorStop(0, "rgba(113,245,255,0)");
+            atmosphere.addColorStop(1, "rgba(113,245,255,0.18)");
+            ctx.fillStyle = atmosphere;
+            ctx.beginPath();
+            ctx.arc(screen.x, screen.y, radius * 1.16, 0, Math.PI * 2);
+            ctx.fill();
+
+            const gradient = ctx.createRadialGradient(screen.x - radius * 0.3, screen.y - radius * 0.35, radius * 0.18, screen.x, screen.y, radius);
+            gradient.addColorStop(0, "#5ce1ff");
+            gradient.addColorStop(0.28, "#2a74ff");
+            gradient.addColorStop(0.72, "#0d2b61");
+            gradient.addColorStop(1, "#07172f");
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.arc(screen.x, screen.y, radius, 0, Math.PI * 2);
+            ctx.fill();
+
+            if (radius > 60) {
+                ctx.strokeStyle = "rgba(113,245,255,0.08)";
+                ctx.lineWidth = 1;
+                for (let i = -2; i <= 2; i++) {
+                    ctx.beginPath();
+                    ctx.arc(screen.x, screen.y, radius * Math.cos((i / 6) * Math.PI), 0, Math.PI * 2);
+                    ctx.stroke();
+                }
+            }
+
+            if (state.mission === "earth") {
+                drawTargetRing(EARTH, EARTH.radius + EARTH_TARGET_ALT, "rgba(196,255,103,0.55)");
+            }
+
+            if (camera.scale > 0.018) {
+                const pad = worldToScreen(0, EARTH.radius);
+                ctx.strokeStyle = "rgba(238,245,255,0.9)";
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(pad.x - 28, pad.y + 2);
+                ctx.lineTo(pad.x + 28, pad.y + 2);
+                ctx.moveTo(pad.x - 12, pad.y + 2);
+                ctx.lineTo(pad.x - 12, pad.y - 48);
+                ctx.lineTo(pad.x + 4, pad.y - 48);
+                ctx.stroke();
+            }
+        }
+
+        function drawMoon() {
+            const screen = worldToScreen(MOON.x, MOON.y);
+            const radius = MOON.radius * camera.scale;
+
+            const gradient = ctx.createRadialGradient(screen.x - radius * 0.28, screen.y - radius * 0.25, radius * 0.14, screen.x, screen.y, radius);
+            gradient.addColorStop(0, "#f0f4ff");
+            gradient.addColorStop(0.4, "#d3dce8");
+            gradient.addColorStop(1, "#8f98aa");
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.arc(screen.x, screen.y, radius, 0, Math.PI * 2);
+            ctx.fill();
+
+            if (state.mission === "moon") {
+                drawTargetRing(MOON, MOON.radius + MOON_TARGET_ALT, "rgba(196,255,103,0.48)");
+            }
+        }
+
+        function drawTrail() {
+            const trail = state.rocket.trail;
+            if (trail.length < 2) return;
+
+            ctx.beginPath();
+            trail.forEach((point, index) => {
+                const screen = worldToScreen(point.x, point.y);
+                if (index === 0) ctx.moveTo(screen.x, screen.y);
+                else ctx.lineTo(screen.x, screen.y);
+            });
+            ctx.strokeStyle = "rgba(113,245,255,0.42)";
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+
+        function drawRocket() {
+            const rocket = state.rocket;
+            const screen = worldToScreen(rocket.x, rocket.y);
+            const size = clamp(8, camera.scale * 280, 22);
+            const angle = -rocket.heading;
+
+            ctx.save();
+            ctx.translate(screen.x, screen.y);
+            ctx.rotate(angle);
+
+            if (state.mode === "ascent") {
+                ctx.beginPath();
+                ctx.moveTo(-size * 0.9, 0);
+                ctx.lineTo(-size * 1.55, size * 0.38);
+                ctx.lineTo(-size * 1.55, -size * 0.38);
+                ctx.closePath();
+                ctx.fillStyle = "rgba(255, 206, 84, 0.95)";
+                ctx.fill();
+
+                ctx.beginPath();
+                ctx.moveTo(-size * 0.82, 0);
+                ctx.lineTo(-size * 1.2, size * 0.22);
+                ctx.lineTo(-size * 1.2, -size * 0.22);
+                ctx.closePath();
+                ctx.fillStyle = "rgba(255, 122, 74, 0.85)";
+                ctx.fill();
+            }
+
+            ctx.beginPath();
+            ctx.moveTo(size, 0);
+            ctx.lineTo(-size * 0.7, size * 0.45);
+            ctx.lineTo(-size * 0.35, 0);
+            ctx.lineTo(-size * 0.7, -size * 0.45);
+            ctx.closePath();
+            ctx.fillStyle = "#f6fbff";
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.moveTo(size * 0.1, 0);
+            ctx.lineTo(-size * 0.45, size * 0.17);
+            ctx.lineTo(-size * 0.45, -size * 0.17);
+            ctx.closePath();
+            ctx.fillStyle = "#71f5ff";
+            ctx.fill();
+
+            ctx.restore();
+        }
+
+        function render() {
+            drawBackground();
+            drawTrail();
+            drawEarth();
+            drawMoon();
+            drawRocket();
+        }
+
+        function updateTelemetry() {
+            const earthOrbit = state.lastTelemetry.earthOrbit || computeOrbit(EARTH);
+            const moonOrbit = state.lastTelemetry.moonOrbit || computeOrbit(MOON);
+            const earthAlt = state.lastTelemetry.earthAlt ?? earthOrbit.r - EARTH.radius;
+            const moonAlt = state.lastTelemetry.moonAlt ?? moonOrbit.r - MOON.radius;
+
+            statusValue.textContent =
+                state.mode === "ready" ? "Ready on the pad" :
+                state.mode === "ascent" ? "Ascent to injection" :
+                state.mode === "coast" ? (state.captureAssistUsed ? "Lunar insertion orbit" : "Coasting") :
+                state.mode === "success" ? "Mission complete" :
+                "Mission failed";
+
+            timeValue.textContent = formatMissionTime(state.time);
+
+            if (state.mode === "ready") {
+                velocityLabel.textContent = state.mission === "moon" ? "Earth Rel Speed" : "Velocity";
+                altitudeLabel.textContent = "Altitude";
+                periapsisLabel.textContent = "Periapsis";
+                apoapsisLabel.textContent = "Apoapsis";
+                altitudeValue.textContent = "0 km";
+                velocityValue.textContent = "0.00 km/s";
+                periapsisValue.textContent = "-";
+                apoapsisValue.textContent = "-";
+                telemetryNote.textContent = state.mission === "earth"
+                    ? "Set energy and burnout angle, then launch to see how injection shapes the orbit."
+                    : "Moon transfer begins as an Earth launch problem. Build the injection first, then use the speed slider for the long cruise.";
+                return;
+            }
+
+            if (state.mode === "ascent") {
+                const rocketSpeed = Math.hypot(state.rocket.vx, state.rocket.vy);
+                const rocketAltitude = Math.hypot(state.rocket.x, state.rocket.y) - EARTH.radius;
+                velocityLabel.textContent = "Ascent Speed";
+                altitudeLabel.textContent = "Altitude";
+                periapsisLabel.textContent = "Injection";
+                apoapsisLabel.textContent = "Target";
+                altitudeValue.textContent = formatAltitude(rocketAltitude);
+                velocityValue.textContent = `${rocketSpeed.toFixed(2)} km/s`;
+                periapsisValue.textContent = "Pending";
+                apoapsisValue.textContent = state.mission === "earth" ? `~${EARTH_TARGET_ALT} km` : "Moon transfer";
+                telemetryNote.textContent = "The launch is cinematic, but the actual physics challenge starts at injection altitude when burnout settings take over.";
+                return;
+            }
+
+            if (state.mission === "moon" && state.captureAssistUsed) {
+                velocityLabel.textContent = "Moon Rel Speed";
+                velocityValue.textContent = `${moonOrbit.speed.toFixed(2)} km/s`;
+                altitudeLabel.textContent = "Moon Altitude";
+                periapsisLabel.textContent = "Moon Periapsis";
+                apoapsisLabel.textContent = "Moon Apoapsis";
+                altitudeValue.textContent = formatAltitude(moonAlt);
+                periapsisValue.textContent = formatOrbitValue(moonOrbit.periapsis, MOON.radius);
+                apoapsisValue.textContent = formatOrbitValue(moonOrbit.apoapsis, MOON.radius);
+                telemetryNote.textContent = "The values are now relative to the Moon. A clean insertion keeps periapsis clear of the surface while apoapsis stays inside the target band.";
+            } else {
+                velocityLabel.textContent = state.mission === "moon" ? "Earth Rel Speed" : "Velocity";
+                velocityValue.textContent = `${earthOrbit.speed.toFixed(2)} km/s`;
+                altitudeLabel.textContent = "Earth Altitude";
+                periapsisLabel.textContent = "Earth Periapsis";
+                apoapsisLabel.textContent = "Earth Apoapsis";
+                altitudeValue.textContent = formatAltitude(earthAlt);
+                periapsisValue.textContent = formatOrbitValue(earthOrbit.periapsis, EARTH.radius);
+                apoapsisValue.textContent = formatOrbitValue(earthOrbit.apoapsis, EARTH.radius);
+                telemetryNote.textContent = state.mission === "earth"
+                    ? "Earth orbit becomes stable only when periapsis stays above the atmosphere."
+                    : "For the Moon mission, Earth telemetry matters during cruise. Use higher sim speed on transfer, then slow down as the Moon approach begins.";
+            }
+        }
+
+        let lastFrame = performance.now();
+        let accumulator = 0;
+
+        function frame(now) {
+            const realDt = Math.min(0.05, (now - lastFrame) / 1000);
+            lastFrame = now;
+
+            if (state.mode === "ascent" || state.mode === "coast") {
+                accumulator += realDt * state.speed * SIM_SECONDS_PER_SECOND;
+                accumulator = Math.min(accumulator, 280);
+                while (accumulator >= SIM_STEP) {
+                    stepSimulation(SIM_STEP);
+                    accumulator -= SIM_STEP;
+                    if (state.mode !== "ascent" && state.mode !== "coast") break;
+                }
+            }
+
+            updateCamera();
+            render();
+            updateTelemetry();
+            requestAnimationFrame(frame);
+        }
+
+        missionButtons.forEach(button => {
+            button.addEventListener("click", () => setMission(button.dataset.mission));
+        });
+
+        energySlider.addEventListener("input", (event) => {
+            state.energy = parseFloat(event.target.value);
+            updateControlLabels();
+            resetMission();
+        });
+
+        angleSlider.addEventListener("input", (event) => {
+            state.angle = parseFloat(event.target.value);
+            updateControlLabels();
+            resetMission();
+        });
+
+        speedSlider.addEventListener("input", (event) => {
+            state.speed = parseFloat(event.target.value);
+            updateControlLabels();
+        });
+
+        launchBtn.addEventListener("click", launchMission);
+        resetBtn.addEventListener("click", resetMission);
+        retryBtn.addEventListener("click", resetMission);
+
+        window.addEventListener("resize", resizeCanvas);
+
+        resizeCanvas();
+        updateControlLabels();
+        resetMission();
+        requestAnimationFrame(frame);
+    </script>
+</body>
+</html>
