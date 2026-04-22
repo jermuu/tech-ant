@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tech-Ant Lab | Orbital Launch Trainer</title>
-    <meta name="description" content="A lightweight orbital physics game from Tech-Ant where players tune injection energy, burnout angle and simulation speed to reach Earth orbit or lunar orbit.">
+    <title>Tech-Ant Lab | DIY Rocket Garage</title>
+    <meta name="description" content="A DIY-style rocket garage game from Tech-Ant where players tune launch phases, punch through the atmosphere and try to hand-build a stable orbit.">
     <meta name="theme-color" content="#050816">
     <link rel="canonical" href="https://tech-ant.fi/orbital-launch.html">
     <link rel="icon" type="image/png" href="tech-antLOGO.png">
-    <meta property="og:title" content="Tech-Ant Lab | Orbital Launch Trainer">
-    <meta property="og:description" content="Launch from the pad, tune injection energy and angle, then learn orbital basics through a lightweight Earth-to-Moon physics game.">
+    <meta property="og:title" content="Tech-Ant Lab | DIY Rocket Garage">
+    <meta property="og:description" content="Build your own launch profile, survive max-Q, stage cleanly and improvise your way into orbit in a DIY rocket sandbox.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://tech-ant.fi/orbital-launch.html">
     <meta property="og:image" content="https://tech-ant.fi/tech-antLOGO.png">
@@ -36,8 +36,9 @@
             --r-sm: 12px;
         }
 
-        * , *::before, *::after { box-sizing: border-box; }
+        *, *::before, *::after { box-sizing: border-box; }
         html, body { height: 100%; }
+
         body {
             margin: 0;
             overflow: hidden;
@@ -46,7 +47,7 @@
             background:
                 radial-gradient(circle at 18% 0%, rgba(113, 245, 255, 0.1), transparent 30%),
                 radial-gradient(circle at 85% 10%, rgba(196, 255, 103, 0.06), transparent 18%),
-                linear-gradient(180deg, #050816 0%, #060b18 50%, #091024 100%);
+                linear-gradient(180deg, #050816 0%, #060b18 48%, #091024 100%);
         }
 
         body::before {
@@ -57,7 +58,7 @@
                 linear-gradient(rgba(113, 245, 255, 0.04) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(113, 245, 255, 0.04) 1px, transparent 1px);
             background-size: 72px 72px;
-            opacity: 0.4;
+            opacity: 0.38;
             pointer-events: none;
         }
 
@@ -71,10 +72,31 @@
             pointer-events: none;
         }
 
+        .side-rail {
+            position: absolute;
+            top: 1rem;
+            bottom: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .left-rail {
+            left: 1rem;
+            width: clamp(320px, 24vw, 430px);
+        }
+
+        .right-rail {
+            right: 1rem;
+            width: clamp(360px, 27vw, 460px);
+        }
+
         .panel,
         .nav-button,
-        .mission-btn,
-        .action-btn {
+        .action-btn,
+        .command-btn {
             pointer-events: auto;
             border: 1px solid var(--line);
             background: var(--panel);
@@ -101,7 +123,7 @@
 
         .panel-inner {
             position: relative;
-            padding: 1.15rem 1.2rem;
+            padding: 1.1rem 1.2rem;
         }
 
         .mono,
@@ -109,8 +131,8 @@
         .label,
         .telemetry-item span,
         .nav-button,
-        .mission-btn,
-        .action-btn {
+        .action-btn,
+        .command-btn {
             font-family: "IBM Plex Mono", monospace;
         }
 
@@ -123,9 +145,10 @@
         }
 
         .hero-panel {
-            top: 1rem;
-            left: 1rem;
-            width: min(450px, calc(100vw - 2rem));
+            position: relative;
+            top: auto;
+            left: auto;
+            width: auto;
         }
 
         .hero-panel h1 {
@@ -135,9 +158,11 @@
         }
 
         .hero-panel p,
+        .setup-copy,
         .lesson-text,
         .telemetry-note,
-        .setup-copy {
+        .hint-copy,
+        .formula-note {
             margin: 0;
             color: var(--muted);
             font-size: 0.94rem;
@@ -163,47 +188,300 @@
         }
 
         .setup-panel {
-            top: 1rem;
-            right: 1rem;
-            width: min(360px, calc(100vw - 2rem));
+            position: relative;
+            top: auto;
+            right: auto;
+            width: auto;
+        }
+
+        @media (min-width: 769px) {
+            .left-rail .telemetry-panel,
+            .right-rail .setup-panel,
+            .right-rail .lesson-panel {
+                min-height: 0;
+                overflow-y: auto;
+                overscroll-behavior: contain;
+                scrollbar-width: thin;
+                scrollbar-color: rgba(113, 245, 255, 0.38) rgba(7, 14, 28, 0.28);
+            }
+
+            .left-rail .telemetry-panel::-webkit-scrollbar,
+            .right-rail .setup-panel::-webkit-scrollbar,
+            .right-rail .lesson-panel::-webkit-scrollbar {
+                width: 10px;
+            }
+
+            .left-rail .telemetry-panel::-webkit-scrollbar-track,
+            .right-rail .setup-panel::-webkit-scrollbar-track,
+            .right-rail .lesson-panel::-webkit-scrollbar-track {
+                background: rgba(7, 14, 28, 0.28);
+            }
+
+            .left-rail .telemetry-panel::-webkit-scrollbar-thumb,
+            .right-rail .setup-panel::-webkit-scrollbar-thumb,
+            .right-rail .lesson-panel::-webkit-scrollbar-thumb {
+                border-radius: 999px;
+                background: rgba(113, 245, 255, 0.3);
+                border: 2px solid rgba(7, 14, 28, 0.55);
+            }
         }
 
         .setup-copy {
             margin-bottom: 1rem;
         }
 
-        .mission-switch {
+        .planner-panel {
+            margin-top: 1rem;
+            border-radius: var(--r-sm);
+            border: 1px solid rgba(113, 245, 255, 0.12);
+            background: rgba(7, 14, 28, 0.58);
+            padding: 0.95rem;
+        }
+
+        .planner-head {
+            margin-bottom: 0.85rem;
+        }
+
+        .planner-head strong {
+            display: block;
+            font-size: 0.84rem;
+            letter-spacing: 0.04em;
+            margin-bottom: 0.35rem;
+        }
+
+        .planner-copy,
+        .phase-guide,
+        .phase-legend {
+            margin: 0;
+            color: var(--muted);
+            font-size: 0.8rem;
+            line-height: 1.58;
+        }
+
+        .control-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 0.65rem;
-            margin-bottom: 1rem;
+            gap: 0.75rem;
         }
 
-        .mission-btn,
-        .action-btn,
-        .nav-button {
-            border-radius: 999px;
-            color: var(--text);
-            cursor: pointer;
-            transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease, color 0.18s ease;
+        .control-summary {
+            margin-top: 1rem;
+            border-radius: var(--r-sm);
+            border: 1px solid rgba(196, 255, 103, 0.16);
+            background: rgba(7, 14, 28, 0.62);
+            padding: 0.9rem;
         }
 
-        .mission-btn {
-            min-height: 44px;
-            padding: 0.75rem 0.9rem;
-            font-size: 0.72rem;
-            letter-spacing: 0.08em;
+        .control-summary strong {
+            display: block;
+            font-size: 0.82rem;
+            letter-spacing: 0.04em;
+            margin-bottom: 0.4rem;
+        }
+
+        .control-summary p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 0.84rem;
+            line-height: 1.65;
+        }
+
+        .director-card,
+        .analysis-card {
+            margin-top: 1rem;
+            border-radius: var(--r-sm);
+            border: 1px solid rgba(113, 245, 255, 0.12);
+            background: rgba(7, 14, 28, 0.6);
+            padding: 0.9rem;
+        }
+
+        .director-card strong,
+        .analysis-card strong {
+            display: block;
+            font-size: 0.82rem;
+            letter-spacing: 0.04em;
+            margin-bottom: 0.55rem;
+        }
+
+        .director-grid,
+        .analysis-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.6rem;
+        }
+
+        .director-item,
+        .analysis-item {
+            padding: 0.72rem 0.76rem;
+            border-radius: 12px;
+            border: 1px solid rgba(113, 245, 255, 0.1);
+            background: rgba(4, 10, 20, 0.46);
+        }
+
+        .director-item span,
+        .analysis-item span {
+            display: block;
+            color: var(--cyan);
+            font-family: "IBM Plex Mono", monospace;
+            font-size: 0.62rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin-bottom: 0.32rem;
+        }
+
+        .director-item strong,
+        .analysis-item strong {
+            margin: 0;
+            font-size: 0.96rem;
+            line-height: 1.35;
+        }
+
+        .director-item.wide,
+        .analysis-item.wide {
+            grid-column: 1 / -1;
+        }
+
+        .stage-stack {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.55rem;
+        }
+
+        .stage-chip {
+            padding: 0.7rem 0.72rem;
+            border-radius: 12px;
+            border: 1px solid rgba(113, 245, 255, 0.1);
+            background: rgba(4, 10, 20, 0.52);
+        }
+
+        .stage-chip span {
+            display: block;
+            color: var(--cyan);
+            font-family: "IBM Plex Mono", monospace;
+            font-size: 0.62rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin-bottom: 0.32rem;
+        }
+
+        .stage-chip strong {
+            margin: 0;
+            font-size: 0.95rem;
+            line-height: 1.35;
+        }
+
+        .phase-grid {
+            display: grid;
+            gap: 0.75rem;
+            margin-top: 0.85rem;
+        }
+
+        .phase-card {
+            border-radius: var(--r-sm);
+            border: 1px solid rgba(113, 245, 255, 0.12);
+            background: rgba(7, 14, 28, 0.58);
+            padding: 0.9rem;
+            transition: border-color 0.18s ease, background 0.18s ease, transform 0.18s ease;
+        }
+
+        .phase-card.active {
+            border-color: rgba(113, 245, 255, 0.4);
+            background: rgba(10, 22, 42, 0.72);
+            transform: translateY(-1px);
+        }
+
+        .phase-card strong {
+            display: block;
+            font-size: 0.84rem;
+            letter-spacing: 0.04em;
+            margin-bottom: 0.3rem;
+        }
+
+        .phase-guide {
+            margin-bottom: 0.72rem;
+        }
+
+        .phase-legend {
+            padding: 0.72rem 0.78rem;
+            border-radius: 12px;
+            border: 1px solid rgba(113, 245, 255, 0.1);
+            background: rgba(4, 10, 20, 0.46);
+        }
+
+        .phase-fields {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 0.55rem;
+        }
+
+        .phase-field {
+            display: grid;
+            gap: 0.3rem;
+        }
+
+        .phase-field span {
+            color: var(--cyan);
+            font-family: "IBM Plex Mono", monospace;
+            font-size: 0.62rem;
+            letter-spacing: 0.12em;
             text-transform: uppercase;
         }
 
-        .mission-btn.active {
-            background: rgba(113, 245, 255, 0.12);
+        .phase-field input[type="number"] {
+            width: 100%;
+            border-radius: 10px;
+            border: 1px solid rgba(113, 245, 255, 0.14);
+            background: rgba(4, 10, 20, 0.75);
+            color: var(--text);
+            font-family: "IBM Plex Mono", monospace;
+            font-size: 0.9rem;
+            padding: 0.62rem 0.68rem;
+        }
+
+        .phase-field input[type="number"]:focus {
+            outline: none;
             border-color: var(--line-strong);
-            color: var(--cyan-soft);
+            box-shadow: 0 0 0 3px rgba(113, 245, 255, 0.1);
+        }
+
+        .objective-box,
+        .hint-box,
+        .formula-card {
+            border-radius: var(--r-sm);
+            border: 1px solid rgba(113, 245, 255, 0.12);
+            background: rgba(7, 14, 28, 0.55);
+            padding: 0.9rem;
+        }
+
+        .objective-box {
+            margin-bottom: 1rem;
+        }
+
+        .objective-box strong,
+        .hint-box strong,
+        .formula-line strong {
+            display: block;
+            font-size: 0.82rem;
+            letter-spacing: 0.04em;
+            margin-bottom: 0.35rem;
+        }
+
+        .objective-list {
+            margin: 0;
+            padding-left: 1rem;
+            color: var(--muted);
+            font-size: 0.88rem;
+            line-height: 1.65;
         }
 
         .control-group + .control-group {
-            margin-top: 1rem;
+            margin-top: 0;
+        }
+
+        .control-group {
+            padding: 0.85rem 0.9rem;
+            border-radius: var(--r-sm);
+            border: 1px solid rgba(113, 245, 255, 0.1);
+            background: rgba(4, 10, 20, 0.5);
         }
 
         .control-head {
@@ -239,16 +517,57 @@
             line-height: 1.6;
         }
 
+        .command-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.7rem;
+            margin-top: 1.05rem;
+        }
+
+        .command-btn,
+        .action-btn,
+        .nav-button {
+            border-radius: 999px;
+            color: var(--text);
+            cursor: pointer;
+            transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease, color 0.18s ease;
+        }
+
+        .command-btn {
+            min-height: 52px;
+            padding: 0.8rem 0.9rem;
+            font-size: 0.72rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .command-btn strong {
+            display: block;
+            font-size: 0.84rem;
+            margin-bottom: 0.16rem;
+        }
+
+        .command-btn span {
+            display: block;
+            color: var(--muted);
+            font-size: 0.64rem;
+            letter-spacing: 0.06em;
+        }
+
         .action-row {
             display: flex;
             gap: 0.75rem;
-            margin-top: 1.2rem;
+            flex-wrap: wrap;
+        }
+
+        .action-row + .action-row {
+            margin-top: 0.75rem;
         }
 
         .action-btn {
             min-height: 48px;
             padding: 0.85rem 1rem;
-            flex: 1;
+            flex: 1 1 0;
             font-size: 0.75rem;
             letter-spacing: 0.1em;
             text-transform: uppercase;
@@ -260,27 +579,65 @@
             border-color: transparent;
         }
 
-        .action-btn:disabled {
+        .action-btn.secondary {
+            background: linear-gradient(135deg, rgba(196, 255, 103, 0.16), rgba(196, 255, 103, 0.05));
+            color: var(--acid);
+        }
+
+        .action-btn:disabled,
+        .command-btn:disabled {
             opacity: 0.5;
             cursor: default;
             transform: none;
         }
 
+        .status-strip {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 0.7rem;
+            margin-top: 0.9rem;
+        }
+
+        .status-pill {
+            padding: 0.72rem 0.78rem;
+            border-radius: var(--r-sm);
+            border: 1px solid rgba(113, 245, 255, 0.1);
+            background: rgba(7, 14, 28, 0.5);
+        }
+
+        .status-pill span {
+            display: block;
+            font-family: "IBM Plex Mono", monospace;
+            font-size: 0.64rem;
+            color: var(--cyan);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin-bottom: 0.35rem;
+        }
+
+        .status-pill strong {
+            display: block;
+            font-size: 1rem;
+            line-height: 1.35;
+        }
+
         .telemetry-panel {
-            left: 1rem;
-            bottom: 1rem;
-            width: min(420px, calc(100vw - 2rem));
+            position: relative;
+            left: auto;
+            bottom: auto;
+            width: auto;
+            flex: 1 1 auto;
         }
 
         .telemetry-grid {
             display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
+            grid-template-columns: repeat(3, minmax(0, 1fr));
             gap: 0.75rem;
             margin-bottom: 1rem;
         }
 
         .telemetry-item {
-            padding: 0.8rem 0.85rem;
+            padding: 0.78rem 0.82rem;
             border-radius: var(--r-sm);
             border: 1px solid rgba(113, 245, 255, 0.1);
             background: rgba(7, 14, 28, 0.55);
@@ -288,29 +645,129 @@
 
         .telemetry-item span {
             display: block;
-            font-size: 0.66rem;
+            font-size: 0.64rem;
             color: var(--cyan);
             letter-spacing: 0.12em;
             text-transform: uppercase;
-            margin-bottom: 0.45rem;
+            margin-bottom: 0.42rem;
         }
 
         .telemetry-item strong {
             display: block;
-            font-size: 1rem;
+            font-size: 0.98rem;
             line-height: 1.35;
         }
 
-        .speed-box {
+        .gauge-group + .gauge-group {
+            margin-top: 0.8rem;
+        }
+
+        .gauge-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 0.35rem;
+        }
+
+        .gauge-head span {
+            color: var(--cyan);
+            font-family: "IBM Plex Mono", monospace;
+            font-size: 0.68rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+
+        .gauge-track {
+            height: 11px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.06);
+            overflow: hidden;
+        }
+
+        .gauge-fill {
+            height: 100%;
+            width: 0;
+            border-radius: inherit;
+            transition: width 0.15s ease;
+        }
+
+        .gauge-fill.fuel {
+            background: linear-gradient(90deg, var(--acid), #f4ffb8);
+        }
+
+        .gauge-fill.q {
+            background: linear-gradient(90deg, rgba(113, 245, 255, 0.85), rgba(255, 209, 102, 0.95), rgba(255, 124, 154, 0.96));
+        }
+
+        .telemetry-note {
             margin-top: 0.95rem;
-            padding-top: 0.95rem;
-            border-top: 1px solid rgba(113, 245, 255, 0.1);
         }
 
         .lesson-panel {
-            right: 1rem;
-            bottom: 1rem;
-            width: min(340px, calc(100vw - 2rem));
+            position: relative;
+            right: auto;
+            bottom: auto;
+            width: auto;
+        }
+
+        .right-rail .setup-panel {
+            flex: 1 1 auto;
+        }
+
+        .right-rail .lesson-panel {
+            flex: 0 0 auto;
+            max-height: min(31vh, 24rem);
+        }
+
+        .control-dock {
+            position: sticky;
+            top: 0;
+            z-index: 3;
+            margin: 1rem 0;
+            padding: 0.9rem;
+            border-radius: var(--r-sm);
+            border: 1px solid rgba(113, 245, 255, 0.12);
+            background: rgba(6, 14, 28, 0.92);
+            backdrop-filter: blur(18px);
+            box-shadow: 0 18px 34px rgba(2, 8, 20, 0.28);
+        }
+
+        .formula-grid {
+            display: grid;
+            gap: 0.65rem;
+        }
+
+        .formula-line {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .formula-line strong {
+            margin: 0;
+            font-size: 0.78rem;
+        }
+
+        .formula-line span {
+            font-family: "IBM Plex Mono", monospace;
+            color: var(--cyan-soft);
+            font-size: 0.78rem;
+            text-align: right;
+        }
+
+        .formula-card {
+            margin-bottom: 1rem;
+        }
+
+        .formula-note {
+            margin-top: 0.75rem;
+            font-size: 0.84rem;
+        }
+
+        .hint-box {
+            margin-top: 1rem;
         }
 
         .result-banner {
@@ -318,7 +775,7 @@
             left: 50%;
             top: 1rem;
             transform: translate(-50%, -14px);
-            width: min(540px, calc(100vw - 2rem));
+            width: min(560px, calc(100vw - 2rem));
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
@@ -337,6 +794,12 @@
             gap: 1rem;
         }
 
+        .result-copy {
+            display: grid;
+            gap: 0.8rem;
+            min-width: 0;
+        }
+
         .result-copy strong {
             display: block;
             font-size: 1.2rem;
@@ -348,6 +811,62 @@
             color: var(--muted);
             font-size: 0.92rem;
             line-height: 1.65;
+        }
+
+        .result-score {
+            border-radius: var(--r-sm);
+            border: 1px solid rgba(196, 255, 103, 0.16);
+            background: rgba(7, 14, 28, 0.66);
+            padding: 0.85rem;
+        }
+
+        .result-score-head {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 0.65rem;
+        }
+
+        .result-score-head span,
+        .result-score-item span {
+            font-family: "IBM Plex Mono", monospace;
+            color: var(--acid);
+            font-size: 0.66rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+
+        .result-score-head strong {
+            margin: 0;
+            font-size: 1.4rem;
+            color: var(--acid);
+        }
+
+        .result-score-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.55rem;
+        }
+
+        .result-score-item {
+            padding: 0.72rem 0.76rem;
+            border-radius: 12px;
+            border: 1px solid rgba(113, 245, 255, 0.1);
+            background: rgba(4, 10, 20, 0.46);
+        }
+
+        .result-score-item strong {
+            display: block;
+            margin-top: 0.28rem;
+            font-size: 0.98rem;
+        }
+
+        .result-score-note {
+            margin: 0.7rem 0 0;
+            color: var(--muted);
+            font-size: 0.8rem;
+            line-height: 1.55;
         }
 
         .result-banner.success {
@@ -367,12 +886,12 @@
         }
 
         .nav-actions {
-            position: absolute;
-            right: 1rem;
-            top: 1rem;
+            position: relative;
             display: flex;
             gap: 0.75rem;
             pointer-events: auto;
+            justify-content: flex-end;
+            margin-left: auto;
         }
 
         .nav-button {
@@ -391,54 +910,118 @@
             color: var(--cyan-soft);
         }
 
-        .mission-btn:hover,
+        .nav-button.is-active {
+            background: linear-gradient(135deg, rgba(196, 255, 103, 0.16), rgba(196, 255, 103, 0.05));
+            color: var(--acid);
+        }
+
+        body.focus-mode .hero-panel p,
+        body.focus-mode .meta-strip,
+        body.focus-mode .setup-copy,
+        body.focus-mode .control-summary,
+        body.focus-mode .objective-box,
+        body.focus-mode .telemetry-note,
+        body.focus-mode .lesson-panel {
+            display: none;
+        }
+
+        body.focus-mode .hero-panel h1 {
+            margin-bottom: 0;
+        }
+
+        body.focus-mode .planner-panel {
+            margin-top: 0.8rem;
+        }
+
+        .command-btn:hover,
         .action-btn:hover,
         .nav-button:hover {
             transform: translateY(-2px);
             border-color: var(--line-strong);
         }
 
-        @media (max-width: 980px) {
-            .hero-panel,
-            .setup-panel,
-            .telemetry-panel,
-            .lesson-panel {
-                width: min(420px, calc(100vw - 1.5rem));
+        @media (max-width: 1100px) {
+            .left-rail {
+                width: clamp(290px, 26vw, 380px);
             }
 
-            .setup-panel {
-                top: auto;
-                bottom: 1rem;
-                right: 1rem;
+            .right-rail {
+                width: clamp(320px, 29vw, 390px);
             }
 
-            .lesson-panel {
-                top: auto;
-                right: 1rem;
-                bottom: calc(1rem + 420px);
+            .telemetry-grid,
+            .status-strip {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
             }
 
-            .telemetry-panel {
-                left: 1rem;
-                bottom: 1rem;
+            .phase-fields {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
             }
         }
 
         @media (max-width: 768px) {
+            body {
+                overflow-y: auto;
+            }
+
+            .ui-shell {
+                position: relative;
+                min-height: auto;
+                display: grid;
+                gap: 0.75rem;
+                padding: 0.75rem 0.75rem 5.5rem;
+            }
+
+            .side-rail {
+                position: relative;
+                top: auto;
+                right: auto;
+                bottom: auto;
+                left: auto;
+                width: auto;
+                min-width: 0;
+                display: grid;
+                gap: 0.75rem;
+            }
+
+            canvas {
+                position: fixed;
+                inset: 0;
+            }
+
             .hero-panel,
             .setup-panel,
             .telemetry-panel,
             .lesson-panel {
-                position: absolute;
-                left: 0.75rem;
-                right: 0.75rem;
+                position: relative;
+                left: auto;
+                right: auto;
+                top: auto;
+                bottom: auto;
                 width: auto;
             }
 
-            .hero-panel { top: 0.75rem; }
-            .setup-panel { top: 11.4rem; bottom: auto; }
-            .telemetry-panel { top: 34.3rem; bottom: auto; }
-            .lesson-panel { top: 58rem; bottom: auto; }
+            .left-rail .telemetry-panel,
+            .right-rail .setup-panel,
+            .right-rail .lesson-panel {
+                overflow: visible;
+                max-height: none;
+            }
+
+            .control-dock {
+                position: relative;
+                top: auto;
+            }
+
+            .phase-fields,
+            .status-strip,
+            .telemetry-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .control-grid {
+                gap: 0.65rem;
+            }
 
             .nav-actions {
                 left: 0.75rem;
@@ -453,15 +1036,13 @@
                 top: 7.5rem;
             }
 
-            .action-row,
             .result-layout,
-            .mission-switch {
-                grid-template-columns: 1fr;
+            .action-row {
                 flex-direction: column;
             }
 
-            .telemetry-grid {
-                grid-template-columns: 1fr 1fr;
+            .result-score-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -470,193 +1051,602 @@
     <canvas id="missionCanvas"></canvas>
 
     <div class="ui-shell">
-        <section class="panel hero-panel">
-            <div class="panel-inner">
-                <div class="panel-kicker">Tech-Ant Lab // Physics Game 01</div>
-                <h1>Orbital Launch Trainer</h1>
-                <p>Launch from the pad, ride the ascent to injection altitude, then learn how burnout energy and angle shape the orbit. Start with Earth orbit and push further toward Moon orbit when you are ready.</p>
-                <div class="meta-strip">
-                    <div class="meta-pill">Low-bandwidth canvas game</div>
-                    <div class="meta-pill">Earth + Moon gravity</div>
-                    <div class="meta-pill">Speed control included</div>
+        <div class="side-rail left-rail">
+            <section class="panel hero-panel">
+                <div class="panel-inner">
+                    <div class="panel-kicker">Tech-Ant Lab // Physics Game 01</div>
+                    <h1>DIY Rocket Garage</h1>
+                    <p>Build a launch profile phase by phase, fly through the atmosphere with the right angle and throttle, then switch to a wide orbital view once the rocket reaches space. This version turns the demo into a more readable launch simulation game.</p>
+                    <div class="meta-strip">
+                        <div class="meta-pill">Two-stage launch stack</div>
+                        <div class="meta-pill">Player-defined flight phases</div>
+                        <div class="meta-pill">Atmospheric drag + max-Q</div>
+                        <div class="meta-pill">Ascent view to orbit view</div>
+                        <div class="meta-pill">Low-bandwidth canvas game</div>
+                    </div>
                 </div>
+            </section>
+
+            <section class="panel telemetry-panel">
+                <div class="panel-inner">
+                    <div class="panel-kicker">Telemetry</div>
+                    <div class="telemetry-grid">
+                        <div class="telemetry-item">
+                            <span>Status</span>
+                            <strong id="statusValue">Ready on the pad</strong>
+                        </div>
+                        <div class="telemetry-item">
+                            <span>Mission Time</span>
+                            <strong id="timeValue">T+00:00</strong>
+                        </div>
+                        <div class="telemetry-item">
+                            <span>Stage</span>
+                            <strong id="stageValue">Stage 1 idle</strong>
+                        </div>
+                        <div class="telemetry-item">
+                            <span>Altitude</span>
+                            <strong id="altitudeValue">0.0 km</strong>
+                        </div>
+                        <div class="telemetry-item">
+                            <span>Speed</span>
+                            <strong id="speedMetricValue">0.00 km/s</strong>
+                        </div>
+                        <div class="telemetry-item">
+                            <span>Vertical Speed</span>
+                            <strong id="verticalValue">0.00 km/s</strong>
+                        </div>
+                        <div class="telemetry-item">
+                            <span>Downrange Speed</span>
+                            <strong id="horizontalValue">0.00 km/s</strong>
+                        </div>
+                        <div class="telemetry-item">
+                            <span>Dynamic Pressure</span>
+                            <strong id="pressureValue">0.0 kPa</strong>
+                        </div>
+                        <div class="telemetry-item">
+                            <span>Apoapsis</span>
+                            <strong id="apoapsisValue">-</strong>
+                        </div>
+                        <div class="telemetry-item">
+                            <span>Periapsis</span>
+                            <strong id="periapsisValue">-</strong>
+                        </div>
+                        <div class="telemetry-item">
+                            <span>Flight Path Angle</span>
+                            <strong id="flightPathValue">90°</strong>
+                        </div>
+                        <div class="telemetry-item">
+                            <span>Circular Speed</span>
+                            <strong id="circularValue">7.79 km/s</strong>
+                        </div>
+                    </div>
+
+                    <div class="gauge-group">
+                        <div class="gauge-head">
+                            <span>Fuel Remaining</span>
+                            <strong id="fuelText">100%</strong>
+                        </div>
+                        <div class="gauge-track">
+                            <div id="fuelBar" class="gauge-fill fuel"></div>
+                        </div>
+                    </div>
+
+                    <div class="gauge-group">
+                        <div class="gauge-head">
+                            <span>Aero Load</span>
+                            <strong id="aeroText">0%</strong>
+                        </div>
+                        <div class="gauge-track">
+                            <div id="qBar" class="gauge-fill q"></div>
+                        </div>
+                    </div>
+
+                    <p class="telemetry-note" id="telemetryNote">Watch altitude and speed together. Orbit is not won by climbing high. It is won when periapsis stays above the atmosphere after the circularization burn.</p>
+                </div>
+            </section>
+        </div>
+
+        <div class="side-rail right-rail">
+            <div class="nav-actions">
+                <a href="index.html#lab" class="nav-button">Back to Lab</a>
+                <a href="solarsystem.html" class="nav-button primary">Open Solar System Survey</a>
+                <button id="focusModeBtn" class="nav-button" type="button">Hide Help Text</button>
             </div>
-        </section>
 
-        <section class="panel setup-panel">
-            <div class="panel-inner">
-                <div class="panel-kicker">Mission Setup</div>
-                <p class="setup-copy">Pick a target, choose the injection energy and burnout angle, then see whether your spacecraft closes into Earth orbit or reaches a workable Moon capture window.</p>
+            <section class="panel setup-panel">
+                <div class="panel-inner">
+                    <div class="panel-kicker">Flight Deck</div>
+                    <p class="setup-copy">Give the rocket a full ascent plan before launch. The guidance computer flies your phase values, while the simulation checks whether the stack survives the atmosphere and reaches a stable orbit.</p>
 
-                <div class="mission-switch">
-                    <button class="mission-btn active" type="button" data-mission="earth">Earth Orbit</button>
-                    <button class="mission-btn" type="button" data-mission="moon">Moon Orbit</button>
+                    <div class="control-dock">
+                        <div class="action-row">
+                            <button id="launchBtn" class="action-btn primary" type="button">Run Flight Plan</button>
+                            <button id="presetBtn" class="action-btn secondary" type="button">Load Friendly Plan</button>
+                        </div>
+                        <div class="action-row">
+                            <button id="pauseBtn" class="action-btn secondary" type="button">Pause</button>
+                            <button id="resetBtn" class="action-btn" type="button">Reset</button>
+                        </div>
+
+                        <div class="status-strip">
+                            <div class="status-pill">
+                                <span>Active Phase</span>
+                                <strong id="activePhaseValue">Tower Clear</strong>
+                            </div>
+                            <div class="status-pill">
+                                <span>Air Layer</span>
+                                <strong id="layerValue">Dense Air</strong>
+                            </div>
+                            <div class="status-pill">
+                                <span>Auto Command</span>
+                                <strong id="autoCommandValue">89° / 100%</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="planner-panel">
+                        <div class="planner-head">
+                            <strong>Editable Launch Variables</strong>
+                            <p class="planner-copy">Change these values before launch. The computer follows this plan exactly, so small changes in the lower atmosphere can completely change the final orbit.</p>
+                        </div>
+
+                        <div class="control-grid">
+                            <div class="control-group">
+                                <div class="control-head">
+                                    <span class="label">Payload Mass</span>
+                                    <span class="value" id="payloadValue">3.0 t</span>
+                                </div>
+                                <input id="payloadSlider" type="range" min="3" max="12" step="0.5" value="3">
+                                <p class="range-note" id="payloadHint">How heavy the rocket must carry. More mass means slower acceleration and less fuel margin for orbit.</p>
+                            </div>
+
+                            <div class="control-group">
+                                <div class="control-head">
+                                    <span class="label">Simulation Speed</span>
+                                    <span class="value" id="speedValue">1.0x</span>
+                                </div>
+                                <input id="speedSlider" type="range" min="0.5" max="10" step="0.5" value="1">
+                                <p class="range-note" id="speedHint">Only changes time flow for you. The atmosphere still limits warp so the dangerous ascent phase stays readable.</p>
+                            </div>
+
+                            <div class="control-group">
+                                <div class="control-head">
+                                    <span class="label">Orbit Safety Margin</span>
+                                    <span class="value" id="periapsisTargetValue">110 km</span>
+                                </div>
+                                <input id="periapsisTargetSlider" type="range" min="110" max="180" step="5" value="110">
+                                <p class="range-note" id="periapsisTargetHint">The minimum safe periapsis after circularization. Higher is safer, but needs a cleaner ascent and more saved fuel.</p>
+                            </div>
+                        </div>
+
+                        <p class="phase-legend">Quick legend: End Alt switches to the next phase, Pitch uses 90° for straight up and 0° for horizontal flight, Throttle is engine power, Apoapsis is the top of the orbit arc, and Burn Window is how close to apoapsis the final burn begins.</p>
+
+                        <div class="phase-grid">
+                            <article class="phase-card" data-phase-card="0">
+                                <strong>Phase 1 // Tower Clear</strong>
+                                <p class="phase-guide">Leave the pad cleanly. Stay mostly vertical here so the rocket does not fight dense air too early.</p>
+                                <div class="phase-fields">
+                                    <label class="phase-field">
+                                        <span>End Alt km</span>
+                                        <input id="phase1Altitude" type="number" min="5" max="18" step="1" value="10">
+                                    </label>
+                                    <label class="phase-field">
+                                        <span>Pitch deg</span>
+                                        <input id="phase1Pitch" type="number" min="70" max="90" step="1" value="89">
+                                    </label>
+                                    <label class="phase-field">
+                                        <span>Throttle %</span>
+                                        <input id="phase1Throttle" type="number" min="50" max="100" step="1" value="100">
+                                    </label>
+                                </div>
+                            </article>
+
+                            <article class="phase-card" data-phase-card="1">
+                                <strong>Phase 2 // Max-Q Trim</strong>
+                                <p class="phase-guide">This is the danger zone. Balance speed and drag so the vehicle survives max-Q without wasting too much energy.</p>
+                                <div class="phase-fields">
+                                    <label class="phase-field">
+                                        <span>End Alt km</span>
+                                        <input id="phase2Altitude" type="number" min="14" max="40" step="1" value="24">
+                                    </label>
+                                    <label class="phase-field">
+                                        <span>Pitch deg</span>
+                                        <input id="phase2Pitch" type="number" min="35" max="88" step="1" value="78">
+                                    </label>
+                                    <label class="phase-field">
+                                        <span>Throttle %</span>
+                                        <input id="phase2Throttle" type="number" min="35" max="100" step="1" value="72">
+                                    </label>
+                                </div>
+                            </article>
+
+                            <article class="phase-card" data-phase-card="2">
+                                <strong>Phase 3 // Thin-Air Turn</strong>
+                                <p class="phase-guide">The air is weaker now, so this phase starts building real sideways orbital speed instead of only climbing.</p>
+                                <div class="phase-fields">
+                                    <label class="phase-field">
+                                        <span>End Alt km</span>
+                                        <input id="phase3Altitude" type="number" min="35" max="95" step="1" value="68">
+                                    </label>
+                                    <label class="phase-field">
+                                        <span>Pitch deg</span>
+                                        <input id="phase3Pitch" type="number" min="10" max="70" step="1" value="38">
+                                    </label>
+                                    <label class="phase-field">
+                                        <span>Throttle %</span>
+                                        <input id="phase3Throttle" type="number" min="40" max="100" step="1" value="95">
+                                    </label>
+                                </div>
+                            </article>
+
+                            <article class="phase-card" data-phase-card="3">
+                                <strong>Phase 4 // Vacuum Push</strong>
+                                <p class="phase-guide">Build the apoapsis high enough to clear the atmosphere, then stop burning before you waste upper-stage fuel.</p>
+                                <div class="phase-fields">
+                                    <label class="phase-field">
+                                        <span>Apoapsis km</span>
+                                        <input id="phase4Apoapsis" type="number" min="145" max="320" step="5" value="145">
+                                    </label>
+                                    <label class="phase-field">
+                                        <span>Pitch deg</span>
+                                        <input id="phase4Pitch" type="number" min="0" max="35" step="1" value="5">
+                                    </label>
+                                    <label class="phase-field">
+                                        <span>Throttle %</span>
+                                        <input id="phase4Throttle" type="number" min="30" max="100" step="1" value="100">
+                                    </label>
+                                </div>
+                            </article>
+
+                            <article class="phase-card" data-phase-card="4">
+                                <strong>Phase 5 // Circularize</strong>
+                                <p class="phase-guide">Burn almost horizontally near apoapsis. This phase decides whether the orbit closes or the rocket falls back.</p>
+                                <div class="phase-fields">
+                                    <label class="phase-field">
+                                        <span>Burn Window km</span>
+                                        <input id="phase5Window" type="number" min="8" max="45" step="1" value="8">
+                                    </label>
+                                    <label class="phase-field">
+                                        <span>Pitch deg</span>
+                                        <input id="phase5Pitch" type="number" min="0" max="15" step="1" value="2">
+                                    </label>
+                                    <label class="phase-field">
+                                        <span>Throttle %</span>
+                                        <input id="phase5Throttle" type="number" min="20" max="100" step="1" value="100">
+                                    </label>
+                                </div>
+                            </article>
+                        </div>
+                    </div>
+
+                    <div class="director-card">
+                        <strong>Launch Director</strong>
+                        <div class="director-grid">
+                            <div class="director-item">
+                                <span>Director State</span>
+                                <strong id="directorStateValue">Awaiting Launch</strong>
+                            </div>
+                            <div class="director-item wide">
+                                <span>Next Event</span>
+                                <strong id="nextEventValue">Arm the stack</strong>
+                            </div>
+                            <div class="director-item">
+                                <span>View Mode</span>
+                                <strong id="viewModeValue">Ascent Cam</strong>
+                            </div>
+                            <div class="director-item wide">
+                                <span>Stage Stack</span>
+                                <div class="stage-stack">
+                                    <div class="stage-chip">
+                                        <span>Stage 1</span>
+                                        <strong id="stageOneStateValue">Ready</strong>
+                                    </div>
+                                    <div class="stage-chip">
+                                        <span>Stage 2</span>
+                                        <strong id="stageTwoStateValue">Standby</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="analysis-card">
+                        <strong>Performance Analysis</strong>
+                        <div class="analysis-grid">
+                            <div class="analysis-item">
+                                <span>Lift-Off TWR</span>
+                                <strong id="liftOffTwrValue">1.55</strong>
+                            </div>
+                            <div class="analysis-item">
+                                <span>Planned Delta-v</span>
+                                <strong id="plannedDeltaVValue">10.09 km/s</strong>
+                            </div>
+                            <div class="analysis-item wide">
+                                <span>Planned Orbit</span>
+                                <strong id="plannedOrbitValue">145 km apo / 110 km peri</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="control-summary">
+                        <strong>How This Version Plays</strong>
+                        <p>Instead of steering every second by hand, you define the launch phases. Low-altitude settings shape max-Q survival, upper-atmosphere values shape apoapsis, and the final circularization settings decide whether periapsis rises above the atmosphere.</p>
+                    </div>
+
+                    <div class="objective-box">
+                        <strong>Mission Goal</strong>
+                        <ol class="objective-list">
+                            <li>Keep the rocket stable through the dense lower atmosphere.</li>
+                            <li>Cross max-Q without breaking the vehicle aerodynamically.</li>
+                            <li>Build enough apoapsis to exit the atmosphere cleanly.</li>
+                            <li>Burn near apoapsis until periapsis stays above the atmosphere.</li>
+                        </ol>
+                    </div>
                 </div>
+            </section>
 
-                <div class="control-group">
-                    <div class="control-head">
-                        <span class="label">Fuel / Launch Energy</span>
-                        <span class="value" id="energyValue">8.00 km/s</span>
-                    </div>
-                    <input id="energySlider" type="range" min="7.60" max="11.10" step="0.05" value="8.00">
-                    <p class="range-note" id="energyHint">Enough energy creates orbital speed. Too little falls back. Too much escapes.</p>
-                </div>
+            <section class="panel lesson-panel">
+                <div class="panel-inner">
+                    <div class="panel-kicker">Physics Insight</div>
 
-                <div class="control-group">
-                    <div class="control-head">
-                        <span class="label">Burnout Angle</span>
-                        <span class="value" id="angleValue">2°</span>
+                    <div class="formula-card">
+                        <div class="formula-grid">
+                            <div class="formula-line">
+                                <strong>q = 1/2 rho v^2</strong>
+                                <span id="formulaQValue">0.0 kPa</span>
+                            </div>
+                            <div class="formula-line">
+                                <strong>v_circ = sqrt(mu / r)</strong>
+                                <span id="formulaCircularValue">7.79 km/s</span>
+                            </div>
+                            <div class="formula-line">
+                                <strong>TWR = T / (m g)</strong>
+                                <span id="formulaTwrValue">0.00</span>
+                            </div>
+                        </div>
+                        <p class="formula-note" id="formulaNote">Max-Q is the period where dense air and high speed combine. Throttle management matters most there, not at orbital altitude.</p>
                     </div>
-                    <input id="angleSlider" type="range" min="0" max="10" step="1" value="2">
-                    <p class="range-note" id="angleHint">The angle is measured above the local horizon at injection. Small angles favor orbit building.</p>
-                </div>
 
-                <div class="action-row">
-                    <button id="launchBtn" class="action-btn primary" type="button">Launch Mission</button>
-                    <button id="resetBtn" class="action-btn" type="button">Reset</button>
-                </div>
-            </div>
-        </section>
+                    <p class="lesson-text" id="lessonText">Start vertically, then pitch down only a little at a time. A gravity turn is efficient because the rocket slowly trades straight-up climb for sideways orbital speed.</p>
 
-        <section class="panel telemetry-panel">
-            <div class="panel-inner">
-                <div class="panel-kicker">Telemetry</div>
-                <div class="telemetry-grid">
-                    <div class="telemetry-item">
-                        <span>Status</span>
-                        <strong id="statusValue">Ready on the pad</strong>
-                    </div>
-                    <div class="telemetry-item">
-                        <span>Mission Time</span>
-                        <strong id="timeValue">T+00:00</strong>
-                    </div>
-                    <div class="telemetry-item">
-                        <span id="altitudeLabel">Altitude</span>
-                        <strong id="altitudeValue">0 km</strong>
-                    </div>
-                    <div class="telemetry-item">
-                        <span id="velocityLabel">Velocity</span>
-                        <strong id="velocityValue">0.00 km/s</strong>
-                    </div>
-                    <div class="telemetry-item">
-                        <span id="periapsisLabel">Periapsis</span>
-                        <strong id="periapsisValue">-</strong>
-                    </div>
-                    <div class="telemetry-item">
-                        <span id="apoapsisLabel">Apoapsis</span>
-                        <strong id="apoapsisValue">-</strong>
+                    <div class="hint-box">
+                        <strong>Current Task</strong>
+                        <p class="hint-copy" id="hintText">Target a 160 km apoapsis first. Once the top of the arc is high enough, cut thrust and save the remaining propellant for circularization near apoapsis.</p>
                     </div>
                 </div>
-                <p class="telemetry-note" id="telemetryNote">Watch how periapsis and apoapsis respond to the balance between vertical climb and horizontal speed.</p>
-
-                <div class="speed-box">
-                    <div class="control-head">
-                        <span class="label">Simulation Speed</span>
-                        <span class="value" id="speedValue">1.0x</span>
-                    </div>
-                    <input id="speedSlider" type="range" min="0.5" max="120" step="0.5" value="1">
-                </div>
-            </div>
-        </section>
-
-        <section class="panel lesson-panel">
-            <div class="panel-inner">
-                <div class="panel-kicker">Physics Insight</div>
-                <p class="lesson-text" id="lessonText">A rocket does not stay up just by going high. It must gain enough sideways velocity that the planet curves away beneath it.</p>
-            </div>
-        </section>
+            </section>
+        </div>
 
         <section class="panel result-banner" id="resultBanner">
             <div class="panel-inner result-layout">
                 <div class="result-copy">
                     <strong id="resultTitle">Mission Result</strong>
-                    <p id="resultCopy">Adjust energy and angle, then launch again.</p>
+                    <p id="resultCopy">Reset and try a cleaner ascent profile.</p>
+                    <div class="result-score" id="resultScoreBox" hidden>
+                        <div class="result-score-head">
+                            <span>Mission Score</span>
+                            <strong id="resultScoreValue">0</strong>
+                        </div>
+                        <div class="result-score-grid">
+                            <div class="result-score-item">
+                                <span>Payload</span>
+                                <strong id="resultScorePayloadValue">+0</strong>
+                            </div>
+                            <div class="result-score-item">
+                                <span>Fuel</span>
+                                <strong id="resultScoreFuelValue">+0</strong>
+                            </div>
+                            <div class="result-score-item">
+                                <span>Orbit</span>
+                                <strong id="resultScoreOrbitValue">+0</strong>
+                            </div>
+                            <div class="result-score-item">
+                                <span>Time</span>
+                                <strong id="resultScoreTimeValue">+0</strong>
+                            </div>
+                        </div>
+                        <p class="result-score-note" id="resultScoreNote">Heavier payloads, fuel left in the tanks, orbit precision and a faster finish all raise the score.</p>
+                    </div>
                 </div>
-                <button id="retryBtn" class="action-btn primary" type="button" style="max-width: 170px;">Try Again</button>
+                <button id="retryBtn" class="action-btn primary" type="button" style="max-width: 170px;">Fly Again</button>
             </div>
         </section>
-
-        <div class="nav-actions">
-            <a href="index.html#lab" class="nav-button">Back to Lab</a>
-            <a href="solarsystem.html" class="nav-button primary">Open Solar System Survey</a>
-        </div>
     </div>
 
     <script>
         const canvas = document.getElementById("missionCanvas");
         const ctx = canvas.getContext("2d");
 
-        const missionButtons = document.querySelectorAll(".mission-btn");
-        const energySlider = document.getElementById("energySlider");
-        const angleSlider = document.getElementById("angleSlider");
+        const payloadSlider = document.getElementById("payloadSlider");
         const speedSlider = document.getElementById("speedSlider");
+        const periapsisTargetSlider = document.getElementById("periapsisTargetSlider");
         const launchBtn = document.getElementById("launchBtn");
+        const presetBtn = document.getElementById("presetBtn");
+        const pauseBtn = document.getElementById("pauseBtn");
         const resetBtn = document.getElementById("resetBtn");
         const retryBtn = document.getElementById("retryBtn");
+        const focusModeBtn = document.getElementById("focusModeBtn");
+        const setupPanel = document.querySelector(".setup-panel");
+        const plannerPanel = document.querySelector(".planner-panel");
+        const controlDock = document.querySelector(".control-dock");
 
-        const energyValue = document.getElementById("energyValue");
-        const angleValue = document.getElementById("angleValue");
+        const phaseCards = Array.from(document.querySelectorAll("[data-phase-card]"));
+        const phaseInputs = [
+            {
+                altitude: document.getElementById("phase1Altitude"),
+                pitch: document.getElementById("phase1Pitch"),
+                throttle: document.getElementById("phase1Throttle")
+            },
+            {
+                altitude: document.getElementById("phase2Altitude"),
+                pitch: document.getElementById("phase2Pitch"),
+                throttle: document.getElementById("phase2Throttle")
+            },
+            {
+                altitude: document.getElementById("phase3Altitude"),
+                pitch: document.getElementById("phase3Pitch"),
+                throttle: document.getElementById("phase3Throttle")
+            },
+            {
+                apoapsis: document.getElementById("phase4Apoapsis"),
+                pitch: document.getElementById("phase4Pitch"),
+                throttle: document.getElementById("phase4Throttle")
+            },
+            {
+                window: document.getElementById("phase5Window"),
+                pitch: document.getElementById("phase5Pitch"),
+                throttle: document.getElementById("phase5Throttle")
+            }
+        ];
+        const editableInputs = [
+            payloadSlider,
+            periapsisTargetSlider,
+            ...phaseInputs.flatMap(group => Object.values(group))
+        ];
+        const planNumberInputs = phaseInputs.flatMap(group => Object.values(group));
+
+        const payloadValue = document.getElementById("payloadValue");
         const speedValue = document.getElementById("speedValue");
-        const energyHint = document.getElementById("energyHint");
-        const angleHint = document.getElementById("angleHint");
+        const periapsisTargetValue = document.getElementById("periapsisTargetValue");
+        const payloadHint = document.getElementById("payloadHint");
+        const speedHint = document.getElementById("speedHint");
+        const periapsisTargetHint = document.getElementById("periapsisTargetHint");
+        const activePhaseValue = document.getElementById("activePhaseValue");
+        const layerValue = document.getElementById("layerValue");
+        const autoCommandValue = document.getElementById("autoCommandValue");
+        const directorStateValue = document.getElementById("directorStateValue");
+        const nextEventValue = document.getElementById("nextEventValue");
+        const viewModeValue = document.getElementById("viewModeValue");
+        const stageOneStateValue = document.getElementById("stageOneStateValue");
+        const stageTwoStateValue = document.getElementById("stageTwoStateValue");
+        const liftOffTwrValue = document.getElementById("liftOffTwrValue");
+        const plannedDeltaVValue = document.getElementById("plannedDeltaVValue");
+        const plannedOrbitValue = document.getElementById("plannedOrbitValue");
+
         const statusValue = document.getElementById("statusValue");
         const timeValue = document.getElementById("timeValue");
-        const altitudeLabel = document.getElementById("altitudeLabel");
+        const stageValue = document.getElementById("stageValue");
         const altitudeValue = document.getElementById("altitudeValue");
-        const velocityLabel = document.getElementById("velocityLabel");
-        const velocityValue = document.getElementById("velocityValue");
-        const periapsisLabel = document.getElementById("periapsisLabel");
-        const periapsisValue = document.getElementById("periapsisValue");
-        const apoapsisLabel = document.getElementById("apoapsisLabel");
+        const speedMetricValue = document.getElementById("speedMetricValue");
+        const verticalValue = document.getElementById("verticalValue");
+        const horizontalValue = document.getElementById("horizontalValue");
+        const pressureValue = document.getElementById("pressureValue");
         const apoapsisValue = document.getElementById("apoapsisValue");
+        const periapsisValue = document.getElementById("periapsisValue");
+        const flightPathValue = document.getElementById("flightPathValue");
+        const circularValue = document.getElementById("circularValue");
         const telemetryNote = document.getElementById("telemetryNote");
+        const fuelText = document.getElementById("fuelText");
+        const fuelBar = document.getElementById("fuelBar");
+        const aeroText = document.getElementById("aeroText");
+        const qBar = document.getElementById("qBar");
+
+        const formulaQValue = document.getElementById("formulaQValue");
+        const formulaCircularValue = document.getElementById("formulaCircularValue");
+        const formulaTwrValue = document.getElementById("formulaTwrValue");
+        const formulaNote = document.getElementById("formulaNote");
         const lessonText = document.getElementById("lessonText");
+        const hintText = document.getElementById("hintText");
+
         const resultBanner = document.getElementById("resultBanner");
         const resultTitle = document.getElementById("resultTitle");
         const resultCopy = document.getElementById("resultCopy");
+        const resultScoreBox = document.getElementById("resultScoreBox");
+        const resultScoreValue = document.getElementById("resultScoreValue");
+        const resultScorePayloadValue = document.getElementById("resultScorePayloadValue");
+        const resultScoreFuelValue = document.getElementById("resultScoreFuelValue");
+        const resultScoreOrbitValue = document.getElementById("resultScoreOrbitValue");
+        const resultScoreTimeValue = document.getElementById("resultScoreTimeValue");
+        const resultScoreNote = document.getElementById("resultScoreNote");
 
         const EARTH = {
             x: 0,
             y: 0,
             radius: 6371,
             mu: 398600,
-            atmosphere: 140
+            atmosphere: 120,
+            scaleHeight: 8.4,
+            karman: 100
         };
 
-        const MOON_PHASE = -90 * Math.PI / 180;
-        const MOON = {
-            x: Math.cos(MOON_PHASE) * 384400,
-            y: Math.sin(MOON_PHASE) * 384400,
-            radius: 1737,
-            mu: 4904.8695
+        const SIM_STEP = 0.05;
+        const TRAIL_INTERVAL = 0.8;
+        const MAX_TRAIL_POINTS = 520;
+        const MAX_AERO_LOAD = 56;
+        const MAX_FLIGHT_TIME = 1800;
+        const ASCENT_VIEW_SWITCH_ALTITUDE = 118;
+        const SIM_SPEED_MULTIPLIER = 10;
+        const FOCUS_MODE_STORAGE_KEY = "orbital-launch-focus-mode";
+        const FIRST_STAGE = {
+            dry: 18,
+            fuel: 180,
+            thrust: 4600,
+            isp: 295,
+            dragArea: 8
+        };
+        const SECOND_STAGE = {
+            dry: 10,
+            fuel: 92,
+            thrust: 1500,
+            isp: 365,
+            dragArea: 3.8
         };
 
-        const INJECTION_ALTITUDE = 220;
-        const INJECTION_THETA = 78 * Math.PI / 180;
-        const EARTH_TARGET_ALT = 260;
-        const MOON_TARGET_ALT = 8000;
-        const ASCENT_DURATION = 120;
-        const SIM_STEP = 4;
-        const SIM_SECONDS_PER_SECOND = 18;
-        const TRAIL_INTERVAL = 10;
-        const MAX_TRAIL_POINTS = 480;
+        const LAYER_BANDS = [
+            { ceiling: 12, name: "Dense air", short: "Dense air", fill: "rgba(255, 157, 102, 0.08)", line: "rgba(255, 182, 118, 0.45)" },
+            { ceiling: 30, name: "Lower stratosphere", short: "Low strato", fill: "rgba(99, 166, 255, 0.08)", line: "rgba(113, 245, 255, 0.28)" },
+            { ceiling: 55, name: "Upper stratosphere", short: "Up strato", fill: "rgba(70, 138, 255, 0.07)", line: "rgba(113, 245, 255, 0.24)" },
+            { ceiling: 85, name: "Mesosphere", short: "Mesosphere", fill: "rgba(59, 96, 212, 0.06)", line: "rgba(113, 245, 255, 0.22)" },
+            { ceiling: 120, name: "Edge of space", short: "Edge space", fill: "rgba(24, 44, 104, 0.06)", line: "rgba(196, 255, 103, 0.24)" },
+            { ceiling: Infinity, name: "Space", short: "Space", fill: "rgba(7, 12, 24, 0)", line: "rgba(196, 255, 103, 0)" }
+        ];
+
+        const ORBIT_SATELLITES = [
+            { altitude: 170, angle: 0.35, rate: 0.035, scale: 1.0, color: "#dff8ff" },
+            { altitude: 240, angle: 2.2, rate: -0.028, scale: 1.18, color: "#c4ff67" },
+            { altitude: 340, angle: 4.45, rate: 0.018, scale: 0.92, color: "#ffd166" }
+        ];
+
+        const ASCENT_SATELLITES = [
+            { x: 0.16, y: 0.18, scale: 0.7, rate: 0.2, tilt: 0.1 },
+            { x: 0.5, y: 0.12, scale: 0.78, rate: 0.15, tilt: -0.2 },
+            { x: 0.8, y: 0.2, scale: 0.64, rate: 0.1, tilt: 0.4 }
+        ];
+
+        const DEFAULT_PLAN = {
+            targetPeriapsis: 110,
+            phases: [
+                { name: "Tower Clear", triggerType: "altitude", triggerValue: 10, pitch: 89, throttle: 100 },
+                { name: "Max-Q Trim", triggerType: "altitude", triggerValue: 24, pitch: 78, throttle: 72 },
+                { name: "Thin-Air Turn", triggerType: "altitude", triggerValue: 68, pitch: 38, throttle: 95 },
+                { name: "Vacuum Push", triggerType: "apoapsis", triggerValue: 145, pitch: 5, throttle: 100 }
+            ],
+            circularize: { window: 8, pitch: 2, throttle: 100 }
+        };
 
         let width = 0;
         let height = 0;
         const stars = [];
-        const camera = { x: 0, y: EARTH.radius + 2100, scale: 0.055 };
+        const camera = { x: 0, y: 0, scale: 0.03 };
 
         const state = {
-            mission: "earth",
-            speed: 1,
-            energy: 8.0,
-            angle: 2,
+            payloadMass: 3,
+            speedSetting: 1,
+            speed: 10,
             mode: "ready",
+            paused: false,
             time: 0,
-            stability: 0,
-            captureAssistUsed: false,
-            lastTelemetry: {},
-            rocket: null
+            orbitLock: 0,
+            stageSepTime: -Infinity,
+            rocket: null,
+            lastTelemetry: null,
+            plan: null,
+            guidanceMode: "phase",
+            activePhaseIndex: 0,
+            activePhaseName: "Tower Clear",
+            autoCommand: { pitch: 89, throttle: 1 },
+            orbitViewUnlocked: false,
+            launchCountdown: 0
         };
 
         function clamp(value, min, max) {
@@ -672,6 +1662,265 @@
             return x * x * (3 - 2 * x);
         }
 
+        function normalizeDegrees(angle) {
+            let value = angle;
+            while (value > 180) value -= 360;
+            while (value < -180) value += 360;
+            return value;
+        }
+
+        function toRadians(angle) {
+            return angle * Math.PI / 180;
+        }
+
+        function clonePlan(plan) {
+            return JSON.parse(JSON.stringify(plan));
+        }
+
+        function readFocusModePreference() {
+            try {
+                return window.localStorage.getItem(FOCUS_MODE_STORAGE_KEY) === "1";
+            } catch {
+                return false;
+            }
+        }
+
+        function setFocusMode(enabled) {
+            document.body.classList.toggle("focus-mode", enabled);
+            focusModeBtn.textContent = enabled ? "Show Help Text" : "Hide Help Text";
+            focusModeBtn.classList.toggle("is-active", enabled);
+            focusModeBtn.setAttribute("aria-pressed", enabled ? "true" : "false");
+
+            try {
+                window.localStorage.setItem(FOCUS_MODE_STORAGE_KEY, enabled ? "1" : "0");
+            } catch {
+                // Ignore storage failures in private or restricted browser modes.
+            }
+        }
+
+        function toggleFocusMode() {
+            setFocusMode(!document.body.classList.contains("focus-mode"));
+            requestAnimationFrame(revealPlannerPanel);
+        }
+
+        function revealPlannerPanel() {
+            if (window.innerWidth <= 768) return;
+            const targetTop = Math.max(0, plannerPanel.offsetTop - controlDock.offsetHeight - 18);
+            setupPanel.scrollTop = targetTop;
+        }
+
+        function readNumericInput(input, fallback) {
+            const value = parseFloat(input.value);
+            return Number.isFinite(value) ? value : fallback;
+        }
+
+        function getSecondStageDryMass() {
+            return SECOND_STAGE.dry + state.payloadMass;
+        }
+
+        function getInitialFuelMass() {
+            return FIRST_STAGE.fuel + SECOND_STAGE.fuel;
+        }
+
+        function formatCountdownTime(seconds) {
+            const total = Math.max(0, Math.ceil(seconds));
+            const mins = String(Math.floor(total / 60)).padStart(2, "0");
+            const secs = String(total % 60).padStart(2, "0");
+            return `T-${mins}:${secs}`;
+        }
+
+        function getLiftOffTwr() {
+            return (FIRST_STAGE.thrust / getVehicleMass(null)) / 9.81;
+        }
+
+        function getPlannedDeltaV() {
+            const stageTwoWet = SECOND_STAGE.dry + SECOND_STAGE.fuel + state.payloadMass;
+            const stageTwoDry = SECOND_STAGE.dry + state.payloadMass;
+            const stageOneWet = FIRST_STAGE.dry + FIRST_STAGE.fuel + stageTwoWet;
+            const stageOneDry = FIRST_STAGE.dry + stageTwoWet;
+
+            const stageOneDeltaV = stageOneWet > stageOneDry
+                ? FIRST_STAGE.isp * 9.81 * Math.log(stageOneWet / stageOneDry) / 1000
+                : 0;
+            const stageTwoDeltaV = stageTwoWet > stageTwoDry
+                ? SECOND_STAGE.isp * 9.81 * Math.log(stageTwoWet / stageTwoDry) / 1000
+                : 0;
+
+            return stageOneDeltaV + stageTwoDeltaV;
+        }
+
+        function getPlannedOrbitLabel() {
+            const plan = state.plan || DEFAULT_PLAN;
+            return `${plan.phases[3].triggerValue} km apo / ${plan.targetPeriapsis} km peri`;
+        }
+
+        function calculateMissionScore(metrics) {
+            const payloadBonus = Math.round(state.payloadMass * 200);
+            const fuelBonus = Math.round(metrics.fuelPercent * 12);
+            const periapsisMargin = Number.isFinite(metrics.orbit.periapsisAlt)
+                ? Math.max(0, metrics.orbit.periapsisAlt - state.plan.targetPeriapsis)
+                : 0;
+            const apoapsisError = Number.isFinite(metrics.orbit.apoapsisAlt)
+                ? Math.abs(metrics.orbit.apoapsisAlt - state.plan.phases[3].triggerValue)
+                : 0;
+            const orbitBonus = Math.round(
+                Math.max(0, 600 - apoapsisError * 3) +
+                Math.max(0, periapsisMargin * 12)
+            );
+            const timeBonus = Math.round(Math.max(0, 1200 - state.time) * 0.8);
+            const total = Math.max(0, 500 + payloadBonus + fuelBonus + orbitBonus + timeBonus);
+
+            return {
+                total,
+                payloadBonus,
+                fuelBonus,
+                orbitBonus,
+                timeBonus
+            };
+        }
+
+        function getAtmosphereLayer(altitude) {
+            return LAYER_BANDS.find(band => altitude < band.ceiling) || LAYER_BANDS[LAYER_BANDS.length - 1];
+        }
+
+        function sanitizePlan(rawPlan) {
+            const plan = clonePlan(rawPlan);
+            const targetPeriapsis = clamp(plan.targetPeriapsis, 110, 180);
+
+            const towerAltitude = clamp(plan.phases[0].triggerValue, 6, 18);
+            const maxQAltitude = clamp(plan.phases[1].triggerValue, towerAltitude + 4, 40);
+            const thinAirAltitude = clamp(plan.phases[2].triggerValue, maxQAltitude + 8, 95);
+            const apoapsisTarget = clamp(plan.phases[3].triggerValue, Math.max(targetPeriapsis + 25, 145), 320);
+
+            return {
+                targetPeriapsis,
+                phases: [
+                    {
+                        name: "Tower Clear",
+                        triggerType: "altitude",
+                        triggerValue: towerAltitude,
+                        pitch: clamp(plan.phases[0].pitch, 70, 90),
+                        throttle: clamp(plan.phases[0].throttle, 50, 100)
+                    },
+                    {
+                        name: "Max-Q Trim",
+                        triggerType: "altitude",
+                        triggerValue: maxQAltitude,
+                        pitch: clamp(plan.phases[1].pitch, 25, 88),
+                        throttle: clamp(plan.phases[1].throttle, 35, 100)
+                    },
+                    {
+                        name: "Thin-Air Turn",
+                        triggerType: "altitude",
+                        triggerValue: thinAirAltitude,
+                        pitch: clamp(plan.phases[2].pitch, 5, 70),
+                        throttle: clamp(plan.phases[2].throttle, 35, 100)
+                    },
+                    {
+                        name: "Vacuum Push",
+                        triggerType: "apoapsis",
+                        triggerValue: apoapsisTarget,
+                        pitch: clamp(plan.phases[3].pitch, 0, 35),
+                        throttle: clamp(plan.phases[3].throttle, 30, 100)
+                    }
+                ],
+                circularize: {
+                    window: clamp(plan.circularize.window, 8, 45),
+                    pitch: clamp(plan.circularize.pitch, 0, 15),
+                    throttle: clamp(plan.circularize.throttle, 20, 100)
+                }
+            };
+        }
+
+        function loadPlanIntoUI(plan) {
+            periapsisTargetSlider.value = String(plan.targetPeriapsis);
+            phaseInputs[0].altitude.value = String(plan.phases[0].triggerValue);
+            phaseInputs[0].pitch.value = String(plan.phases[0].pitch);
+            phaseInputs[0].throttle.value = String(plan.phases[0].throttle);
+            phaseInputs[1].altitude.value = String(plan.phases[1].triggerValue);
+            phaseInputs[1].pitch.value = String(plan.phases[1].pitch);
+            phaseInputs[1].throttle.value = String(plan.phases[1].throttle);
+            phaseInputs[2].altitude.value = String(plan.phases[2].triggerValue);
+            phaseInputs[2].pitch.value = String(plan.phases[2].pitch);
+            phaseInputs[2].throttle.value = String(plan.phases[2].throttle);
+            phaseInputs[3].apoapsis.value = String(plan.phases[3].triggerValue);
+            phaseInputs[3].pitch.value = String(plan.phases[3].pitch);
+            phaseInputs[3].throttle.value = String(plan.phases[3].throttle);
+            phaseInputs[4].window.value = String(plan.circularize.window);
+            phaseInputs[4].pitch.value = String(plan.circularize.pitch);
+            phaseInputs[4].throttle.value = String(plan.circularize.throttle);
+        }
+
+        function readPlanFromUI() {
+            const rawPlan = {
+                targetPeriapsis: readNumericInput(periapsisTargetSlider, DEFAULT_PLAN.targetPeriapsis),
+                phases: [
+                    {
+                        triggerValue: readNumericInput(phaseInputs[0].altitude, DEFAULT_PLAN.phases[0].triggerValue),
+                        pitch: readNumericInput(phaseInputs[0].pitch, DEFAULT_PLAN.phases[0].pitch),
+                        throttle: readNumericInput(phaseInputs[0].throttle, DEFAULT_PLAN.phases[0].throttle)
+                    },
+                    {
+                        triggerValue: readNumericInput(phaseInputs[1].altitude, DEFAULT_PLAN.phases[1].triggerValue),
+                        pitch: readNumericInput(phaseInputs[1].pitch, DEFAULT_PLAN.phases[1].pitch),
+                        throttle: readNumericInput(phaseInputs[1].throttle, DEFAULT_PLAN.phases[1].throttle)
+                    },
+                    {
+                        triggerValue: readNumericInput(phaseInputs[2].altitude, DEFAULT_PLAN.phases[2].triggerValue),
+                        pitch: readNumericInput(phaseInputs[2].pitch, DEFAULT_PLAN.phases[2].pitch),
+                        throttle: readNumericInput(phaseInputs[2].throttle, DEFAULT_PLAN.phases[2].throttle)
+                    },
+                    {
+                        triggerValue: readNumericInput(phaseInputs[3].apoapsis, DEFAULT_PLAN.phases[3].triggerValue),
+                        pitch: readNumericInput(phaseInputs[3].pitch, DEFAULT_PLAN.phases[3].pitch),
+                        throttle: readNumericInput(phaseInputs[3].throttle, DEFAULT_PLAN.phases[3].throttle)
+                    }
+                ],
+                circularize: {
+                    window: readNumericInput(phaseInputs[4].window, DEFAULT_PLAN.circularize.window),
+                    pitch: readNumericInput(phaseInputs[4].pitch, DEFAULT_PLAN.circularize.pitch),
+                    throttle: readNumericInput(phaseInputs[4].throttle, DEFAULT_PLAN.circularize.throttle)
+                }
+            };
+
+            return sanitizePlan(rawPlan);
+        }
+
+        function createRocket() {
+            return {
+                x: 0,
+                y: EARTH.radius + 0.05,
+                vx: 0,
+                vy: 0,
+                pitch: state.plan ? state.plan.phases[0].pitch : 89,
+                throttle: 0,
+                stage: 1,
+                fuel1: FIRST_STAGE.fuel,
+                fuel2: SECOND_STAGE.fuel,
+                trail: [{ x: 0, y: EARTH.radius + 0.05 }],
+                trailTimer: 0,
+                heading: Math.PI / 2,
+                maxQ: 0,
+                aeroLoad: 0
+            };
+        }
+
+        function getStageConfig(stage = state.rocket ? state.rocket.stage : 1) {
+            if (stage === 1) return FIRST_STAGE;
+            return {
+                dry: getSecondStageDryMass(),
+                fuel: SECOND_STAGE.fuel,
+                thrust: SECOND_STAGE.thrust,
+                isp: SECOND_STAGE.isp,
+                dragArea: SECOND_STAGE.dragArea
+            };
+        }
+
+        function getVehicleMass(rocket = state.rocket) {
+            if (!rocket) return FIRST_STAGE.dry + getSecondStageDryMass() + getInitialFuelMass();
+            return (rocket.stage === 1 ? FIRST_STAGE.dry + rocket.fuel1 : 0) + getSecondStageDryMass() + rocket.fuel2;
+        }
+
         function formatMissionTime(seconds) {
             const total = Math.max(0, Math.floor(seconds));
             const mins = String(Math.floor(total / 60)).padStart(2, "0");
@@ -681,12 +1930,115 @@
 
         function formatAltitude(value) {
             if (!Number.isFinite(value)) return "-";
+            return `${value >= 100 ? Math.round(value) : value.toFixed(1)} km`;
+        }
+
+        function formatSpeed(value) {
+            if (!Number.isFinite(value)) return "-";
+            return `${value.toFixed(2)} km/s`;
+        }
+
+        function formatPressure(value) {
+            if (!Number.isFinite(value)) return "-";
+            return `${value.toFixed(1)} kPa`;
+        }
+
+        function formatAngle(value) {
+            if (!Number.isFinite(value)) return "-";
+            return `${value >= 0 ? "" : "-"}${Math.abs(value).toFixed(0)}°`;
+        }
+
+        function formatOrbitAltitude(value) {
+            if (!Number.isFinite(value)) return "Escape";
             return `${Math.round(value)} km`;
         }
 
-        function formatOrbitValue(value, referenceRadius) {
-            if (!Number.isFinite(value)) return "Escape";
-            return `${Math.round(value - referenceRadius)} km`;
+        function isPadState(metrics) {
+            return (state.mode === "ready" || state.mode === "countdown") &&
+                metrics.altitude < 1 &&
+                metrics.orbit.speed < 0.05;
+        }
+
+        function getDirectorState(metrics) {
+            if (state.mode === "ready") return "Awaiting Launch";
+            if (state.mode === "countdown") return state.paused ? "Launch Hold" : "Terminal Count";
+            if (state.mode === "success") return "Orbit Confirmed";
+            if (state.mode === "fail") return "Abort Called";
+            if (state.paused) return "Guidance Hold";
+            if (state.time - state.stageSepTime < 6) return "Stage Transition";
+            if (state.guidanceMode === "coast") return "Coast Arc";
+            if (state.guidanceMode === "circularize") return "Circularization";
+            if (state.guidanceMode === "complete") return "Orbit Trim";
+            return metrics.altitude < EARTH.atmosphere ? "Atmospheric Guidance" : "Vacuum Guidance";
+        }
+
+        function getNextEvent(metrics) {
+            const plan = state.plan || DEFAULT_PLAN;
+
+            if (state.mode === "ready") return "Arm the stack";
+            if (state.mode === "countdown") {
+                return state.paused
+                    ? "Resume terminal count"
+                    : `Liftoff in ${formatCountdownTime(state.launchCountdown)}`;
+            }
+            if (state.mode === "success") return "Stable orbit verified";
+            if (state.mode === "fail") return "Reset and redesign";
+
+            if (state.guidanceMode === "phase") {
+                if (state.activePhaseIndex === 0) return `Begin Max-Q trim at ${plan.phases[0].triggerValue} km`;
+                if (state.activePhaseIndex === 1) return `Enter thin-air turn at ${plan.phases[1].triggerValue} km`;
+                if (state.activePhaseIndex === 2) return `Transition to vacuum push at ${plan.phases[2].triggerValue} km`;
+                return `Engine cutoff near ${plan.phases[3].triggerValue} km apoapsis`;
+            }
+
+            if (state.guidanceMode === "coast") {
+                return `Circularize within ${plan.circularize.window} km of apoapsis`;
+            }
+            if (state.guidanceMode === "circularize") {
+                return `Raise periapsis above ${plan.targetPeriapsis} km`;
+            }
+            if (state.guidanceMode === "complete") return "Hold attitude and verify orbit";
+            return metrics.altitude < EARTH.atmosphere ? "Clear the atmosphere" : "Build a closed orbit";
+        }
+
+        function getStageStackState(metrics) {
+            if (state.mode === "ready") {
+                return { stage1: "Ready", stage2: "Standby" };
+            }
+            if (state.mode === "countdown") {
+                return { stage1: state.paused ? "Hold" : "Armed", stage2: "Standby" };
+            }
+            if (state.mode === "fail") {
+                return {
+                    stage1: state.rocket.stage === 1 ? "Lost" : "Dropped",
+                    stage2: state.rocket.stage === 2 ? "Abort" : "Standby"
+                };
+            }
+            if (state.mode === "success") {
+                return { stage1: "Dropped", stage2: "Orbital" };
+            }
+            if (state.rocket.stage === 1) {
+                return { stage1: metrics.engineActive ? "Burning" : "Coast", stage2: "Standby" };
+            }
+            if (state.guidanceMode === "complete") {
+                return { stage1: "Dropped", stage2: "Orbital" };
+            }
+            return { stage1: "Dropped", stage2: metrics.engineActive ? "Burning" : "Coast" };
+        }
+
+        function getStageTelemetryLabel(metrics) {
+            if (state.mode === "ready") return `Stage 1 ready / ${metrics.layer.short}`;
+            if (state.mode === "countdown") return `Stage 1 armed / ${metrics.layer.short}`;
+            if (state.mode === "success") return `Orbit secured / ${metrics.layer.short}`;
+            if (state.mode === "fail") return `Abort / ${metrics.layer.short}`;
+            if (state.rocket.stage === 1) return `Stage 1 / ${metrics.layer.short}`;
+            return metrics.engineActive
+                ? `Stage 2 burn / ${metrics.layer.short}`
+                : `Stage 2 coast / ${metrics.layer.short}`;
+        }
+
+        function getDownrangeDistance(x, y) {
+            return Math.atan2(x, y) * EARTH.radius;
         }
 
         function worldToScreen(x, y) {
@@ -698,7 +2050,7 @@
 
         function addStars() {
             stars.length = 0;
-            for (let i = 0; i < 280; i++) {
+            for (let i = 0; i < 260; i++) {
                 stars.push({
                     x: Math.random() * width,
                     y: Math.random() * height,
@@ -716,351 +2068,455 @@
             addStars();
         }
 
-        function getInjectionPoint() {
-            const radius = EARTH.radius + INJECTION_ALTITUDE;
-            return {
-                x: Math.cos(INJECTION_THETA) * radius,
-                y: Math.sin(INJECTION_THETA) * radius
-            };
+        function getDensity(altitude) {
+            if (altitude >= EARTH.atmosphere) return 0;
+            return 1.225 * Math.exp(-Math.max(0, altitude) / EARTH.scaleHeight);
         }
 
-        function getInjectionVelocity() {
-            const point = getInjectionPoint();
-            const radialLength = Math.hypot(point.x, point.y);
-            const radial = { x: point.x / radialLength, y: point.y / radialLength };
-            const tangent = { x: radial.y, y: -radial.x };
-            const angle = state.angle * Math.PI / 180;
-            return {
-                vx: tangent.x * Math.cos(angle) * state.energy + radial.x * Math.sin(angle) * state.energy,
-                vy: tangent.y * Math.cos(angle) * state.energy + radial.y * Math.sin(angle) * state.energy
-            };
-        }
-
-        function getAscentState(progress) {
-            const eased = smoothstep(progress);
-            const radius = lerp(EARTH.radius + 12, EARTH.radius + INJECTION_ALTITUDE, Math.pow(eased, 0.78));
-            const theta = lerp(Math.PI / 2, INJECTION_THETA, eased);
-            return {
-                x: Math.cos(theta) * radius,
-                y: Math.sin(theta) * radius
-            };
-        }
-
-        function createRocket() {
-            return {
-                x: 0,
-                y: EARTH.radius + 12,
-                vx: 0,
-                vy: 0,
-                heading: Math.PI / 2,
-                ascentTime: 0,
-                trail: [],
-                trailTimer: 0
-            };
-        }
-
-        function resetMission() {
-            state.mode = "ready";
-            state.time = 0;
-            state.stability = 0;
-            state.captureAssistUsed = false;
-            state.lastTelemetry = {};
-            state.rocket = createRocket();
-            resultBanner.classList.remove("visible", "success", "fail");
-            updateLessons();
-            updateTelemetry();
-        }
-
-        function updateControlLabels() {
-            energyValue.textContent = `${state.energy.toFixed(2)} km/s`;
-            angleValue.textContent = `${Math.round(state.angle)}°`;
-            speedValue.textContent = `${state.speed.toFixed(1)}x`;
-
-            if (state.mission === "earth") {
-                energyHint.textContent = "Try roughly 7.8 to 8.4 km/s. Stable Earth orbit needs enough sideways injection speed.";
-                angleHint.textContent = "Start around 0° to 3°. Higher burnout angles waste energy climbing instead of orbiting.";
-            } else {
-                energyHint.textContent = "Try roughly 10.9 to 11.0 km/s. The Moon mission needs a much stronger transfer injection.";
-                angleHint.textContent = "Moon transfer works best with a very shallow burnout. Start around 0° to 3°.";
-            }
-        }
-
-        function setMission(mission) {
-            state.mission = mission;
-            missionButtons.forEach(button => {
-                button.classList.toggle("active", button.dataset.mission === mission);
-            });
-
-            if (mission === "earth") {
-                state.energy = 8.0;
-                state.angle = 2;
-            } else {
-                state.energy = 10.95;
-                state.angle = 0;
-            }
-
-            energySlider.value = state.energy.toFixed(2);
-            angleSlider.value = String(state.angle);
-            updateControlLabels();
-            resetMission();
-        }
-
-        function gravityFromBody(body, x, y) {
-            const dx = body.x - x;
-            const dy = body.y - y;
-            const distSq = dx * dx + dy * dy;
-            const dist = Math.sqrt(distSq);
-            const force = body.mu / distSq;
-            return {
-                ax: (dx / dist) * force,
-                ay: (dy / dist) * force,
-                dist
-            };
-        }
-
-        function computeOrbit(body) {
+        function computeOrbit() {
             const rocket = state.rocket;
-            const rx = rocket.x - body.x;
-            const ry = rocket.y - body.y;
+            const rx = rocket.x - EARTH.x;
+            const ry = rocket.y - EARTH.y;
             const r = Math.hypot(rx, ry);
-            const v2 = rocket.vx * rocket.vx + rocket.vy * rocket.vy;
-            const energy = v2 / 2 - body.mu / r;
-            const h = rx * rocket.vy - ry * rocket.vx;
-            const eccentricityTerm = 1 + (2 * energy * h * h) / (body.mu * body.mu);
-            const e = eccentricityTerm > 0 ? Math.sqrt(eccentricityTerm) : 0;
-            const a = energy < 0 ? -body.mu / (2 * energy) : Infinity;
-            const periapsis = Number.isFinite(a) ? a * (1 - e) : Infinity;
-            const apoapsis = Number.isFinite(a) ? a * (1 + e) : Infinity;
+            const radial = { x: rx / r, y: ry / r };
+            const tangent = { x: radial.y, y: -radial.x };
+            const speedSq = rocket.vx * rocket.vx + rocket.vy * rocket.vy;
+            const speed = Math.sqrt(speedSq);
+            const radialVelocity = (rx * rocket.vx + ry * rocket.vy) / r;
+            const horizontalVelocity = tangent.x * rocket.vx + tangent.y * rocket.vy;
+            const energy = speedSq / 2 - EARTH.mu / r;
+            const angularMomentum = rx * rocket.vy - ry * rocket.vx;
+            const eVecX = ((speedSq - EARTH.mu / r) * rx - (rx * rocket.vx + ry * rocket.vy) * rocket.vx) / EARTH.mu;
+            const eVecY = ((speedSq - EARTH.mu / r) * ry - (rx * rocket.vx + ry * rocket.vy) * rocket.vy) / EARTH.mu;
+            const eccentricity = Math.hypot(eVecX, eVecY);
+            const semiMajorAxis = energy < 0 ? -EARTH.mu / (2 * energy) : Infinity;
+            const periapsis = Number.isFinite(semiMajorAxis) ? semiMajorAxis * (1 - eccentricity) : Infinity;
+            const apoapsis = Number.isFinite(semiMajorAxis) ? semiMajorAxis * (1 + eccentricity) : Infinity;
+            const flightPathAngle = Math.atan2(radialVelocity, horizontalVelocity) * 180 / Math.PI;
+            const circularSpeed = Math.sqrt(EARTH.mu / r);
+            const periapsisAngle = eccentricity > 1e-5 ? Math.atan2(eVecY, eVecX) : Math.atan2(ry, rx);
+            const semiLatusRectum = (angularMomentum * angularMomentum) / EARTH.mu;
+
             return {
                 r,
-                speed: Math.sqrt(v2),
+                altitude: r - EARTH.radius,
+                speed,
+                speedSq,
+                radialVelocity,
+                horizontalVelocity,
                 energy,
-                eccentricity: e,
+                angularMomentum,
+                eccentricity,
+                semiMajorAxis,
                 periapsis,
-                apoapsis
+                apoapsis,
+                periapsisAlt: periapsis - EARTH.radius,
+                apoapsisAlt: apoapsis - EARTH.radius,
+                radial,
+                tangent,
+                flightPathAngle,
+                circularSpeed,
+                periapsisAngle,
+                semiLatusRectum
             };
+        }
+
+        function computeTelemetry() {
+            const rocket = state.rocket;
+            const orbit = computeOrbit();
+            const altitude = orbit.altitude;
+            const density = getDensity(altitude);
+            const speedMs = orbit.speed * 1000;
+            const dynamicPressure = 0.5 * density * speedMs * speedMs / 1000;
+            const aoa = orbit.speed > 0.12 ? normalizeDegrees(rocket.pitch - orbit.flightPathAngle) : 0;
+            const aeroLoad = dynamicPressure * (1 + Math.pow(Math.abs(aoa) / 18, 1.18));
+            const activeStage = getStageConfig(rocket.stage);
+            const engineActive = (rocket.stage === 1 ? rocket.fuel1 : rocket.fuel2) > 0 && rocket.throttle > 0;
+            const thrust = engineActive ? activeStage.thrust * rocket.throttle : 0;
+            const twr = thrust > 0 ? (thrust / getVehicleMass(rocket)) / 9.81 : 0;
+            const fuelTotal = rocket.fuel1 + rocket.fuel2;
+            const fuelPercent = 100 * fuelTotal / getInitialFuelMass();
+            const downrange = getDownrangeDistance(rocket.x, rocket.y);
+            const apoapsisGap = Number.isFinite(orbit.apoapsisAlt) ? orbit.apoapsisAlt - altitude : Infinity;
+
+            return {
+                orbit,
+                altitude,
+                density,
+                dynamicPressure,
+                aoa,
+                aeroLoad,
+                twr,
+                fuelTotal,
+                fuelPercent,
+                engineActive,
+                thrust,
+                downrange,
+                apoapsisGap,
+                layer: getAtmosphereLayer(altitude)
+            };
+        }
+
+        function getGuidanceLabel(metrics = state.lastTelemetry) {
+            if (state.mode === "ready") return "Tower Clear";
+            if (state.mode === "countdown") return "Terminal Count";
+            if (state.mode === "success") return "Orbit Locked";
+            if (state.mode === "fail") return "Mission Failed";
+            if (state.guidanceMode === "phase") return state.plan.phases[state.activePhaseIndex]?.name || "Guided ascent";
+            if (state.guidanceMode === "coast") return "Coast to Apoapsis";
+            if (state.guidanceMode === "circularize") return "Circularize";
+            if (state.guidanceMode === "complete") return "Orbit Trim";
+            return metrics ? metrics.layer.name : "Guided ascent";
+        }
+
+        function getStatusLabel(metrics) {
+            if (state.mode === "ready") return "Flight plan ready";
+            if (state.mode === "countdown") return state.paused ? "Launch hold" : "Terminal count";
+            if (state.mode === "success") return "Orbit achieved";
+            if (state.mode === "fail") return "Mission failed";
+            if (state.paused) return "Paused";
+            if (state.time - state.stageSepTime < 6) return "Stage separation";
+            if (state.guidanceMode === "coast") return "Coasting to apoapsis";
+            if (state.guidanceMode === "circularize") return "Circularization burn";
+            if (metrics.dynamicPressure > 22 && metrics.altitude < 32) return "Max-Q window";
+            return getGuidanceLabel(metrics);
+        }
+
+        function updatePhaseCardStates() {
+            let activeIndex = -1;
+            if (state.mode !== "ready" && state.mode !== "success" && state.mode !== "fail") {
+                if (state.mode === "countdown") activeIndex = 0;
+                if (state.guidanceMode === "phase") activeIndex = state.activePhaseIndex;
+                if (state.guidanceMode === "circularize") activeIndex = 4;
+            }
+
+            phaseCards.forEach((card, index) => {
+                card.classList.toggle("active", index === activeIndex);
+            });
+        }
+
+        function setSetupLocked(locked) {
+            editableInputs.forEach(input => {
+                input.disabled = locked;
+            });
+            presetBtn.disabled = locked;
         }
 
         function setResult(type, title, copy) {
             if (state.mode === "success" || state.mode === "fail") return;
             state.mode = type;
+            state.paused = false;
+            state.launchCountdown = 0;
+            state.autoCommand.throttle = 0;
             resultTitle.textContent = title;
             resultCopy.textContent = copy;
-            resultBanner.classList.add("visible", type === "success" ? "success" : "fail");
+            if (type === "success") {
+                const metrics = state.lastTelemetry || computeTelemetry();
+                const score = calculateMissionScore(metrics);
+                resultScoreBox.hidden = false;
+                resultScoreValue.textContent = score.total.toLocaleString("en-US");
+                resultScorePayloadValue.textContent = `+${score.payloadBonus.toLocaleString("en-US")}`;
+                resultScoreFuelValue.textContent = `+${score.fuelBonus.toLocaleString("en-US")}`;
+                resultScoreOrbitValue.textContent = `+${score.orbitBonus.toLocaleString("en-US")}`;
+                resultScoreTimeValue.textContent = `+${score.timeBonus.toLocaleString("en-US")}`;
+                resultScoreNote.textContent = "Heavier payloads score more, while fuel reserve, orbit precision and a quicker finish add the rest.";
+            } else {
+                resultScoreBox.hidden = true;
+            }
+            resultBanner.classList.add("visible", type);
             resultBanner.classList.remove(type === "success" ? "fail" : "success");
+            pauseBtn.textContent = "Pause";
+            setSetupLocked(false);
+            updatePhaseCardStates();
+        }
+
+        function hideResult() {
+            resultBanner.classList.remove("visible", "success", "fail");
+            resultScoreBox.hidden = true;
+        }
+
+        function initializeMissionState() {
+            state.time = 0;
+            state.orbitLock = 0;
+            state.stageSepTime = -Infinity;
+            state.guidanceMode = "phase";
+            state.activePhaseIndex = 0;
+            state.activePhaseName = state.plan.phases[0].name;
+            state.autoCommand.pitch = state.plan.phases[0].pitch;
+            state.autoCommand.throttle = 0;
+            state.orbitViewUnlocked = false;
+            state.launchCountdown = 0;
+            state.rocket = createRocket();
+            state.rocket.pitch = state.plan.phases[0].pitch;
+            state.lastTelemetry = computeTelemetry();
+            camera.x = 0;
+            camera.y = 0;
+            camera.scale = 0.03;
+        }
+
+        function beginPoweredFlight() {
+            state.mode = "flight";
+            state.paused = false;
+            state.launchCountdown = 0;
+            state.rocket.throttle = state.plan.phases[0].throttle / 100;
+            state.autoCommand.throttle = state.rocket.throttle;
+            state.lastTelemetry = computeTelemetry();
+            pauseBtn.textContent = "Pause";
+            updateLessons();
+            updatePhaseCardStates();
+            updateTelemetry();
+        }
+
+        function syncSetupState() {
+            state.payloadMass = parseFloat(payloadSlider.value);
+            state.speedSetting = parseFloat(speedSlider.value);
+            state.speed = state.speedSetting * SIM_SPEED_MULTIPLIER;
+            state.plan = readPlanFromUI();
+            loadPlanIntoUI(state.plan);
+        }
+
+        function resetMission() {
+            syncSetupState();
+            state.mode = "ready";
+            state.paused = false;
+            initializeMissionState();
+            hideResult();
+            pauseBtn.textContent = "Pause";
+            setSetupLocked(false);
+            updateControlLabels();
+            updatePhaseCardStates();
             updateLessons();
             updateTelemetry();
         }
 
-        function updateLessons() {
-            if (state.mode === "ready") {
-                lessonText.textContent = state.mission === "earth"
-                    ? "The ascent gets you above the atmosphere, but orbit is decided at injection. Sideways speed is what keeps the spacecraft falling around Earth instead of into it."
-                    : "Moon missions begin as an Earth orbit problem. First you need a strong transfer injection, then you must arrive near the Moon slow enough for capture.";
-                return;
-            }
-
-            if (state.mode === "ascent") {
-                lessonText.textContent = "Launch is underway. The camera pulls back during ascent, but the playable physics challenge begins at orbital injection altitude.";
-                return;
-            }
-
-            if (state.mode === "success") {
-                lessonText.textContent = state.mission === "earth"
-                    ? "You balanced altitude and sideways speed well enough to form a closed Earth orbit. That is the core idea behind orbital insertion."
-                    : "You reached the Moon with a controlled enough arrival for capture. Transfer energy and arrival geometry worked together.";
-                return;
-            }
-
-            if (state.mode === "fail") {
-                lessonText.textContent = state.mission === "earth"
-                    ? "Missed orbit? The usual fix is more sideways speed or a shallower burnout angle. Height alone does not keep you in space."
-                    : "Moon missions fail when transfer energy and arrival speed do not match the capture window. Adjust the injection and try again.";
-                return;
-            }
-
-            const earthOrbit = state.lastTelemetry.earthOrbit || computeOrbit(EARTH);
-            const moonOrbit = state.lastTelemetry.moonOrbit || computeOrbit(MOON);
-
-            if (state.captureAssistUsed) {
-                lessonText.textContent = "Lunar insertion burn has executed because you arrived inside the capture window. The Moon mission now becomes a local orbit problem instead of a flyby.";
-            } else if (state.mission === "earth" && earthOrbit.energy < 0 && earthOrbit.periapsis - EARTH.radius > 120) {
-                lessonText.textContent = "This is a closed Earth orbit candidate. Stable orbit needs both periapsis and apoapsis above the atmosphere.";
-            } else if (state.mission === "moon" && moonOrbit.r - MOON.radius < 40000) {
-                lessonText.textContent = "You are approaching the Moon. Arrival speed matters: too fast becomes a flyby, controlled speed becomes a capture opportunity.";
-            } else {
-                lessonText.textContent = "Watch the path: vertical energy raises altitude, but orbital success is still mostly about horizontal velocity at injection.";
-            }
+        function launchMission() {
+            if (state.mode === "flight" || state.mode === "countdown") return;
+            syncSetupState();
+            state.mode = "countdown";
+            state.paused = false;
+            initializeMissionState();
+            state.launchCountdown = 4;
+            state.autoCommand.throttle = state.plan.phases[0].throttle / 100;
+            state.lastTelemetry = computeTelemetry();
+            hideResult();
+            pauseBtn.textContent = "Pause";
+            setSetupLocked(true);
+            updateControlLabels();
+            updatePhaseCardStates();
+            updateLessons();
+            updateTelemetry();
         }
 
-        function maybeApplyMoonCapture(moonOrbit) {
-            if (state.mission !== "moon" || state.captureAssistUsed || state.mode !== "coast") return false;
-
-            const closeWindow =
-                (moonOrbit.r - MOON.radius < 12000 && moonOrbit.speed < 3.2) ||
-                (moonOrbit.r - MOON.radius < 40000 && moonOrbit.speed < 1.7);
-
-            if (!closeWindow) return false;
-
-            const rocket = state.rocket;
-            const rx = rocket.x - MOON.x;
-            const ry = rocket.y - MOON.y;
-            const radius = Math.hypot(rx, ry);
-            const radial = { x: rx / radius, y: ry / radius };
-            let tangent = { x: -radial.y, y: radial.x };
-            const angularMomentum = rx * rocket.vy - ry * rocket.vx;
-            if (angularMomentum < 0) {
-                tangent = { x: radial.y, y: -radial.x };
-            }
-
-            const targetAltitude = clamp(moonOrbit.r - MOON.radius, 4000, MOON_TARGET_ALT);
-            const targetRadius = MOON.radius + targetAltitude;
-            const circularSpeed = Math.sqrt(MOON.mu / targetRadius);
-
-            rocket.x = MOON.x + radial.x * targetRadius;
-            rocket.y = MOON.y + radial.y * targetRadius;
-            rocket.vx = tangent.x * circularSpeed;
-            rocket.vy = tangent.y * circularSpeed;
-            rocket.heading = Math.atan2(rocket.vy, rocket.vx);
-            rocket.trail = [{ x: rocket.x, y: rocket.y }];
-            rocket.trailTimer = 0;
-            state.captureAssistUsed = true;
-            state.stability = 0;
-            return true;
+        function loadFriendlyPlan() {
+            payloadSlider.value = "3";
+            speedSlider.value = "1";
+            loadPlanIntoUI(clonePlan(DEFAULT_PLAN));
+            resetMission();
         }
 
-        function checkMissionState(dt) {
-            let earthOrbit = computeOrbit(EARTH);
-            let moonOrbit = computeOrbit(MOON);
+        function togglePause() {
+            if (state.mode !== "flight" && state.mode !== "countdown") return;
+            state.paused = !state.paused;
+            pauseBtn.textContent = state.paused ? "Resume" : "Pause";
+            updateLessons();
+            updateTelemetry();
+        }
 
-            if (state.mode === "coast" && state.mission === "moon" && maybeApplyMoonCapture(moonOrbit)) {
-                earthOrbit = computeOrbit(EARTH);
-                moonOrbit = computeOrbit(MOON);
-            }
+        function updateControlLabels() {
+            payloadValue.textContent = `${state.payloadMass.toFixed(1)} t`;
+            speedValue.textContent = `${state.speedSetting.toFixed(1)}x`;
+            periapsisTargetValue.textContent = `${state.plan.targetPeriapsis} km`;
+            liftOffTwrValue.textContent = getLiftOffTwr().toFixed(2);
+            plannedDeltaVValue.textContent = `${getPlannedDeltaV().toFixed(2)} km/s`;
+            plannedOrbitValue.textContent = getPlannedOrbitLabel();
 
-            const earthAlt = earthOrbit.r - EARTH.radius;
-            const moonAlt = moonOrbit.r - MOON.radius;
+            payloadHint.textContent = state.payloadMass <= 5.5
+                ? "Light payload leaves more performance margin, so the programmed ascent can be a little less perfect."
+                : state.payloadMass <= 8
+                    ? "Medium payload is forgiving enough to learn with, but the flight plan still needs a clean gravity turn."
+                    : "Heavy payload makes the plan far less tolerant. Max-Q control and a clean apoapsis build matter much more.";
 
-            state.lastTelemetry = { earthOrbit, moonOrbit, earthAlt, moonAlt };
+            speedHint.textContent = state.speedSetting <= 1.5
+                ? "Slow speed keeps the atmosphere phase readable. Increase warp later when the vehicle is coasting to apoapsis."
+                : state.speedSetting <= 6
+                    ? "Displayed warp stays readable, but the simulator now runs that value with a 10x backend multiplier outside the thick lower atmosphere."
+                    : "10.0x on the UI now drives the simulation at up to 100x in space. The dense lower atmosphere still limits speed so launches stay controllable.";
 
-            if (earthOrbit.r <= EARTH.radius) {
-                setResult("fail", "Earth Impact", "The spacecraft returned to Earth. Try a little more injection speed or a shallower burnout angle.");
-                return;
-            }
-
-            if (moonOrbit.r <= MOON.radius) {
-                setResult("fail", "Moon Impact", "The Moon intercept was too direct. Arrive slower or with a softer angle so the Moon can capture the spacecraft.");
-                return;
-            }
-
-            if (earthOrbit.r > 1000000) {
-                setResult("fail", "Escape Trajectory", "The spacecraft escaped the Earth-Moon system. Lower the injection energy or reduce the burnout angle.");
-                return;
-            }
-
-            if (state.mission === "earth") {
-                const stableEarthOrbit =
-                    state.mode === "coast" &&
-                    earthOrbit.energy < 0 &&
-                    earthOrbit.periapsis - EARTH.radius > 120 &&
-                    earthOrbit.apoapsis - EARTH.radius > 140 &&
-                    earthOrbit.apoapsis - EARTH.radius < 30000 &&
-                    earthOrbit.eccentricity < 0.35;
-
-                state.stability = stableEarthOrbit ? state.stability + dt : 0;
-
-                if (state.stability > 80) {
-                    setResult("success", "Earth Orbit Achieved", "You injected enough sideways speed to keep periapsis above the atmosphere and close the orbit around Earth.");
-                }
-            } else {
-                const stableMoonOrbit =
-                    state.captureAssistUsed &&
-                    state.mode === "coast" &&
-                    moonOrbit.energy < 0 &&
-                    moonAlt < MOON_TARGET_ALT + 10000 &&
-                    moonOrbit.periapsis - MOON.radius > 400 &&
-                    moonOrbit.apoapsis - MOON.radius < MOON_TARGET_ALT + 9000 &&
-                    moonOrbit.eccentricity < 0.35;
-
-                state.stability = stableMoonOrbit ? state.stability + dt : 0;
-
-                if (state.stability > 160) {
-                    setResult("success", "Moon Orbit Achieved", "You reached the Moon inside the capture window and settled into lunar orbit. That is the transfer-and-capture principle in action.");
-                }
-            }
-
-            if (state.time > 700000 && (state.mode === "coast" || state.mode === "ascent")) {
-                setResult("fail", "Mission Timeout", "The mission ran too long without settling into a target orbit. Reset and try a cleaner injection.");
-            }
+            periapsisTargetHint.textContent = state.plan.targetPeriapsis <= 125
+                ? "A lower safety margin is easier to reach, but it leaves less room for guidance mistakes and drag losses."
+                : state.plan.targetPeriapsis <= 145
+                    ? "This is a balanced orbit goal for learning. The rocket still has to circularize cleanly near apoapsis."
+                    : "A high periapsis is safer, but it demands a stronger ascent and more propellant saved for the final burn.";
         }
 
         function pushTrailPoint() {
-            const rocket = state.rocket;
-            rocket.trail.push({ x: rocket.x, y: rocket.y });
-            if (rocket.trail.length > MAX_TRAIL_POINTS) {
-                rocket.trail.shift();
+            const trail = state.rocket.trail;
+            trail.push({ x: state.rocket.x, y: state.rocket.y });
+            if (trail.length > MAX_TRAIL_POINTS) {
+                trail.shift();
             }
         }
 
-        function beginInjection() {
+        function steerRocketToward(targetPitch, targetThrottle, dt, metrics) {
             const rocket = state.rocket;
-            const point = getInjectionPoint();
-            const velocity = getInjectionVelocity();
-            rocket.x = point.x;
-            rocket.y = point.y;
-            rocket.vx = velocity.vx;
-            rocket.vy = velocity.vy;
-            rocket.heading = Math.atan2(rocket.vy, rocket.vx);
-            rocket.trailTimer = 0;
-            pushTrailPoint();
-            state.mode = "coast";
+            const pitchRate = metrics.altitude < 20 ? 4.8 : metrics.altitude < 75 ? 7.2 : 12;
+            const throttleRate = metrics.altitude < 25 ? 0.9 : 1.25;
+
+            rocket.pitch += clamp(targetPitch - rocket.pitch, -pitchRate * dt, pitchRate * dt);
+            rocket.throttle += clamp(targetThrottle - rocket.throttle, -throttleRate * dt, throttleRate * dt);
+            rocket.pitch = clamp(rocket.pitch, 0, 90);
+            rocket.throttle = clamp(rocket.throttle, 0, 1);
         }
 
-        function stepSimulation(dt) {
-            const rocket = state.rocket;
-            if (state.mode !== "ascent" && state.mode !== "coast") return;
+        function updateGuidance(metrics, dt) {
+            if (state.mode !== "flight") return;
 
-            if (state.mode === "ascent") {
-                const previous = { x: rocket.x, y: rocket.y };
-                rocket.ascentTime += dt;
-                const progress = clamp(rocket.ascentTime / ASCENT_DURATION, 0, 1);
-                const ascent = getAscentState(progress);
-                rocket.x = ascent.x;
-                rocket.y = ascent.y;
-                rocket.vx = (rocket.x - previous.x) / dt;
-                rocket.vy = (rocket.y - previous.y) / dt;
-                rocket.heading = Math.atan2(rocket.vy, rocket.vx);
-                rocket.trailTimer += dt;
-                if (rocket.trailTimer >= TRAIL_INTERVAL) {
-                    rocket.trailTimer = 0;
-                    pushTrailPoint();
+            while (state.guidanceMode === "phase") {
+                const phase = state.plan.phases[state.activePhaseIndex];
+                if (!phase) {
+                    state.guidanceMode = "coast";
+                    break;
                 }
-                state.time += dt;
-                if (progress >= 1) beginInjection();
-                checkMissionState(dt);
-                updateLessons();
+
+                const done = phase.triggerType === "altitude"
+                    ? metrics.altitude >= phase.triggerValue
+                    : metrics.orbit.apoapsisAlt >= phase.triggerValue;
+
+                if (!done) break;
+                state.activePhaseIndex += 1;
+                if (state.activePhaseIndex >= state.plan.phases.length) {
+                    state.guidanceMode = "coast";
+                    break;
+                }
+            }
+
+            if (state.guidanceMode === "phase") {
+                const phase = state.plan.phases[state.activePhaseIndex];
+                state.activePhaseName = phase.name;
+                state.autoCommand.pitch = phase.pitch;
+                state.autoCommand.throttle = phase.throttle / 100;
+            } else if (state.guidanceMode === "coast") {
+                state.activePhaseName = "Coast to Apoapsis";
+                state.autoCommand.pitch = clamp(metrics.orbit.flightPathAngle, 0, 12);
+                state.autoCommand.throttle = 0;
+                if (metrics.altitude > EARTH.atmosphere && metrics.apoapsisGap <= state.plan.circularize.window) {
+                    state.guidanceMode = "circularize";
+                }
+            } else if (state.guidanceMode === "circularize") {
+                state.activePhaseName = "Circularize";
+                state.autoCommand.pitch = state.plan.circularize.pitch;
+                state.autoCommand.throttle = state.plan.circularize.throttle / 100;
+                if (metrics.orbit.periapsisAlt >= state.plan.targetPeriapsis) {
+                    state.guidanceMode = "complete";
+                }
+            } else {
+                state.activePhaseName = "Orbit Trim";
+                state.autoCommand.pitch = 0;
+                state.autoCommand.throttle = 0;
+            }
+
+            steerRocketToward(state.autoCommand.pitch, state.autoCommand.throttle, dt, metrics);
+        }
+
+        function checkMissionState(metrics, dt) {
+            if (metrics.altitude <= 0 && state.time > 4) {
+                setResult("fail", "Surface Impact", "The rocket fell back to Earth. The flight plan did not build enough sideways orbital speed before propellant or altitude ran out.");
                 return;
             }
 
-            const earthGravity = gravityFromBody(EARTH, rocket.x, rocket.y);
-            const moonGravity = gravityFromBody(MOON, rocket.x, rocket.y);
+            if (metrics.aeroLoad > MAX_AERO_LOAD && metrics.altitude < 50) {
+                setResult("fail", "Aerodynamic Breakup", "The programmed ascent pushed too hard through thick air. Ease the early pitch schedule or reduce throttle during the max-Q phase.");
+                return;
+            }
 
-            let ax = earthGravity.ax + moonGravity.ax;
-            let ay = earthGravity.ay + moonGravity.ay;
+            if (state.time > MAX_FLIGHT_TIME) {
+                setResult("fail", "Mission Timeout", "The mission took too long without closing orbit. The flight plan likely spent too much fuel climbing instead of building enough sideways speed.");
+                return;
+            }
 
-            const earthAltitude = earthGravity.dist - EARTH.radius;
-            if (earthAltitude < EARTH.atmosphere) {
-                const speed = Math.hypot(rocket.vx, rocket.vy);
-                const dragStrength = ((EARTH.atmosphere - earthAltitude) / EARTH.atmosphere) ** 2 * 0.00001;
-                ax -= rocket.vx * speed * dragStrength;
-                ay -= rocket.vy * speed * dragStrength;
+            if (state.rocket.fuel1 + state.rocket.fuel2 <= 0 && metrics.orbit.periapsisAlt < 0 && metrics.altitude < 120 && metrics.orbit.radialVelocity < 0) {
+                setResult("fail", "Out of Propellant", "The stack ran dry on a suborbital path. Try a cleaner gravity turn and save more upper-stage fuel for circularization.");
+                return;
+            }
+
+            const stableOrbit =
+                metrics.orbit.energy < 0 &&
+                metrics.orbit.periapsisAlt > state.plan.targetPeriapsis &&
+                metrics.orbit.apoapsisAlt > state.plan.phases[3].triggerValue - 15 &&
+                metrics.orbit.apoapsisAlt < state.plan.phases[3].triggerValue + 220 &&
+                metrics.altitude > state.plan.targetPeriapsis &&
+                Math.abs(metrics.orbit.radialVelocity) < 0.26;
+
+            state.orbitLock = stableOrbit ? state.orbitLock + dt : 0;
+
+            if (state.orbitLock > 10) {
+                setResult("success", "Orbit Achieved", "The launch plan survived the atmosphere, built apoapsis, coasted cleanly and raised periapsis above the atmosphere. The orbit now stays closed.");
+            }
+        }
+
+        function stepSimulation(dt) {
+            if (state.mode !== "flight" || state.paused) return;
+
+            const rocket = state.rocket;
+            if (rocket.stage === 1 && rocket.fuel1 <= 0) {
+                rocket.stage = 2;
+                state.stageSepTime = state.time;
+            }
+
+            const metricsBefore = state.lastTelemetry || computeTelemetry();
+            updateGuidance(metricsBefore, dt);
+
+            const orbitBefore = computeOrbit();
+            const altitude = orbitBefore.altitude;
+            const radial = orbitBefore.radial;
+            const tangent = orbitBefore.tangent;
+            const speed = orbitBefore.speed;
+            const pitchRad = toRadians(rocket.pitch);
+            const thrustDirection = {
+                x: tangent.x * Math.cos(pitchRad) + radial.x * Math.sin(pitchRad),
+                y: tangent.y * Math.cos(pitchRad) + radial.y * Math.sin(pitchRad)
+            };
+
+            rocket.heading = Math.atan2(thrustDirection.y, thrustDirection.x);
+
+            let ax = (-rocket.x / orbitBefore.r) * (EARTH.mu / (orbitBefore.r * orbitBefore.r));
+            let ay = (-rocket.y / orbitBefore.r) * (EARTH.mu / (orbitBefore.r * orbitBefore.r));
+
+            const activeStage = getStageConfig(rocket.stage);
+            const hasFuel = rocket.stage === 1 ? rocket.fuel1 > 0 : rocket.fuel2 > 0;
+            if (rocket.throttle > 0 && hasFuel) {
+                const thrust = activeStage.thrust * rocket.throttle;
+                const mass = getVehicleMass(rocket);
+                const thrustAccel = (thrust / mass) / 1000;
+                ax += thrustDirection.x * thrustAccel;
+                ay += thrustDirection.y * thrustAccel;
+
+                const massFlow = thrust / (activeStage.isp * 9.81);
+                if (rocket.stage === 1) {
+                    rocket.fuel1 = Math.max(0, rocket.fuel1 - massFlow * dt);
+                } else {
+                    rocket.fuel2 = Math.max(0, rocket.fuel2 - massFlow * dt);
+                }
+            }
+
+            if (altitude < EARTH.atmosphere) {
+                const density = getDensity(altitude);
+                const speedMs = speed * 1000;
+                const aoa = speed > 0.12 ? Math.abs(normalizeDegrees(rocket.pitch - orbitBefore.flightPathAngle)) : 0;
+                const dragMultiplier = 1 + Math.pow(aoa / 20, 1.18);
+                const dragForce = 0.5 * density * speedMs * speedMs * activeStage.dragArea * dragMultiplier;
+                const dragAccel = (dragForce / (getVehicleMass(rocket) * 1000)) / 1000;
+
+                if (speed > 0.02) {
+                    ax -= (rocket.vx / speed) * dragAccel;
+                    ay -= (rocket.vy / speed) * dragAccel;
+                }
             }
 
             rocket.vx += ax * dt;
             rocket.vy += ay * dt;
             rocket.x += rocket.vx * dt;
             rocket.y += rocket.vy * dt;
-            rocket.heading = Math.atan2(rocket.vy, rocket.vx);
 
             rocket.trailTimer += dt;
             if (rocket.trailTimer >= TRAIL_INTERVAL) {
@@ -1069,79 +2525,269 @@
             }
 
             state.time += dt;
-            checkMissionState(dt);
+            state.lastTelemetry = computeTelemetry();
+            rocket.maxQ = Math.max(rocket.maxQ, state.lastTelemetry.dynamicPressure);
+            rocket.aeroLoad = state.lastTelemetry.aeroLoad;
+            if (state.lastTelemetry.altitude >= ASCENT_VIEW_SWITCH_ALTITUDE) {
+                state.orbitViewUnlocked = true;
+            }
+            checkMissionState(state.lastTelemetry, dt);
             updateLessons();
+            updatePhaseCardStates();
         }
 
-        function launchMission() {
-            if (state.mode === "ascent" || state.mode === "coast") return;
-            resetMission();
-            state.mode = "ascent";
-            state.rocket.trail = [{ x: state.rocket.x, y: state.rocket.y }];
-            updateLessons();
-            updateTelemetry();
+        function getEffectiveSimSpeed() {
+            if (state.mode !== "flight") return state.speed;
+            const altitude = state.lastTelemetry ? state.lastTelemetry.altitude : 0;
+            if (altitude < 60) return Math.min(state.speed, 1.5 * SIM_SPEED_MULTIPLIER);
+            if (altitude < 110) return Math.min(state.speed, 2.5 * SIM_SPEED_MULTIPLIER);
+            return state.speed;
+        }
+
+        function useOrbitalView(metrics) {
+            return state.orbitViewUnlocked || metrics.altitude >= ASCENT_VIEW_SWITCH_ALTITUDE;
         }
 
         function getMissionFrame() {
+            const orbit = state.lastTelemetry ? state.lastTelemetry.orbit : computeOrbit();
+            const targetApoapsis = state.plan ? state.plan.phases[3].triggerValue : DEFAULT_PLAN.phases[3].triggerValue;
             const rocket = state.rocket;
 
-            if (state.mode === "ready") {
-                return { x: 0, y: EARTH.radius + 2200, scale: 0.058 };
-            }
-
-            if (state.mode === "ascent") {
-                const progress = clamp(state.rocket.ascentTime / ASCENT_DURATION, 0, 1);
-                const close = { x: rocket.x, y: rocket.y - 2600, scale: 0.07 };
-                const medium = { x: 0, y: EARTH.radius + 1000, scale: 0.045 };
-                const mix = smoothstep(progress);
-                return {
-                    x: lerp(close.x, medium.x, mix),
-                    y: lerp(close.y, medium.y, mix),
-                    scale: lerp(close.scale, medium.scale, mix)
-                };
-            }
-
-            const includeMoon = state.mission === "moon" || Math.hypot(rocket.x - MOON.x, rocket.y - MOON.y) < 180000 || state.captureAssistUsed;
-            const targets = [
-                { x: EARTH.x, y: EARTH.y, r: EARTH.radius * 1.2 },
-                { x: rocket.x, y: rocket.y, r: 4000 }
-            ];
-
-            if (includeMoon) {
-                targets.push({ x: MOON.x, y: MOON.y, r: Math.max(MOON.radius + MOON_TARGET_ALT, MOON.radius * 3) });
-            }
-
-            let minX = Infinity;
-            let maxX = -Infinity;
-            let minY = Infinity;
-            let maxY = -Infinity;
-
-            targets.forEach(target => {
-                minX = Math.min(minX, target.x - target.r);
-                maxX = Math.max(maxX, target.x + target.r);
-                minY = Math.min(minY, target.y - target.r);
-                maxY = Math.max(maxY, target.y + target.r);
-            });
+            const outerRadius = Math.max(
+                orbit.r,
+                Number.isFinite(orbit.apoapsis) ? Math.min(orbit.apoapsis, EARTH.radius + 720) : orbit.r,
+                EARTH.radius + targetApoapsis + 45
+            );
+            const focusWeight = clamp((orbit.altitude - EARTH.atmosphere) / 420, 0.08, 0.18);
 
             return {
-                x: (minX + maxX) / 2,
-                y: (minY + maxY) / 2,
-                scale: clamp(
-                    Math.min((width * 0.68) / Math.max(maxX - minX, 1), (height * 0.68) / Math.max(maxY - minY, 1)),
-                    0.00085,
-                    0.05
-                )
+                x: rocket.x * focusWeight,
+                y: rocket.y * focusWeight,
+                scale: clamp(Math.min(width, height) * 0.46 / outerRadius, 0.015, 0.065)
             };
         }
 
         function updateCamera() {
+            const metrics = state.lastTelemetry || computeTelemetry();
+            if (!useOrbitalView(metrics)) return;
             const target = getMissionFrame();
             camera.x += (target.x - camera.x) * 0.08;
             camera.y += (target.y - camera.y) * 0.08;
             camera.scale += (target.scale - camera.scale) * 0.08;
         }
 
-        function drawBackground() {
+        function drawRocketGlyph(x, y, angle, size, rocket, alpha = 1) {
+            const stageScale = rocket.stage === 1 ? 1.15 : 0.86;
+
+            ctx.save();
+            ctx.globalAlpha = alpha;
+            ctx.translate(x, y);
+            ctx.rotate(angle);
+
+            if (rocket.throttle > 0.01 && state.mode === "flight") {
+                const flame = size * (rocket.stage === 1 ? 1.9 : 1.25) * (0.35 + rocket.throttle * 0.8);
+                ctx.beginPath();
+                ctx.moveTo(-size * 0.9, 0);
+                ctx.lineTo(-size * 0.9 - flame, size * 0.42);
+                ctx.lineTo(-size * 0.9 - flame * 0.75, 0);
+                ctx.lineTo(-size * 0.9 - flame, -size * 0.42);
+                ctx.closePath();
+                ctx.fillStyle = rocket.stage === 1 ? "rgba(255, 164, 76, 0.95)" : "rgba(113, 245, 255, 0.92)";
+                ctx.fill();
+
+                ctx.beginPath();
+                ctx.moveTo(-size * 0.82, 0);
+                ctx.lineTo(-size * 0.82 - flame * 0.55, size * 0.22);
+                ctx.lineTo(-size * 0.82 - flame * 0.38, 0);
+                ctx.lineTo(-size * 0.82 - flame * 0.55, -size * 0.22);
+                ctx.closePath();
+                ctx.fillStyle = "rgba(255, 228, 126, 0.92)";
+                ctx.fill();
+            }
+
+            ctx.beginPath();
+            ctx.moveTo(size * 1.05, 0);
+            ctx.lineTo(-size * 0.72 * stageScale, size * 0.36);
+            ctx.lineTo(-size * 0.45 * stageScale, 0);
+            ctx.lineTo(-size * 0.72 * stageScale, -size * 0.36);
+            ctx.closePath();
+            ctx.fillStyle = "#f6fbff";
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.moveTo(size * 0.22, 0);
+            ctx.lineTo(-size * 0.2 * stageScale, size * 0.14);
+            ctx.lineTo(-size * 0.2 * stageScale, -size * 0.14);
+            ctx.closePath();
+            ctx.fillStyle = rocket.stage === 1 ? "#ffd166" : "#71f5ff";
+            ctx.fill();
+
+            if (rocket.stage === 1) {
+                ctx.beginPath();
+                ctx.moveTo(-size * 0.25, size * 0.18);
+                ctx.lineTo(-size * 0.62, size * 0.42);
+                ctx.lineTo(-size * 0.48, size * 0.08);
+                ctx.closePath();
+                ctx.fillStyle = "#c7d7ff";
+                ctx.fill();
+
+                ctx.beginPath();
+                ctx.moveTo(-size * 0.25, -size * 0.18);
+                ctx.lineTo(-size * 0.62, -size * 0.42);
+                ctx.lineTo(-size * 0.48, -size * 0.08);
+                ctx.closePath();
+                ctx.fillStyle = "#c7d7ff";
+                ctx.fill();
+            }
+
+            ctx.restore();
+        }
+
+        function drawSatelliteGlyph(x, y, scale, rotation, color = "#dff8ff", alpha = 1) {
+            ctx.save();
+            ctx.globalAlpha = alpha;
+            ctx.translate(x, y);
+            ctx.rotate(rotation);
+            ctx.strokeStyle = color;
+            ctx.lineWidth = Math.max(1, scale * 1.2);
+            ctx.beginPath();
+            ctx.moveTo(-scale * 0.9, 0);
+            ctx.lineTo(scale * 0.9, 0);
+            ctx.moveTo(0, -scale * 1.2);
+            ctx.lineTo(0, scale * 1.2);
+            ctx.moveTo(-scale * 1.35, -scale * 0.7);
+            ctx.lineTo(-scale * 0.45, -scale * 0.7);
+            ctx.moveTo(scale * 0.45, -scale * 0.7);
+            ctx.lineTo(scale * 1.35, -scale * 0.7);
+            ctx.moveTo(-scale * 1.35, scale * 0.7);
+            ctx.lineTo(-scale * 0.45, scale * 0.7);
+            ctx.moveTo(scale * 0.45, scale * 0.7);
+            ctx.lineTo(scale * 1.35, scale * 0.7);
+            ctx.stroke();
+            ctx.fillStyle = color;
+            ctx.fillRect(-scale * 0.35, -scale * 0.45, scale * 0.7, scale * 0.9);
+            ctx.restore();
+        }
+
+        function getAscentViewport(metrics) {
+            const groundY = height - Math.max(70, height * 0.1);
+            const topAltitude = Math.max(140, Math.min(220, metrics.altitude + 40));
+            const yScale = (groundY - 54) / topAltitude;
+            const xScale = yScale * 0.42;
+
+            return {
+                groundY,
+                topAltitude,
+                yScale,
+                xScale,
+                altitudeToY: altitude => groundY - altitude * yScale,
+                downrangeToX: downrange => clamp(width * 0.28 + downrange * xScale, width * 0.14, width * 0.84)
+            };
+        }
+
+        function drawAscentScene(metrics) {
+            const view = getAscentViewport(metrics);
+            const sky = ctx.createLinearGradient(0, 0, 0, view.groundY);
+            sky.addColorStop(0, "#01030a");
+            sky.addColorStop(0.2, "#06112a");
+            sky.addColorStop(0.55, "#0f2f60");
+            sky.addColorStop(0.88, "#295487");
+            sky.addColorStop(1, "#7c5d4b");
+            ctx.fillStyle = sky;
+            ctx.fillRect(0, 0, width, height);
+
+            let bandFloor = 0;
+            for (const band of LAYER_BANDS.slice(0, -1)) {
+                const yBottom = view.altitudeToY(bandFloor);
+                const yTop = view.altitudeToY(band.ceiling);
+                ctx.fillStyle = band.fill;
+                ctx.fillRect(0, yTop, width, yBottom - yTop);
+                ctx.strokeStyle = band.line;
+                ctx.lineWidth = band.ceiling === 120 ? 3 : 2;
+                ctx.beginPath();
+                ctx.moveTo(0, yTop);
+                ctx.lineTo(width, yTop);
+                ctx.stroke();
+
+                if (yTop > 28 && yTop < height - 40) {
+                    ctx.fillStyle = "rgba(238, 245, 255, 0.86)";
+                    ctx.font = '600 12px "IBM Plex Mono", monospace';
+                    ctx.textAlign = "right";
+                    ctx.fillText(`${band.name} // ${Math.round(band.ceiling)} km`, width - 18, yTop - 8);
+                }
+                bandFloor = band.ceiling;
+            }
+
+            const spaceLineY = view.altitudeToY(EARTH.atmosphere);
+            stars.forEach(star => {
+                if (star.y <= spaceLineY - 4) {
+                    ctx.globalAlpha = star.alpha;
+                    ctx.fillStyle = "#f4fbff";
+                    ctx.beginPath();
+                    ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            });
+            ctx.globalAlpha = 1;
+
+            ASCENT_SATELLITES.forEach(sat => {
+                const x = sat.x * width + Math.sin(state.time * sat.rate) * 18;
+                const y = Math.max(36, spaceLineY * sat.y);
+                drawSatelliteGlyph(x, y, 9 * sat.scale, sat.tilt + state.time * 0.04, "#eef5ff", 0.85);
+            });
+
+            const trail = state.rocket.trail;
+            if (trail.length > 1) {
+                ctx.beginPath();
+                trail.forEach((point, index) => {
+                    const altitude = Math.hypot(point.x, point.y) - EARTH.radius;
+                    const downrange = getDownrangeDistance(point.x, point.y);
+                    const x = view.downrangeToX(downrange);
+                    const y = view.altitudeToY(altitude);
+                    if (index === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                });
+                ctx.strokeStyle = "rgba(113, 245, 255, 0.52)";
+                ctx.lineWidth = 2.2;
+                ctx.stroke();
+            }
+
+            ctx.fillStyle = "#02050a";
+            ctx.fillRect(0, view.groundY, width, height - view.groundY);
+            ctx.strokeStyle = "rgba(238, 245, 255, 0.92)";
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(0, view.groundY);
+            ctx.lineTo(width, view.groundY);
+            ctx.stroke();
+
+            const padX = view.downrangeToX(0);
+            ctx.lineWidth = 2.2;
+            ctx.beginPath();
+            ctx.moveTo(padX - 36, view.groundY);
+            ctx.lineTo(padX + 36, view.groundY);
+            ctx.moveTo(padX - 14, view.groundY);
+            ctx.lineTo(padX - 14, view.groundY - 64);
+            ctx.lineTo(padX + 8, view.groundY - 64);
+            ctx.stroke();
+
+            const rocketX = view.downrangeToX(metrics.downrange);
+            const rocketY = view.altitudeToY(metrics.altitude);
+            drawRocketGlyph(rocketX, rocketY, -toRadians(state.rocket.pitch), clamp(view.yScale * 3.1, 14, 34), state.rocket);
+        }
+
+        function drawOrbitRing(radius, color, dash = []) {
+            const screen = worldToScreen(EARTH.x, EARTH.y);
+            ctx.beginPath();
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 1.2;
+            ctx.setLineDash(dash);
+            ctx.arc(screen.x, screen.y, radius * camera.scale, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.setLineDash([]);
+        }
+
+        function drawOrbitalBackground() {
             ctx.fillStyle = "#030711";
             ctx.fillRect(0, 0, width, height);
 
@@ -1152,90 +2798,34 @@
                 ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
                 ctx.fill();
             });
-
             ctx.globalAlpha = 1;
         }
 
-        function drawTargetRing(body, radius, color) {
-            const screen = worldToScreen(body.x, body.y);
+        function drawPredictedOrbit() {
+            if (state.mode === "ready") return;
+            const orbit = state.lastTelemetry ? state.lastTelemetry.orbit : computeOrbit();
+            if (!Number.isFinite(orbit.apoapsis) || orbit.eccentricity >= 1 || orbit.semiLatusRectum <= 0) return;
+
+            const points = 220;
             ctx.beginPath();
-            ctx.strokeStyle = color;
+            for (let i = 0; i <= points; i++) {
+                const trueAnomaly = i / points * Math.PI * 2;
+                const radius = orbit.semiLatusRectum / (1 + orbit.eccentricity * Math.cos(trueAnomaly));
+                const angle = orbit.periapsisAngle + trueAnomaly;
+                const x = Math.cos(angle) * radius;
+                const y = Math.sin(angle) * radius;
+                const screen = worldToScreen(x, y);
+                if (i === 0) ctx.moveTo(screen.x, screen.y);
+                else ctx.lineTo(screen.x, screen.y);
+            }
+            ctx.strokeStyle = "rgba(113, 245, 255, 0.22)";
             ctx.lineWidth = 1.2;
-            ctx.setLineDash([8, 6]);
-            ctx.arc(screen.x, screen.y, radius * camera.scale, 0, Math.PI * 2);
+            ctx.setLineDash([6, 6]);
             ctx.stroke();
             ctx.setLineDash([]);
         }
 
-        function drawEarth() {
-            const screen = worldToScreen(EARTH.x, EARTH.y);
-            const radius = EARTH.radius * camera.scale;
-
-            const atmosphere = ctx.createRadialGradient(screen.x, screen.y, radius, screen.x, screen.y, radius * 1.16);
-            atmosphere.addColorStop(0, "rgba(113,245,255,0)");
-            atmosphere.addColorStop(1, "rgba(113,245,255,0.18)");
-            ctx.fillStyle = atmosphere;
-            ctx.beginPath();
-            ctx.arc(screen.x, screen.y, radius * 1.16, 0, Math.PI * 2);
-            ctx.fill();
-
-            const gradient = ctx.createRadialGradient(screen.x - radius * 0.3, screen.y - radius * 0.35, radius * 0.18, screen.x, screen.y, radius);
-            gradient.addColorStop(0, "#5ce1ff");
-            gradient.addColorStop(0.28, "#2a74ff");
-            gradient.addColorStop(0.72, "#0d2b61");
-            gradient.addColorStop(1, "#07172f");
-            ctx.fillStyle = gradient;
-            ctx.beginPath();
-            ctx.arc(screen.x, screen.y, radius, 0, Math.PI * 2);
-            ctx.fill();
-
-            if (radius > 60) {
-                ctx.strokeStyle = "rgba(113,245,255,0.08)";
-                ctx.lineWidth = 1;
-                for (let i = -2; i <= 2; i++) {
-                    ctx.beginPath();
-                    ctx.arc(screen.x, screen.y, radius * Math.cos((i / 6) * Math.PI), 0, Math.PI * 2);
-                    ctx.stroke();
-                }
-            }
-
-            if (state.mission === "earth") {
-                drawTargetRing(EARTH, EARTH.radius + EARTH_TARGET_ALT, "rgba(196,255,103,0.55)");
-            }
-
-            if (camera.scale > 0.018) {
-                const pad = worldToScreen(0, EARTH.radius);
-                ctx.strokeStyle = "rgba(238,245,255,0.9)";
-                ctx.lineWidth = 2;
-                ctx.beginPath();
-                ctx.moveTo(pad.x - 28, pad.y + 2);
-                ctx.lineTo(pad.x + 28, pad.y + 2);
-                ctx.moveTo(pad.x - 12, pad.y + 2);
-                ctx.lineTo(pad.x - 12, pad.y - 48);
-                ctx.lineTo(pad.x + 4, pad.y - 48);
-                ctx.stroke();
-            }
-        }
-
-        function drawMoon() {
-            const screen = worldToScreen(MOON.x, MOON.y);
-            const radius = MOON.radius * camera.scale;
-
-            const gradient = ctx.createRadialGradient(screen.x - radius * 0.28, screen.y - radius * 0.25, radius * 0.14, screen.x, screen.y, radius);
-            gradient.addColorStop(0, "#f0f4ff");
-            gradient.addColorStop(0.4, "#d3dce8");
-            gradient.addColorStop(1, "#8f98aa");
-            ctx.fillStyle = gradient;
-            ctx.beginPath();
-            ctx.arc(screen.x, screen.y, radius, 0, Math.PI * 2);
-            ctx.fill();
-
-            if (state.mission === "moon") {
-                drawTargetRing(MOON, MOON.radius + MOON_TARGET_ALT, "rgba(196,255,103,0.48)");
-            }
-        }
-
-        function drawTrail() {
+        function drawTrailOrbit() {
             const trail = state.rocket.trail;
             if (trail.length < 2) return;
 
@@ -1245,135 +2835,268 @@
                 if (index === 0) ctx.moveTo(screen.x, screen.y);
                 else ctx.lineTo(screen.x, screen.y);
             });
-            ctx.strokeStyle = "rgba(113,245,255,0.42)";
+            ctx.strokeStyle = "rgba(113, 245, 255, 0.48)";
             ctx.lineWidth = 2;
             ctx.stroke();
         }
 
-        function drawRocket() {
-            const rocket = state.rocket;
-            const screen = worldToScreen(rocket.x, rocket.y);
-            const size = clamp(8, camera.scale * 280, 22);
-            const angle = -rocket.heading;
+        function drawEarth() {
+            const targetApoapsis = state.plan ? state.plan.phases[3].triggerValue : DEFAULT_PLAN.phases[3].triggerValue;
+            const targetPeriapsis = state.plan ? state.plan.targetPeriapsis : DEFAULT_PLAN.targetPeriapsis;
+            const screen = worldToScreen(EARTH.x, EARTH.y);
+            const radius = EARTH.radius * camera.scale;
+            const atmosphereRadius = (EARTH.radius + EARTH.atmosphere) * camera.scale;
 
-            ctx.save();
-            ctx.translate(screen.x, screen.y);
-            ctx.rotate(angle);
+            const atmosphere = ctx.createRadialGradient(screen.x, screen.y, radius, screen.x, screen.y, atmosphereRadius);
+            atmosphere.addColorStop(0, "rgba(113,245,255,0)");
+            atmosphere.addColorStop(0.7, "rgba(113,245,255,0.06)");
+            atmosphere.addColorStop(1, "rgba(113,245,255,0.2)");
+            ctx.fillStyle = atmosphere;
+            ctx.beginPath();
+            ctx.arc(screen.x, screen.y, atmosphereRadius, 0, Math.PI * 2);
+            ctx.fill();
 
-            if (state.mode === "ascent") {
-                ctx.beginPath();
-                ctx.moveTo(-size * 0.9, 0);
-                ctx.lineTo(-size * 1.55, size * 0.38);
-                ctx.lineTo(-size * 1.55, -size * 0.38);
-                ctx.closePath();
-                ctx.fillStyle = "rgba(255, 206, 84, 0.95)";
-                ctx.fill();
+            const planet = ctx.createRadialGradient(screen.x - radius * 0.3, screen.y - radius * 0.35, radius * 0.16, screen.x, screen.y, radius);
+            planet.addColorStop(0, "#6fe3ff");
+            planet.addColorStop(0.28, "#2569ff");
+            planet.addColorStop(0.72, "#0a275b");
+            planet.addColorStop(1, "#051021");
+            ctx.fillStyle = planet;
+            ctx.beginPath();
+            ctx.arc(screen.x, screen.y, radius, 0, Math.PI * 2);
+            ctx.fill();
 
-                ctx.beginPath();
-                ctx.moveTo(-size * 0.82, 0);
-                ctx.lineTo(-size * 1.2, size * 0.22);
-                ctx.lineTo(-size * 1.2, -size * 0.22);
-                ctx.closePath();
-                ctx.fillStyle = "rgba(255, 122, 74, 0.85)";
-                ctx.fill();
+            if (radius > 90) {
+                ctx.globalAlpha = 0.12;
+                ctx.fillStyle = "#b8fff6";
+                for (let i = 0; i < 4; i++) {
+                    const offset = i * radius * 0.18;
+                    ctx.beginPath();
+                    ctx.ellipse(screen.x - radius * 0.18 + offset * 0.2, screen.y - radius * 0.18 + offset * 0.1, radius * 0.16, radius * 0.08, Math.PI / 8, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                ctx.globalAlpha = 1;
             }
 
-            ctx.beginPath();
-            ctx.moveTo(size, 0);
-            ctx.lineTo(-size * 0.7, size * 0.45);
-            ctx.lineTo(-size * 0.35, 0);
-            ctx.lineTo(-size * 0.7, -size * 0.45);
-            ctx.closePath();
-            ctx.fillStyle = "#f6fbff";
-            ctx.fill();
+            drawOrbitRing(EARTH.radius + EARTH.karman, "rgba(255, 209, 102, 0.28)", [7, 6]);
+            drawOrbitRing(EARTH.radius + targetPeriapsis, "rgba(196, 255, 103, 0.28)", [9, 8]);
+            drawOrbitRing(EARTH.radius + targetApoapsis, "rgba(113, 245, 255, 0.42)", [10, 8]);
+        }
 
-            ctx.beginPath();
-            ctx.moveTo(size * 0.1, 0);
-            ctx.lineTo(-size * 0.45, size * 0.17);
-            ctx.lineTo(-size * 0.45, -size * 0.17);
-            ctx.closePath();
-            ctx.fillStyle = "#71f5ff";
-            ctx.fill();
+        function drawOrbitSatellites() {
+            ORBIT_SATELLITES.forEach(sat => {
+                const angle = sat.angle + state.time * sat.rate;
+                const radius = EARTH.radius + sat.altitude;
+                const x = Math.cos(angle) * radius;
+                const y = Math.sin(angle) * radius;
+                const screen = worldToScreen(x, y);
+                drawSatelliteGlyph(screen.x, screen.y, clamp(camera.scale * 140 * sat.scale, 5, 12), -angle * 0.8, sat.color, 0.95);
+            });
+        }
 
+        function drawRocketOrbit() {
+            const rocket = state.rocket;
+            const screen = worldToScreen(rocket.x, rocket.y);
+            const size = clamp(camera.scale * 320, 14, 40);
+
+            ctx.save();
+            ctx.strokeStyle = "rgba(113, 245, 255, 0.42)";
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(screen.x, screen.y, size * 1.3, 0, Math.PI * 2);
+            ctx.stroke();
             ctx.restore();
+
+            drawRocketGlyph(screen.x, screen.y, -rocket.heading, size, rocket);
         }
 
         function render() {
-            drawBackground();
-            drawTrail();
-            drawEarth();
-            drawMoon();
-            drawRocket();
+            const metrics = state.lastTelemetry || computeTelemetry();
+            if (useOrbitalView(metrics)) {
+                drawOrbitalBackground();
+                drawPredictedOrbit();
+                drawTrailOrbit();
+                drawEarth();
+                drawOrbitSatellites();
+                drawRocketOrbit();
+            } else {
+                drawAscentScene(metrics);
+            }
         }
 
         function updateTelemetry() {
-            const earthOrbit = state.lastTelemetry.earthOrbit || computeOrbit(EARTH);
-            const moonOrbit = state.lastTelemetry.moonOrbit || computeOrbit(MOON);
-            const earthAlt = state.lastTelemetry.earthAlt ?? earthOrbit.r - EARTH.radius;
-            const moonAlt = state.lastTelemetry.moonAlt ?? moonOrbit.r - MOON.radius;
+            const metrics = state.lastTelemetry || computeTelemetry();
+            const rocket = state.rocket;
+            const layer = metrics.layer;
+            const stageStates = getStageStackState(metrics);
+            const padState = isPadState(metrics);
 
-            statusValue.textContent =
-                state.mode === "ready" ? "Ready on the pad" :
-                state.mode === "ascent" ? "Ascent to injection" :
-                state.mode === "coast" ? (state.captureAssistUsed ? "Lunar insertion orbit" : "Coasting") :
-                state.mode === "success" ? "Mission complete" :
-                "Mission failed";
+            statusValue.textContent = getStatusLabel(metrics);
+            timeValue.textContent = state.mode === "countdown"
+                ? formatCountdownTime(state.launchCountdown)
+                : formatMissionTime(state.time);
+            stageValue.textContent = getStageTelemetryLabel(metrics);
 
-            timeValue.textContent = formatMissionTime(state.time);
+            altitudeValue.textContent = formatAltitude(metrics.altitude);
+            speedMetricValue.textContent = formatSpeed(metrics.orbit.speed);
+            verticalValue.textContent = formatSpeed(metrics.orbit.radialVelocity);
+            horizontalValue.textContent = formatSpeed(metrics.orbit.horizontalVelocity);
+            pressureValue.textContent = formatPressure(metrics.dynamicPressure);
+            apoapsisValue.textContent = padState
+                ? "0 km"
+                : Number.isFinite(metrics.orbit.apoapsisAlt)
+                    ? formatOrbitAltitude(metrics.orbit.apoapsisAlt)
+                    : "Escape";
+            periapsisValue.textContent = padState
+                ? "Pad"
+                : Number.isFinite(metrics.orbit.periapsisAlt)
+                    ? formatOrbitAltitude(metrics.orbit.periapsisAlt)
+                    : "Escape";
+            flightPathValue.textContent = padState ? "90°" : formatAngle(metrics.orbit.flightPathAngle);
+            circularValue.textContent = formatSpeed(metrics.orbit.circularSpeed);
+
+            const fuelPercent = clamp(metrics.fuelPercent, 0, 100);
+            const aeroPercent = clamp(metrics.aeroLoad / MAX_AERO_LOAD * 100, 0, 100);
+
+            fuelText.textContent = `${Math.round(fuelPercent)}%`;
+            fuelBar.style.width = `${fuelPercent}%`;
+            aeroText.textContent = `${Math.round(aeroPercent)}%`;
+            qBar.style.width = `${aeroPercent}%`;
+
+            formulaQValue.textContent = formatPressure(metrics.dynamicPressure);
+            formulaCircularValue.textContent = formatSpeed(metrics.orbit.circularSpeed);
+            formulaTwrValue.textContent = (state.mode === "ready" || state.mode === "countdown")
+                ? getLiftOffTwr().toFixed(2)
+                : metrics.twr.toFixed(2);
+
+            activePhaseValue.textContent = getGuidanceLabel(metrics);
+            layerValue.textContent = layer.short;
+            autoCommandValue.textContent = `${Math.round(state.autoCommand.pitch)}° / ${Math.round(state.autoCommand.throttle * 100)}%`;
+            directorStateValue.textContent = getDirectorState(metrics);
+            nextEventValue.textContent = getNextEvent(metrics);
+            viewModeValue.textContent = useOrbitalView(metrics) ? "Orbital Map" : "Ascent Cam";
+            stageOneStateValue.textContent = stageStates.stage1;
+            stageTwoStateValue.textContent = stageStates.stage2;
+        }
+
+        function updateLessons() {
+            const metrics = state.lastTelemetry || computeTelemetry();
+            const targetApoapsis = state.plan.phases[3].triggerValue;
 
             if (state.mode === "ready") {
-                velocityLabel.textContent = state.mission === "moon" ? "Earth Rel Speed" : "Velocity";
-                altitudeLabel.textContent = "Altitude";
-                periapsisLabel.textContent = "Periapsis";
-                apoapsisLabel.textContent = "Apoapsis";
-                altitudeValue.textContent = "0 km";
-                velocityValue.textContent = "0.00 km/s";
-                periapsisValue.textContent = "-";
-                apoapsisValue.textContent = "-";
-                telemetryNote.textContent = state.mission === "earth"
-                    ? "Set energy and burnout angle, then launch to see how injection shapes the orbit."
-                    : "Moon transfer begins as an Earth launch problem. Build the injection first, then use the speed slider for the long cruise.";
+                lessonText.textContent = "This version is about launch design, not frantic button-mashing. Enter a full ascent profile, then let the rocket fly your phase plan through the atmosphere.";
+                hintText.textContent = "Start with the friendly plan, then experiment with one value at a time. Early pitch and throttle changes affect max-Q far more than late vacuum burns do.";
+                telemetryNote.textContent = "The camera stays close while the rocket climbs through atmospheric layers. Once it reaches space, the view pulls back so you can read the orbit shape.";
+                formulaNote.textContent = "Orbit is not won by altitude alone. The mission only succeeds when periapsis stays above the atmosphere after circularization.";
                 return;
             }
 
-            if (state.mode === "ascent") {
-                const rocketSpeed = Math.hypot(state.rocket.vx, state.rocket.vy);
-                const rocketAltitude = Math.hypot(state.rocket.x, state.rocket.y) - EARTH.radius;
-                velocityLabel.textContent = "Ascent Speed";
-                altitudeLabel.textContent = "Altitude";
-                periapsisLabel.textContent = "Injection";
-                apoapsisLabel.textContent = "Target";
-                altitudeValue.textContent = formatAltitude(rocketAltitude);
-                velocityValue.textContent = `${rocketSpeed.toFixed(2)} km/s`;
-                periapsisValue.textContent = "Pending";
-                apoapsisValue.textContent = state.mission === "earth" ? `~${EARTH_TARGET_ALT} km` : "Moon transfer";
-                telemetryNote.textContent = "The launch is cinematic, but the actual physics challenge starts at injection altitude when burnout settings take over.";
+            if (state.mode === "countdown") {
+                lessonText.textContent = "Terminal count gives the launch a real mission-control moment: the stack is armed, the guidance program is loaded and the first atmospheric phase is about to begin.";
+                hintText.textContent = state.paused
+                    ? "Launch hold is a safe moment to double-check the first phase values before ignition."
+                    : "Use these last seconds to verify the opening pitch and throttle. The lower atmosphere is where the whole mission is usually won or lost.";
+                telemetryNote.textContent = "The rocket is still on the pad, so the orbit numbers stay calm while the director panel counts down to ignition.";
+                formulaNote.textContent = "Lift-off TWR is shown before ignition because that ratio predicts whether the vehicle will leave the pad cleanly or waste thrust fighting gravity.";
                 return;
             }
 
-            if (state.mission === "moon" && state.captureAssistUsed) {
-                velocityLabel.textContent = "Moon Rel Speed";
-                velocityValue.textContent = `${moonOrbit.speed.toFixed(2)} km/s`;
-                altitudeLabel.textContent = "Moon Altitude";
-                periapsisLabel.textContent = "Moon Periapsis";
-                apoapsisLabel.textContent = "Moon Apoapsis";
-                altitudeValue.textContent = formatAltitude(moonAlt);
-                periapsisValue.textContent = formatOrbitValue(moonOrbit.periapsis, MOON.radius);
-                apoapsisValue.textContent = formatOrbitValue(moonOrbit.apoapsis, MOON.radius);
-                telemetryNote.textContent = "The values are now relative to the Moon. A clean insertion keeps periapsis clear of the surface while apoapsis stays inside the target band.";
-            } else {
-                velocityLabel.textContent = state.mission === "moon" ? "Earth Rel Speed" : "Velocity";
-                velocityValue.textContent = `${earthOrbit.speed.toFixed(2)} km/s`;
-                altitudeLabel.textContent = "Earth Altitude";
-                periapsisLabel.textContent = "Earth Periapsis";
-                apoapsisLabel.textContent = "Earth Apoapsis";
-                altitudeValue.textContent = formatAltitude(earthAlt);
-                periapsisValue.textContent = formatOrbitValue(earthOrbit.periapsis, EARTH.radius);
-                apoapsisValue.textContent = formatOrbitValue(earthOrbit.apoapsis, EARTH.radius);
-                telemetryNote.textContent = state.mission === "earth"
-                    ? "Earth orbit becomes stable only when periapsis stays above the atmosphere."
-                    : "For the Moon mission, Earth telemetry matters during cruise. Use higher sim speed on transfer, then slow down as the Moon approach begins.";
+            if (state.mode === "success") {
+                lessonText.textContent = "The flight plan worked because it did three jobs in order: survive dense air, place apoapsis high enough, then raise periapsis near apoapsis with a mostly horizontal burn.";
+                hintText.textContent = "Try changing only one phase next time. A few degrees too much pitch in the lower atmosphere often hurts more than a small vacuum trim mistake.";
+                telemetryNote.textContent = "The orbit is now closed above the atmosphere. You can read both periapsis and apoapsis in the wide orbital view.";
+                formulaNote.textContent = "The last burn succeeded because raising periapsis near apoapsis is one of the most efficient orbital geometry moves in the whole launch.";
+                return;
             }
+
+            if (state.mode === "fail") {
+                lessonText.textContent = "Most failed launch plans break for one of two reasons: too much aerodynamic stress in the atmosphere, or not enough sideways speed by the time the upper stage runs out of fuel.";
+                hintText.textContent = "If aero load spikes, flatten the pitch later or reduce throttle in the max-Q phase. If apoapsis looks good but periapsis stays negative, save more fuel for circularization.";
+                telemetryNote.textContent = "Use the atmosphere layers and orbital readouts together. A dramatic climb does not count unless periapsis climbs above the atmosphere.";
+                formulaNote.textContent = "Dynamic pressure rises with v^2, so a launch profile that looks only slightly faster in dense air can become much more dangerous aerodynamically.";
+                return;
+            }
+
+            if (state.paused) {
+                lessonText.textContent = "Pause lets you compare the planned phase with the real vehicle state. Watch altitude, apoapsis, periapsis and dynamic pressure together before changing the next plan.";
+                hintText.textContent = "The best tuning loop is small: change one phase value, relaunch, then compare max-Q, apoapsis and remaining fuel.";
+                telemetryNote.textContent = "The simulation is paused, but the orbit preview still shows where the current energy and angle would carry the vehicle.";
+                formulaNote.textContent = "Circular speed is the sideways velocity needed for a circular orbit at the current radius. It is a useful reality check during the final burn.";
+                return;
+            }
+
+            if (state.time - state.stageSepTime < 6) {
+                lessonText.textContent = "Stage separation has just happened. The upper stage is lighter and more efficient, so each degree and each throttle percentage now changes the orbit much more strongly.";
+                hintText.textContent = "A clean lower-atmosphere plan should hand the second stage a stable, already-turning vehicle instead of a desperate vertical climb.";
+                telemetryNote.textContent = "Stage 2 is now in charge. The simulation should begin feeling more like orbit-building and less like atmospheric survival.";
+                formulaNote.textContent = "Thrust-to-weight often improves sharply after staging because the empty lower stage disappears while the upper engine keeps pushing.";
+                return;
+            }
+
+            if (metrics.aeroLoad > MAX_AERO_LOAD * 0.82 && metrics.altitude < 55) {
+                lessonText.textContent = "The flight plan is pushing too hard through thick air. This is where real launches live or die: angle of attack and dynamic pressure combine into a structural problem.";
+                hintText.textContent = "Reduce throttle or keep the rocket more upright during the tower-clear or max-Q phase. The lower atmosphere rewards patience.";
+                telemetryNote.textContent = "The close ascent view is intentionally tight here so you can read the atmosphere layers and understand where the dangerous loads build up.";
+                formulaNote.textContent = "q = 1/2 rho v^2. If density is still high, speed becomes expensive very quickly in aerodynamic terms.";
+                return;
+            }
+
+            if (state.guidanceMode === "phase" && state.activePhaseIndex === 0) {
+                lessonText.textContent = "Tower Clear is the lift-off phase. The rocket should leave the pad cleanly before the gravity turn really starts.";
+                hintText.textContent = "If the rocket tips too early, the lower atmosphere punishes it. If it stays vertical too long, later orbit building becomes inefficient.";
+                telemetryNote.textContent = "Watch altitude, thrust-to-weight and the first signs of dynamic pressure. This phase sets the tone for the whole ascent.";
+                formulaNote.textContent = "At lift-off, thrust-to-weight is the main question. If it is too low, the rocket wastes propellant just trying to clear the ground.";
+                return;
+            }
+
+            if (state.guidanceMode === "phase" && state.activePhaseIndex === 1) {
+                lessonText.textContent = "Max-Q Trim is the hardest atmospheric phase. The rocket is already moving fast, but the air is still dense enough to punish an aggressive turn.";
+                hintText.textContent = "Throttle reductions are not weakness here. They are how you survive the atmosphere without wasting the vehicle.";
+                telemetryNote.textContent = "The layer lines make it easier to see that the danger is not at orbital altitude. It is here, in the thick lower bands.";
+                formulaNote.textContent = "Max-Q is where high speed and dense air overlap. That is why launch vehicles often throttle down during this window.";
+                return;
+            }
+
+            if (state.guidanceMode === "phase" && state.activePhaseIndex === 2) {
+                lessonText.textContent = "Thin-Air Turn is where the launch starts acting more like an orbital injection problem. The rocket can flatten harder because the atmosphere is weakening.";
+                hintText.textContent = "This phase should build sideways speed, not just altitude. A tall arc with little horizontal speed still falls back to Earth.";
+                telemetryNote.textContent = "Watch apoapsis start to rise more quickly here. That is the sign that the gravity turn is finally paying off.";
+                formulaNote.textContent = "As density drops, drag stops dominating. More of the engine energy can now go into orbital velocity instead of atmospheric losses.";
+                return;
+            }
+
+            if (state.guidanceMode === "phase" && state.activePhaseIndex === 3) {
+                lessonText.textContent = "Vacuum Push finishes the job of building apoapsis. Once the top of the arc is high enough, the best move is usually to cut thrust and coast.";
+                hintText.textContent = `Your current plan wants apoapsis around ${targetApoapsis} km. If you overspend here, the final circularization phase will have too little fuel left.`;
+                telemetryNote.textContent = "The orbital view is now active because the important question is no longer just height. It is the shape of the whole trajectory around Earth.";
+                formulaNote.textContent = "Apoapsis tells you how high the current orbit arc tops out. It is a placement target, not mission success by itself.";
+                return;
+            }
+
+            if (state.guidanceMode === "coast") {
+                lessonText.textContent = "The engines are quiet because this is the smart time to wait. Burning too early now mostly raises apoapsis further instead of lifting periapsis efficiently.";
+                hintText.textContent = `The circularization plan will start when the rocket comes within about ${state.plan.circularize.window} km of apoapsis.`;
+                telemetryNote.textContent = "You are out of the atmosphere now, so the simulation zooms out and shows the orbit geometry directly around Earth.";
+                formulaNote.textContent = "At apoapsis the spacecraft is moving slowest, which makes prograde burns there especially effective for raising periapsis.";
+                return;
+            }
+
+            if (state.guidanceMode === "circularize") {
+                lessonText.textContent = "Circularization is the final orbital proof. The rocket should be burning almost horizontally now to lift periapsis above the atmosphere.";
+                hintText.textContent = `The plan succeeds when periapsis rises above ${state.plan.targetPeriapsis} km and stays there.`;
+                telemetryNote.textContent = "During the final burn, periapsis matters more than raw altitude. That is the number that decides whether the orbit closes.";
+                formulaNote.textContent = "A circularization burn is really a periapsis-raising burn. Matching the local circular-speed scale is the key idea.";
+                return;
+            }
+
+            lessonText.textContent = "The rocket is trimming the orbit now. Small extra burns matter less than the phase design decisions that got the stack here in the first place.";
+            hintText.textContent = "If the orbit is good, resist the urge to over-burn. A calm finish is better than chasing a perfect circle and wasting all remaining propellant.";
+            telemetryNote.textContent = "The wide Earth view shows the final result of the whole ascent plan: atmosphere survival, apoapsis placement and periapsis closure.";
+            formulaNote.textContent = "Once periapsis stays above the atmosphere, the vehicle no longer re-enters every orbit. That threshold is the real finish line.";
+        }
+
+        function isInteractiveTarget(target) {
+            return target instanceof HTMLElement && Boolean(target.closest("input, button, a, textarea, select"));
         }
 
         let lastFrame = performance.now();
@@ -1383,52 +3106,85 @@
             const realDt = Math.min(0.05, (now - lastFrame) / 1000);
             lastFrame = now;
 
-            if (state.mode === "ascent" || state.mode === "coast") {
-                accumulator += realDt * state.speed * SIM_SECONDS_PER_SECOND;
-                accumulator = Math.min(accumulator, 280);
-                while (accumulator >= SIM_STEP) {
-                    stepSimulation(SIM_STEP);
-                    accumulator -= SIM_STEP;
-                    if (state.mode !== "ascent" && state.mode !== "coast") break;
+            if (state.mode === "countdown" && !state.paused) {
+                state.launchCountdown = Math.max(0, state.launchCountdown - realDt);
+                if (state.launchCountdown <= 0) {
+                    beginPoweredFlight();
                 }
             }
 
+            if (state.mode === "flight" && !state.paused) {
+                accumulator += realDt * getEffectiveSimSpeed();
+                accumulator = Math.min(accumulator, 0.6);
+                while (accumulator >= SIM_STEP) {
+                    stepSimulation(SIM_STEP);
+                    accumulator -= SIM_STEP;
+                    if (state.mode !== "flight") break;
+                }
+            }
+
+            state.lastTelemetry = state.lastTelemetry || computeTelemetry();
             updateCamera();
             render();
             updateTelemetry();
             requestAnimationFrame(frame);
         }
 
-        missionButtons.forEach(button => {
-            button.addEventListener("click", () => setMission(button.dataset.mission));
+        [payloadSlider, periapsisTargetSlider].forEach(input => {
+            input.addEventListener("input", () => {
+                if (state.mode !== "flight") {
+                    resetMission();
+                }
+            });
         });
 
-        energySlider.addEventListener("input", (event) => {
-            state.energy = parseFloat(event.target.value);
-            updateControlLabels();
-            resetMission();
+        planNumberInputs.forEach(input => {
+            input.addEventListener("change", () => {
+                if (state.mode !== "flight") {
+                    resetMission();
+                }
+            });
         });
 
-        angleSlider.addEventListener("input", (event) => {
-            state.angle = parseFloat(event.target.value);
+        speedSlider.addEventListener("input", event => {
+            state.speedSetting = parseFloat(event.target.value);
+            state.speed = state.speedSetting * SIM_SPEED_MULTIPLIER;
             updateControlLabels();
-            resetMission();
-        });
-
-        speedSlider.addEventListener("input", (event) => {
-            state.speed = parseFloat(event.target.value);
-            updateControlLabels();
+            updateLessons();
+            updateTelemetry();
         });
 
         launchBtn.addEventListener("click", launchMission);
+        presetBtn.addEventListener("click", loadFriendlyPlan);
+        pauseBtn.addEventListener("click", togglePause);
         resetBtn.addEventListener("click", resetMission);
         retryBtn.addEventListener("click", resetMission);
+        focusModeBtn.addEventListener("click", toggleFocusMode);
+
+        window.addEventListener("keydown", event => {
+            if (isInteractiveTarget(event.target) || event.repeat) return;
+
+            if (event.code === "Space") {
+                event.preventDefault();
+                togglePause();
+            }
+            if (event.code === "KeyL") {
+                launchMission();
+            }
+            if (event.code === "KeyR") {
+                resetMission();
+            }
+            if (event.code === "KeyH") {
+                toggleFocusMode();
+            }
+        });
 
         window.addEventListener("resize", resizeCanvas);
 
         resizeCanvas();
-        updateControlLabels();
-        resetMission();
+        setFocusMode(readFocusModePreference());
+        loadFriendlyPlan();
+        requestAnimationFrame(revealPlannerPanel);
         requestAnimationFrame(frame);
     </script>
 </body>
