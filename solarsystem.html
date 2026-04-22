@@ -221,12 +221,40 @@
             font-size: 0.74rem;
             letter-spacing: 0.08em;
             text-transform: uppercase;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            flex-direction: column;
+            gap: 0.18rem;
+            text-align: left;
         }
 
         .action-btn.primary {
             background: linear-gradient(135deg, var(--cyan), #a4fbff);
             color: #04121e;
             border-color: transparent;
+        }
+
+        .action-btn .btn-title {
+            display: block;
+            width: 100%;
+            font-size: 0.74rem;
+            line-height: 1.1;
+        }
+
+        .action-btn .btn-hint {
+            display: block;
+            width: 100%;
+            font-family: "IBM Plex Mono", monospace;
+            font-size: 0.58rem;
+            line-height: 1.35;
+            letter-spacing: 0.04em;
+            text-transform: none;
+            color: var(--muted);
+        }
+
+        .action-btn.primary .btn-hint {
+            color: rgba(4, 18, 30, 0.76);
         }
 
         .action-btn.warning {
@@ -370,6 +398,48 @@
             background: rgba(7, 14, 28, 0.55);
         }
 
+        .formula-card {
+            margin-top: 0.95rem;
+            padding: 0.85rem 0.9rem;
+            border-radius: var(--r-sm);
+            border: 1px solid rgba(113, 245, 255, 0.1);
+            background: rgba(7, 14, 28, 0.55);
+        }
+
+        .formula-grid {
+            display: grid;
+            gap: 0.65rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .formula-line {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 1rem;
+            color: var(--text);
+        }
+
+        .formula-line strong {
+            font-family: "IBM Plex Mono", monospace;
+            font-size: 0.76rem;
+            color: var(--cyan-soft);
+        }
+
+        .formula-line span {
+            font-family: "IBM Plex Mono", monospace;
+            font-size: 0.76rem;
+            color: var(--text);
+            text-align: right;
+        }
+
+        .formula-note {
+            margin: 0;
+            color: var(--muted);
+            font-size: 0.84rem;
+            line-height: 1.6;
+        }
+
         .info-label {
             display: block;
             margin-bottom: 0.45rem;
@@ -447,6 +517,19 @@
             border-color: var(--line-strong);
         }
 
+        body.guide-hidden .intro-panel,
+        body.guide-hidden .setup-copy,
+        body.guide-hidden .range-note,
+        body.guide-hidden .formula-card,
+        body.guide-hidden .info-stack {
+            display: none;
+        }
+
+        body.guide-hidden .console-panel,
+        body.guide-hidden .status-panel {
+            width: min(360px, calc(100vw - 2rem));
+        }
+
         @media (max-width: 980px) {
             .intro-panel,
             .console-panel,
@@ -476,35 +559,33 @@
         }
 
         @media (max-width: 768px) {
+            .ui-shell {
+                overflow-y: auto;
+                padding: 4.3rem 0.75rem 0.75rem;
+            }
+
             .nav-actions {
+                position: fixed;
+                top: 0.75rem;
                 left: 0.75rem;
                 right: 0.75rem;
                 justify-content: flex-end;
                 flex-wrap: wrap;
+                z-index: 5;
             }
 
             .intro-panel,
             .console-panel,
             .status-panel {
-                left: 0.75rem;
-                right: 0.75rem;
+                position: relative;
+                left: auto;
+                right: auto;
+                top: auto;
+                bottom: auto;
                 width: auto;
-            }
-
-            .intro-panel {
-                top: 4.3rem;
-            }
-
-            .console-panel {
-                top: 15.25rem;
-                max-height: 31vh;
-                overflow: auto;
-            }
-
-            .status-panel {
-                bottom: 0.75rem;
-                max-height: 31vh;
-                overflow: auto;
+                margin: 0 0 0.75rem;
+                max-height: none;
+                overflow: visible;
             }
 
             .result-banner {
@@ -515,6 +596,11 @@
                 flex-direction: column;
                 align-items: flex-start;
             }
+
+            body.guide-hidden .console-panel,
+            body.guide-hidden .status-panel {
+                width: auto;
+            }
         }
     </style>
 </head>
@@ -523,6 +609,7 @@
 
     <div class="ui-shell">
         <div class="nav-actions">
+            <button id="guideToggle" class="nav-button" type="button">Focus View</button>
             <a href="index.html#lab" class="nav-button">Back to Lab</a>
             <a href="orbital-launch.html" class="nav-button primary">Open Orbital Launch</a>
         </div>
@@ -543,13 +630,28 @@
         <section class="panel console-panel">
             <div class="panel-inner">
                 <div class="panel-kicker">Mission Console</div>
-                <p class="setup-copy">Hold prograde to raise your orbit, hold retrograde to drop inward, then use time warp to ride the transfer. Slow down again when the target planet gets close.</p>
+                <p class="setup-copy">A prograde burn adds tangential speed and usually lifts the far side of the orbit outward. A retrograde burn removes tangential speed and usually drops the orbit inward toward the Sun.</p>
 
                 <div class="control-grid">
-                    <button id="raiseBtn" class="action-btn primary" type="button">Raise Orbit</button>
-                    <button id="dropBtn" class="action-btn warning" type="button">Drop Orbit</button>
+                    <button id="raiseBtn" class="action-btn primary" type="button">
+                        <span class="btn-title">Fire Prograde Burn</span>
+                        <span class="btn-hint">+ tangential speed for chosen burn time</span>
+                    </button>
+                    <button id="dropBtn" class="action-btn warning" type="button">
+                        <span class="btn-title">Fire Retrograde Burn</span>
+                        <span class="btn-hint">- tangential speed for chosen burn time</span>
+                    </button>
                     <button id="pauseBtn" class="action-btn" type="button">Pause</button>
                     <button id="resetBtn" class="action-btn" type="button">Restart Run</button>
+                </div>
+
+                <div class="control-group">
+                    <div class="control-head">
+                        <span class="label">Burn Duration</span>
+                        <span class="value" id="burnDurationValue">5.0 s</span>
+                    </div>
+                    <input id="burnDurationSlider" type="range" min="1" max="12" step="0.5" value="5">
+                    <p class="range-note">The burn equation here is practical: <span class="mono">Delta-v ≈ a x t_burn</span>. Longer burn means larger orbit change, but it also spends more reserve.</p>
                 </div>
 
                 <div class="control-group">
@@ -577,11 +679,19 @@
                         <strong id="statusValue">Ready</strong>
                     </div>
                     <div class="telemetry-item">
-                        <span>Solar Radius</span>
+                        <span>Elapsed Years</span>
+                        <strong id="yearsValue">0.00 y</strong>
+                    </div>
+                    <div class="telemetry-item">
+                        <span>Heliocentric Radius</span>
                         <strong id="radiusValue">-</strong>
                     </div>
                     <div class="telemetry-item">
-                        <span>Target Range</span>
+                        <span>Burn State</span>
+                        <strong id="burnValue">Ready 5.0 s</strong>
+                    </div>
+                    <div class="telemetry-item">
+                        <span>Intercept Range</span>
                         <strong id="distanceValue">-</strong>
                     </div>
                     <div class="telemetry-item">
@@ -589,7 +699,7 @@
                         <strong id="relativeValue">-</strong>
                     </div>
                     <div class="telemetry-item">
-                        <span>Fuel</span>
+                        <span>Delta-v Reserve</span>
                         <strong id="fuelValue">100%</strong>
                     </div>
                 </div>
@@ -629,10 +739,33 @@
                     </div>
                 </div>
 
+                <div class="formula-card">
+                    <span class="info-label">Orbit Formula</span>
+                    <div class="formula-grid">
+                        <div class="formula-line">
+                            <strong>v_circ = sqrt(mu / r)</strong>
+                            <span id="circularSpeedValue">-</span>
+                        </div>
+                        <div class="formula-line">
+                            <strong>Delta = v_probe - v_circ</strong>
+                            <span id="speedDeltaValue">-</span>
+                        </div>
+                        <div class="formula-line">
+                            <strong>Delta-v_burn ≈ a x t_burn</strong>
+                            <span id="burnPlanValue">-</span>
+                        </div>
+                        <div class="formula-line">
+                            <strong>epsilon = v^2/2 - mu/r</strong>
+                            <span id="energyValue">-</span>
+                        </div>
+                    </div>
+                    <p class="formula-note" id="formulaNote">If the probe is faster than circular speed at the same radius, the opposite side of the orbit rises. If it is slower, the orbit falls inward.</p>
+                </div>
+
                 <div class="info-stack">
                     <div class="info-block">
                         <span class="info-label">Flight Lesson</span>
-                        <p class="lesson-text" id="lessonText">Raise orbit to reach Mars, Jupiter and the outer planets. Drop inward to move faster and catch Mercury or Venus.</p>
+                        <p class="lesson-text" id="lessonText">Use prograde burn to add tangential speed and reach Mars, Jupiter and the outer planets. Use retrograde burn to drop inward and move faster around the Sun.</p>
                     </div>
                     <div class="info-block">
                         <span class="info-label">Discovery Feed</span>
@@ -656,16 +789,23 @@
         const canvas = document.getElementById("solarCanvas");
         const ctx = canvas.getContext("2d");
 
+        const burnDurationSlider = document.getElementById("burnDurationSlider");
+        const burnDurationValue = document.getElementById("burnDurationValue");
         const speedSlider = document.getElementById("speedSlider");
         const speedValue = document.getElementById("speedValue");
+        const guideToggle = document.getElementById("guideToggle");
         const raiseBtn = document.getElementById("raiseBtn");
         const dropBtn = document.getElementById("dropBtn");
         const pauseBtn = document.getElementById("pauseBtn");
         const resetBtn = document.getElementById("resetBtn");
+        const raiseHint = raiseBtn.querySelector(".btn-hint");
+        const dropHint = dropBtn.querySelector(".btn-hint");
 
         const targetValue = document.getElementById("targetValue");
         const statusValue = document.getElementById("statusValue");
+        const yearsValue = document.getElementById("yearsValue");
         const radiusValue = document.getElementById("radiusValue");
+        const burnValue = document.getElementById("burnValue");
         const distanceValue = document.getElementById("distanceValue");
         const relativeValue = document.getElementById("relativeValue");
         const fuelValue = document.getElementById("fuelValue");
@@ -678,11 +818,17 @@
         const bestValue = document.getElementById("bestValue");
         const lessonText = document.getElementById("lessonText");
         const factText = document.getElementById("factText");
+        const circularSpeedValue = document.getElementById("circularSpeedValue");
+        const speedDeltaValue = document.getElementById("speedDeltaValue");
+        const burnPlanValue = document.getElementById("burnPlanValue");
+        const energyValue = document.getElementById("energyValue");
+        const formulaNote = document.getElementById("formulaNote");
         const resultBanner = document.getElementById("resultBanner");
         const resultTitle = document.getElementById("resultTitle");
         const resultCopy = document.getElementById("resultCopy");
 
         const STORAGE_KEY = "tech_ant_solar_best_chain";
+        const GUIDE_KEY = "tech_ant_solar_guide_hidden";
 
         const SUN = {
             radius: 18,
@@ -698,8 +844,8 @@
         const MAX_TRAIL_POINTS = 340;
         const SCAN_LOCK_TIME = 1.45;
         const SCAN_REL_SPEED = 3.4;
-        const BURN_ACCEL = 1.6;
-        const FUEL_BURN_RATE = 24;
+        const BURN_ACCEL = 0.2;
+        const FUEL_BURN_RATE = 8;
         const HEAT_GAIN = 1.8;
         const HEAT_COOL = 15;
         const INTRO_TARGETS = ["Mars", "Venus", "Jupiter"];
@@ -713,7 +859,7 @@
                 colorB: "#8d95a6",
                 phase: 1.4,
                 fact: "Mercury races around the Sun in only 88 Earth days.",
-                hint: "Mercury sits deep in the Sun's gravity well. Lower orbit makes you move faster and catch it."
+                hint: "Mercury sits deep in the Sun's gravity well. A retrograde burn drops you inward and makes you sweep angle faster."
             },
             {
                 name: "Venus",
@@ -723,7 +869,7 @@
                 colorB: "#c89242",
                 phase: 4.65,
                 fact: "Venus has a year shorter than its day because it rotates extremely slowly.",
-                hint: "Venus is inside Earth's orbit. Drop inward to gain angular speed."
+                hint: "Venus is inside Earth's orbit. Retrograde burn lowers your solar orbit and increases angular speed."
             },
             {
                 name: "Earth",
@@ -733,7 +879,7 @@
                 colorB: "#2f63ff",
                 phase: 0.2,
                 fact: "Earth is the reference orbit for this probe and your home reset point.",
-                hint: "Earth is your home orbit. Circular motion here is a good baseline for transfers."
+                hint: "Earth is your baseline orbit. Compare probe speed against circular speed here before making a transfer."
             },
             {
                 name: "Mars",
@@ -743,7 +889,7 @@
                 colorB: "#b94728",
                 phase: 0.95,
                 fact: "Mars moves more slowly around the Sun than Earth because it orbits farther out.",
-                hint: "Raise orbit to head outward. Outer orbits take longer and sweep angle more slowly."
+                hint: "Mars sits farther out. A prograde burn lifts apoapsis and starts a slower outer transfer."
             },
             {
                 name: "Jupiter",
@@ -753,7 +899,7 @@
                 colorB: "#b77748",
                 phase: 2.15,
                 fact: "Jupiter holds most of the planetary mass in the Solar System outside the Sun.",
-                hint: "Jupiter needs a wide outward transfer. Build energy, then time-warp through cruise."
+                hint: "Jupiter needs a wide outward transfer. Use prograde burn, then time-warp through the long cruise."
             },
             {
                 name: "Saturn",
@@ -764,7 +910,7 @@
                 phase: 5.05,
                 rings: true,
                 fact: "Saturn's rings are broad but extremely thin compared with their huge diameter.",
-                hint: "Saturn lies far outside Earth. Large high orbits help, but patience matters."
+                hint: "Saturn lies far outside Earth. Prograde burn raises the far side of the orbit, but patience still matters."
             },
             {
                 name: "Uranus",
@@ -774,7 +920,7 @@
                 colorB: "#8ad5e8",
                 phase: 3.45,
                 fact: "Uranus rotates tipped on its side compared with most planets.",
-                hint: "Uranus rewards clean, fuel-efficient transfers. Ride a calm outer ellipse."
+                hint: "Uranus rewards clean, fuel-efficient prograde transfers. Ride a calm outer ellipse and avoid overburning."
             },
             {
                 name: "Neptune",
@@ -784,9 +930,10 @@
                 colorB: "#3558d3",
                 phase: 1.95,
                 fact: "Neptune completes one trip around the Sun in roughly 165 Earth years.",
-                hint: "Neptune is the long-haul test. Raise orbit, conserve fuel and use time warp wisely."
+                hint: "Neptune is the long-haul test. Prograde burn outward, conserve delta-v and use time warp wisely."
             }
         ];
+        const EARTH_YEAR = 2 * Math.PI / Math.sqrt(SUN.mu / Math.pow(PLANET_DATA.find(planet => planet.name === "Earth").orbit, 3));
 
         let width = 0;
         let height = 0;
@@ -819,14 +966,13 @@
             trailTimer: 0
         };
 
-        const input = {
-            prograde: false,
-            retrograde: false
-        };
-
         const state = {
             speed: 4,
+            burnDuration: 5,
+            burnDirection: 0,
+            burnRemaining: 0,
             paused: false,
+            simTime: 0,
             sessionScans: 0,
             chain: 0,
             bestChain: readBestChain(),
@@ -835,7 +981,7 @@
             scanProgress: 0,
             target: null,
             status: "Mission ready",
-            lesson: "Raise orbit to reach Mars, Jupiter and the outer planets. Drop inward to move faster and catch Mercury or Venus.",
+            lesson: "Use prograde burn to add tangential speed and reach outer planets. Use retrograde burn to drop inward and move faster around the Sun.",
             discovery: "Each completed scan unlocks a short planet fact and refuels the probe for a longer run."
         };
 
@@ -848,11 +994,30 @@
             }
         }
 
+        function readGuidePreference() {
+            try {
+                return window.localStorage.getItem(GUIDE_KEY) === "1";
+            } catch (error) {
+                return false;
+            }
+        }
+
         function saveBestChain() {
             try {
                 window.localStorage.setItem(STORAGE_KEY, String(state.bestChain));
             } catch (error) {
                 // Ignore storage failures and keep the game fully local.
+            }
+        }
+
+        function setGuideVisibility(hidden) {
+            document.body.classList.toggle("guide-hidden", hidden);
+            guideToggle.textContent = hidden ? "Show Guide" : "Focus View";
+
+            try {
+                window.localStorage.setItem(GUIDE_KEY, hidden ? "1" : "0");
+            } catch (error) {
+                // Ignore storage failures and keep UI fully local.
             }
         }
 
@@ -873,6 +1038,10 @@
 
         function formatSpeed(value) {
             return `${value.toFixed(2)} u/s`;
+        }
+
+        function formatYears(value) {
+            return `${value < 10 ? value.toFixed(2) : value.toFixed(1)} y`;
         }
 
         function worldToScreen(x, y) {
@@ -898,9 +1067,17 @@
         }
 
         function updateButtonStates() {
-            raiseBtn.classList.toggle("active", input.prograde && !state.paused);
-            dropBtn.classList.toggle("active", input.retrograde && !state.paused);
+            raiseBtn.classList.toggle("active", state.burnDirection > 0 && state.burnRemaining > 0 && !state.paused);
+            dropBtn.classList.toggle("active", state.burnDirection < 0 && state.burnRemaining > 0 && !state.paused);
             pauseBtn.textContent = state.paused ? "Resume" : "Pause";
+        }
+
+        function updateControlLabels() {
+            const plannedDeltaV = BURN_ACCEL * state.burnDuration;
+            burnDurationValue.textContent = `${state.burnDuration.toFixed(1)} s`;
+            speedValue.textContent = `${state.speed.toFixed(1)}x`;
+            raiseHint.textContent = `+ tangential speed, Delta-v≈${plannedDeltaV.toFixed(2)} u/s`;
+            dropHint.textContent = `- tangential speed, Delta-v≈${plannedDeltaV.toFixed(2)} u/s`;
         }
 
         function resizeCanvas() {
@@ -993,13 +1170,14 @@
         }
 
         function restartRun(showBanner = true) {
-            input.prograde = false;
-            input.retrograde = false;
             resetPlanets();
+            state.simTime = 0;
             state.sessionScans = 0;
             state.chain = 0;
             state.missionCursor = 0;
             state.missionCount = 0;
+            state.burnDirection = 0;
+            state.burnRemaining = 0;
             state.paused = false;
             state.status = "Mission ready";
             state.discovery = "Each completed scan unlocks a short planet fact and refuels the probe for a longer run.";
@@ -1017,15 +1195,16 @@
 
         function failRun(title, copy) {
             const previousTarget = state.target ? state.target.name : "";
-            input.prograde = false;
-            input.retrograde = false;
             state.chain = 0;
+            state.burnDirection = 0;
+            state.burnRemaining = 0;
             resetProbe();
             chooseNextTarget(previousTarget);
             state.status = title;
             updateLesson();
             updateTelemetry();
             setBanner("fail", title, `${copy} Next target: ${state.target.name}.`);
+            updateButtonStates();
         }
 
         function completeScan() {
@@ -1045,12 +1224,28 @@
 
         function getBurnMode() {
             if (state.paused) return 0;
-            if (input.prograde === input.retrograde) return 0;
-            return input.prograde ? 1 : -1;
+            return state.burnRemaining > 0 ? state.burnDirection : 0;
         }
 
         function getScanRadius(target) {
             return 18 + target.size * 1.8;
+        }
+
+        function startBurn(direction) {
+            if (state.paused) return;
+            if (probe.fuel <= 0) {
+                setBanner("fail", "No delta-v reserve", "The probe is out of burn reserve. Finish a scan for refuel or restart the run.");
+                return;
+            }
+            if (state.burnRemaining > 0) {
+                setBanner("info", "Burn in progress", `Wait until the current ${state.burnDirection > 0 ? "prograde" : "retrograde"} burn finishes.`);
+                return;
+            }
+
+            state.burnDirection = direction;
+            state.burnRemaining = state.burnDuration;
+            state.status = direction > 0 ? "Timed prograde burn" : "Timed retrograde burn";
+            updateButtonStates();
         }
 
         function updateLesson() {
@@ -1065,7 +1260,12 @@
             const targetAngleDelta = normalizeAngle(target.angle - probeAngle);
 
             if (probe.heat > 72) {
-                state.lesson = "Solar heat is climbing. Raise orbit or coast outward to cool the probe before it overloads.";
+                state.lesson = "Solar heat is climbing. Use prograde burn or simple outward coasting to increase radius and cool the probe.";
+                return;
+            }
+
+            if (state.burnRemaining > 0) {
+                state.lesson = `${state.burnDirection > 0 ? "Prograde" : "Retrograde"} burn is active for ${state.burnRemaining.toFixed(1)} more simulation seconds. Burn timing matters because Delta-v grows roughly in proportion to burn duration.`;
                 return;
             }
 
@@ -1077,22 +1277,22 @@
             }
 
             if (targetRadius - probeRadius > 22) {
-                state.lesson = `${target.name} orbits farther from the Sun than the probe. Burn prograde to raise orbit, then let the slower outer arc carry you outward.`;
+                state.lesson = `${target.name} orbits farther from the Sun than the probe. Burn prograde to add tangential speed, raise the opposite side of the orbit and drift outward.`;
                 return;
             }
 
             if (probeRadius - targetRadius > 22) {
-                state.lesson = `${target.name} sits deeper in the Sun's gravity field. Burn retrograde to drop inward and gain angular speed.`;
+                state.lesson = `${target.name} sits deeper in the Sun's gravity field. Burn retrograde to remove tangential speed, drop inward and gain angular speed.`;
                 return;
             }
 
             if (targetAngleDelta > 0.35) {
-                state.lesson = `${target.name} is ahead of you on a similar orbit. Dropping slightly inward helps you move faster and close the angle.`;
+                state.lesson = `${target.name} is ahead of you on a similar orbit. A small retrograde burn drops you inward, where faster orbital motion helps close the angle.`;
                 return;
             }
 
             if (targetAngleDelta < -0.35) {
-                state.lesson = `${target.name} is behind you. Raising orbit slightly slows your angular pace and lets the target catch up.`;
+                state.lesson = `${target.name} is behind you. A small prograde burn lifts you outward, slows angular pace and lets the target catch up.`;
                 return;
             }
 
@@ -1104,6 +1304,12 @@
 
             const target = state.target;
             const probeRadius = Math.hypot(probe.x, probe.y);
+            const probeSpeed = Math.hypot(probe.vx, probe.vy);
+            const circularSpeed = Math.sqrt(SUN.mu / probeRadius);
+            const speedDelta = probeSpeed - circularSpeed;
+            const specificEnergy = (probeSpeed * probeSpeed) / 2 - SUN.mu / probeRadius;
+            const yearsElapsed = state.simTime / EARTH_YEAR;
+            const plannedDeltaV = BURN_ACCEL * state.burnDuration;
             const targetRange = Math.hypot(target.x - probe.x, target.y - probe.y);
             const relativeSpeed = Math.hypot(target.vx - probe.vx, target.vy - probe.vy);
 
@@ -1111,12 +1317,10 @@
             const burnMode = getBurnMode();
 
             if (!state.paused) {
-                if (state.scanProgress > 0.02 && targetRange < getScanRadius(target) * 1.7) {
+                if (burnMode !== 0) {
+                    liveStatus = burnMode > 0 ? "Timed prograde burn" : "Timed retrograde burn";
+                } else if (state.scanProgress > 0.02 && targetRange < getScanRadius(target) * 1.7) {
                     liveStatus = "Scan lock building";
-                } else if (burnMode > 0) {
-                    liveStatus = "Burning prograde";
-                } else if (burnMode < 0) {
-                    liveStatus = "Burning retrograde";
                 } else {
                     liveStatus = "Coasting";
                 }
@@ -1126,10 +1330,18 @@
 
             targetValue.textContent = target.name;
             statusValue.textContent = liveStatus;
+            yearsValue.textContent = formatYears(yearsElapsed);
             radiusValue.textContent = formatDistance(probeRadius);
+            burnValue.textContent = burnMode !== 0
+                ? `${burnMode > 0 ? "Pro" : "Retro"} ${state.burnRemaining.toFixed(1)} s`
+                : `Ready ${state.burnDuration.toFixed(1)} s`;
             distanceValue.textContent = formatDistance(targetRange);
             relativeValue.textContent = formatSpeed(relativeSpeed);
             fuelValue.textContent = `${Math.round(probe.fuel)}%`;
+            circularSpeedValue.textContent = formatSpeed(circularSpeed);
+            speedDeltaValue.textContent = `${speedDelta >= 0 ? "+" : ""}${speedDelta.toFixed(2)} u/s`;
+            burnPlanValue.textContent = `${plannedDeltaV.toFixed(2)} u/s @ ${state.burnDuration.toFixed(1)} s`;
+            energyValue.textContent = `${specificEnergy.toFixed(2)}`;
             scanText.textContent = `${Math.round(state.scanProgress * 100)}%`;
             heatText.textContent = `${Math.round(probe.heat)}%`;
             sessionValue.textContent = String(state.sessionScans);
@@ -1139,6 +1351,14 @@
             heatBar.style.width = `${probe.heat}%`;
             lessonText.textContent = state.lesson;
             factText.textContent = state.discovery;
+
+            if (speedDelta > 0.18) {
+                formulaNote.textContent = "The probe is faster than circular speed at this radius. That extra tangential speed lifts the far side of the orbit outward.";
+            } else if (speedDelta < -0.18) {
+                formulaNote.textContent = "The probe is slower than circular speed at this radius. The orbit will fall inward toward a lower perihelion.";
+            } else {
+                formulaNote.textContent = "The probe is close to circular speed here. Timed burns now make clean, easy-to-read orbital changes.";
+            }
         }
 
         function pushTrailPoint() {
@@ -1155,15 +1375,23 @@
             const ay = (-probe.y / radius) * gravity;
 
             const burnMode = getBurnMode();
-            if (burnMode !== 0 && probe.fuel > 0) {
+            const burnDt = burnMode !== 0 ? Math.min(dt, state.burnRemaining) : 0;
+            if (burnDt > 0 && probe.fuel > 0) {
                 const speed = Math.hypot(probe.vx, probe.vy) || 1;
                 const direction = burnMode > 0
                     ? { x: probe.vx / speed, y: probe.vy / speed }
                     : { x: -probe.vx / speed, y: -probe.vy / speed };
 
-                probe.vx += direction.x * BURN_ACCEL * dt;
-                probe.vy += direction.y * BURN_ACCEL * dt;
-                probe.fuel = clamp(probe.fuel - FUEL_BURN_RATE * dt, 0, 100);
+                probe.vx += direction.x * BURN_ACCEL * burnDt;
+                probe.vy += direction.y * BURN_ACCEL * burnDt;
+                probe.fuel = clamp(probe.fuel - FUEL_BURN_RATE * burnDt, 0, 100);
+                state.burnRemaining = Math.max(0, state.burnRemaining - burnDt);
+
+                if (state.burnRemaining <= 0 || probe.fuel <= 0) {
+                    state.burnRemaining = 0;
+                    state.burnDirection = 0;
+                    updateButtonStates();
+                }
             }
 
             probe.vx += ax * dt;
@@ -1179,7 +1407,7 @@
             }
 
             if (nextRadius < SUN.radius + 2) {
-                failRun("Solar impact", "The probe fell into the Sun. Raise orbit sooner and avoid deep dives.");
+                failRun("Solar impact", "The probe fell into the Sun. Use prograde burn sooner and avoid staying too deep in the gravity well.");
                 return;
             }
 
@@ -1220,6 +1448,7 @@
         }
 
         function stepSimulation(dt) {
+            state.simTime += dt;
             planets.forEach(planet => updatePlanet(planet, dt));
             updateProbe(dt);
             updateMission(dt);
@@ -1413,60 +1642,41 @@
             requestAnimationFrame(frame);
         }
 
-        function bindHoldButton(button, key) {
-            button.addEventListener("pointerdown", event => {
-                event.preventDefault();
-                input[key] = true;
-                updateButtonStates();
-            });
+        raiseBtn.addEventListener("click", () => startBurn(1));
+        dropBtn.addEventListener("click", () => startBurn(-1));
 
-            ["pointerup", "pointerleave", "pointercancel"].forEach(type => {
-                button.addEventListener(type, () => {
-                    input[key] = false;
-                    updateButtonStates();
-                });
-            });
-        }
-
-        bindHoldButton(raiseBtn, "prograde");
-        bindHoldButton(dropBtn, "retrograde");
-
-        window.addEventListener("pointerup", () => {
-            input.prograde = false;
-            input.retrograde = false;
-            updateButtonStates();
+        burnDurationSlider.addEventListener("input", event => {
+            state.burnDuration = parseFloat(event.target.value);
+            updateControlLabels();
+            updateTelemetry();
         });
 
         window.addEventListener("keydown", event => {
+            if (event.repeat) return;
+
             if (event.code === "KeyW" || event.code === "ArrowUp") {
-                input.prograde = true;
-                updateButtonStates();
+                startBurn(1);
             }
             if (event.code === "KeyS" || event.code === "ArrowDown") {
-                input.retrograde = true;
-                updateButtonStates();
+                startBurn(-1);
             }
             if (event.code === "Space") {
                 event.preventDefault();
                 state.paused = !state.paused;
                 updateButtonStates();
             }
-        });
-
-        window.addEventListener("keyup", event => {
-            if (event.code === "KeyW" || event.code === "ArrowUp") {
-                input.prograde = false;
-                updateButtonStates();
-            }
-            if (event.code === "KeyS" || event.code === "ArrowDown") {
-                input.retrograde = false;
-                updateButtonStates();
+            if (event.code === "KeyR") {
+                restartRun(true);
             }
         });
 
         speedSlider.addEventListener("input", event => {
             state.speed = parseFloat(event.target.value);
-            speedValue.textContent = `${state.speed.toFixed(1)}x`;
+            updateControlLabels();
+        });
+
+        guideToggle.addEventListener("click", () => {
+            setGuideVisibility(!document.body.classList.contains("guide-hidden"));
         });
 
         pauseBtn.addEventListener("click", () => {
@@ -1481,6 +1691,8 @@
         window.addEventListener("resize", resizeCanvas);
 
         resizeCanvas();
+        setGuideVisibility(readGuidePreference());
+        updateControlLabels();
         restartRun(true);
         updateButtonStates();
         requestAnimationFrame(frame);
