@@ -1,1701 +1,1922 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Tech-Ant Lab | Solar System Survey</title>
-    <meta name="description" content="A lightweight solar system survey game from Tech-Ant where players reshape a probe orbit, use time warp and learn why inner and outer orbits behave differently.">
-    <meta name="theme-color" content="#050816">
-    <link rel="canonical" href="https://tech-ant.fi/solarsystem.html">
-    <link rel="icon" type="image/png" href="tech-antLOGO.png">
-    <meta property="og:title" content="Tech-Ant Lab | Solar System Survey">
-    <meta property="og:description" content="Guide a survey probe through the Solar System, scan planets and learn orbital intuition in a lightweight browser game.">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://tech-ant.fi/solarsystem.html">
-    <meta property="og:image" content="https://tech-ant.fi/tech-antLOGO.png">
-    <meta property="og:image:alt" content="Tech-Ant Oy logo">
-    <meta name="twitter:card" content="summary">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+    <meta
+      name="description"
+      content="A lightweight orbital survey module from Tech-Ant Lab. Reshape a probe's orbit with small burns, use time warp and learn how timing affects scan missions."
+    />
+    <meta name="theme-color" content="#050816" />
+    <link rel="canonical" href="https://tech-ant.fi/solarsystem.html" />
+    <link rel="icon" type="image/png" href="tech-antLOGO.png" />
+    <meta property="og:title" content="Tech-Ant Lab | Solar System Survey" />
+    <meta
+      property="og:description"
+      content="Guide a survey probe through the Solar System, reshape its orbit and learn orbital intuition in a lightweight Tech-Ant Lab module."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://tech-ant.fi/solarsystem.html" />
+    <meta property="og:image" content="https://tech-ant.fi/tech-antLOGO.png" />
+    <meta property="og:image:alt" content="Tech-Ant Oy logo" />
+    <meta name="twitter:card" content="summary" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
     <style>
-        :root {
-            --bg: #050816;
-            --panel: rgba(8, 15, 30, 0.82);
-            --line: rgba(113, 245, 255, 0.16);
-            --line-strong: rgba(113, 245, 255, 0.34);
-            --cyan: #71f5ff;
-            --cyan-soft: #d5fdff;
-            --text: #eef5ff;
-            --muted: #9ca9c2;
-            --acid: #c4ff67;
-            --danger: #ff7c9a;
-            --warning: #ffd166;
-            --shadow: 0 24px 80px rgba(2, 8, 20, 0.36);
-            --r: 18px;
-            --r-sm: 12px;
-        }
+      :root {
+        --bg: #050816;
+        --panel: rgba(11, 18, 31, 0.84);
+        --line: rgba(124, 214, 225, 0.14);
+        --line-strong: rgba(124, 214, 225, 0.34);
+        --cyan: #7cd6e1;
+        --cyan-soft: #dcf9fb;
+        --text: #f1f5fb;
+        --muted: #a8b4c5;
+        --acid: #c9ff7d;
+        --danger: #ff7c9a;
+        --warning: #ffd166;
+        --shadow: 0 30px 80px rgba(2, 6, 16, 0.42);
+        --r: 18px;
+        --r-sm: 12px;
+      }
 
-        *, *::before, *::after { box-sizing: border-box; }
-        html, body { height: 100%; }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+      }
 
-        body {
-            margin: 0;
-            overflow: hidden;
-            color: var(--text);
-            font-family: "Space Grotesk", sans-serif;
-            background:
-                radial-gradient(circle at 18% 0%, rgba(113, 245, 255, 0.1), transparent 30%),
-                radial-gradient(circle at 85% 10%, rgba(196, 255, 103, 0.06), transparent 18%),
-                linear-gradient(180deg, #050816 0%, #060b18 50%, #091024 100%);
-        }
+      body {
+        margin: 0;
+        overflow: hidden;
+        color: var(--text);
+        font-family: "Space Grotesk", sans-serif;
+        background:
+          radial-gradient(
+            circle at 18% 0%,
+            rgba(113, 245, 255, 0.1),
+            transparent 30%
+          ),
+          radial-gradient(
+            circle at 85% 10%,
+            rgba(196, 255, 103, 0.06),
+            transparent 18%
+          ),
+          linear-gradient(180deg, #050816 0%, #060b18 50%, #091024 100%);
+      }
 
-        body::before {
-            content: "";
-            position: fixed;
-            inset: 0;
-            background-image:
-                linear-gradient(rgba(113, 245, 255, 0.04) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(113, 245, 255, 0.04) 1px, transparent 1px);
-            background-size: 72px 72px;
-            opacity: 0.4;
-            pointer-events: none;
-        }
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background-image:
+          linear-gradient(rgba(113, 245, 255, 0.04) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(113, 245, 255, 0.04) 1px, transparent 1px);
+        background-size: 72px 72px;
+        opacity: 0.4;
+        pointer-events: none;
+      }
 
-        canvas {
-            display: block;
-        }
+      canvas {
+        display: block;
+      }
 
-        .ui-shell {
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-        }
+      .ui-shell {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+      }
 
-        .panel,
-        .nav-button,
-        .action-btn {
-            pointer-events: auto;
-            border: 1px solid var(--line);
-            background: var(--panel);
-            backdrop-filter: blur(18px);
-            box-shadow: var(--shadow);
-        }
+      .panel,
+      .nav-button,
+      .action-btn {
+        pointer-events: auto;
+        border: 1px solid var(--line);
+        background: var(--panel);
+        backdrop-filter: blur(18px);
+        box-shadow: var(--shadow);
+      }
 
-        .panel {
-            position: absolute;
-            border-radius: var(--r);
-            overflow: hidden;
-        }
+      .panel {
+        position: absolute;
+        border-radius: var(--r);
+        overflow: hidden;
+      }
 
-        .panel::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, var(--cyan), transparent 70%);
-            opacity: 0.78;
-        }
+      .panel::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, var(--cyan), transparent 70%);
+        opacity: 0.78;
+      }
 
-        .panel-inner {
-            position: relative;
-            padding: 1.15rem 1.2rem;
-        }
+      .panel-inner {
+        position: relative;
+        padding: 1.15rem 1.2rem;
+      }
 
-        .mono,
-        .panel-kicker,
-        .label,
-        .telemetry-item span,
-        .gauge-head,
-        .stat-pill span,
-        .nav-button,
-        .action-btn {
-            font-family: "IBM Plex Mono", monospace;
-        }
+      .mono,
+      .panel-kicker,
+      .label,
+      .telemetry-item span,
+      .gauge-head,
+      .stat-pill span,
+      .nav-button,
+      .action-btn {
+        font-family: "IBM Plex Mono", monospace;
+      }
 
-        .panel-kicker {
-            color: var(--cyan);
-            font-size: 0.72rem;
-            letter-spacing: 0.14em;
-            text-transform: uppercase;
-            margin-bottom: 0.85rem;
-        }
+      .panel-kicker {
+        color: var(--cyan);
+        font-size: 0.72rem;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        margin-bottom: 0.85rem;
+      }
 
-        .nav-actions {
-            position: absolute;
-            right: 1rem;
-            top: 1rem;
-            display: flex;
-            gap: 0.75rem;
-            pointer-events: auto;
-        }
+      .nav-actions {
+        position: absolute;
+        right: 1rem;
+        top: 1rem;
+        display: flex;
+        gap: 0.75rem;
+        pointer-events: auto;
+      }
 
-        .nav-button,
-        .action-btn {
-            border-radius: 999px;
-            color: var(--text);
-            cursor: pointer;
-            transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease, color 0.18s ease;
-        }
+      .nav-button,
+      .action-btn {
+        border-radius: 999px;
+        color: var(--text);
+        cursor: pointer;
+        transition:
+          transform 0.18s ease,
+          border-color 0.18s ease,
+          background 0.18s ease,
+          color 0.18s ease;
+      }
 
-        .nav-button {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 46px;
-            padding: 0.8rem 1rem;
-            font-size: 0.72rem;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-        }
+      .nav-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 46px;
+        padding: 0.8rem 1rem;
+        font-size: 0.72rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
 
-        .nav-button.primary {
-            background: linear-gradient(135deg, rgba(113, 245, 255, 0.18), rgba(113, 245, 255, 0.06));
-            color: var(--cyan-soft);
+      .nav-button.primary {
+        background: linear-gradient(
+          135deg,
+          rgba(113, 245, 255, 0.18),
+          rgba(113, 245, 255, 0.06)
+        );
+        color: var(--cyan-soft);
+      }
+
+      .intro-panel {
+        top: 1rem;
+        left: 1rem;
+        width: min(430px, calc(100vw - 2rem));
+      }
+
+      .intro-panel h1 {
+        margin: 0 0 0.8rem;
+        font-size: clamp(1.75rem, 5vw, 2.35rem);
+        line-height: 1.02;
+      }
+
+      .intro-panel p,
+      .setup-copy,
+      .range-note,
+      .lesson-text,
+      .fact-text {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.94rem;
+        line-height: 1.72;
+      }
+
+      .meta-strip {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.55rem;
+        margin-top: 1rem;
+      }
+
+      .meta-pill,
+      .stat-pill {
+        padding: 0.48rem 0.72rem;
+        border-radius: 999px;
+        border: 1px solid rgba(113, 245, 255, 0.12);
+        background: rgba(7, 14, 28, 0.54);
+        color: var(--muted);
+        font-size: 0.68rem;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      .console-panel {
+        top: 5rem;
+        right: 1rem;
+        width: min(380px, calc(100vw - 2rem));
+      }
+
+      .setup-copy {
+        margin-bottom: 1rem;
+      }
+
+      .control-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.7rem;
+        margin-bottom: 1rem;
+      }
+
+      .action-btn {
+        min-height: 48px;
+        padding: 0.85rem 0.95rem;
+        font-size: 0.74rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        flex-direction: column;
+        gap: 0.18rem;
+        text-align: left;
+      }
+
+      .action-btn.primary {
+        background: linear-gradient(135deg, var(--cyan), #a4fbff);
+        color: #04121e;
+        border-color: transparent;
+      }
+
+      .action-btn .btn-title {
+        display: block;
+        width: 100%;
+        font-size: 0.74rem;
+        line-height: 1.1;
+      }
+
+      .action-btn .btn-hint {
+        display: block;
+        width: 100%;
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 0.58rem;
+        line-height: 1.35;
+        letter-spacing: 0.04em;
+        text-transform: none;
+        color: var(--muted);
+      }
+
+      .action-btn.primary .btn-hint {
+        color: rgba(4, 18, 30, 0.76);
+      }
+
+      .action-btn.warning {
+        color: var(--warning);
+      }
+
+      .action-btn.active {
+        background: rgba(113, 245, 255, 0.12);
+        border-color: var(--line-strong);
+        color: var(--cyan-soft);
+      }
+
+      .control-group + .control-group {
+        margin-top: 1rem;
+      }
+
+      .control-head,
+      .gauge-head {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 0.55rem;
+      }
+
+      .label {
+        font-size: 0.72rem;
+        color: var(--cyan);
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .value {
+        color: var(--text);
+        font-size: 1rem;
+        font-weight: 600;
+      }
+
+      input[type="range"] {
+        width: 100%;
+        accent-color: var(--cyan);
+      }
+
+      .status-panel {
+        left: 1rem;
+        bottom: 1rem;
+        width: min(470px, calc(100vw - 2rem));
+      }
+
+      .telemetry-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+      }
+
+      .telemetry-item {
+        padding: 0.8rem 0.85rem;
+        border-radius: var(--r-sm);
+        border: 1px solid rgba(113, 245, 255, 0.1);
+        background: rgba(7, 14, 28, 0.55);
+      }
+
+      .telemetry-item span {
+        display: block;
+        font-size: 0.66rem;
+        color: var(--cyan);
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        margin-bottom: 0.45rem;
+      }
+
+      .telemetry-item strong {
+        display: block;
+        font-size: 1rem;
+        line-height: 1.35;
+      }
+
+      .gauge-group + .gauge-group {
+        margin-top: 0.85rem;
+      }
+
+      .gauge-head {
+        margin-bottom: 0.4rem;
+        color: var(--muted);
+        font-size: 0.74rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+
+      .gauge-track {
+        height: 12px;
+        border-radius: 999px;
+        overflow: hidden;
+        background: rgba(7, 14, 28, 0.65);
+        border: 1px solid rgba(113, 245, 255, 0.08);
+      }
+
+      .gauge-fill {
+        width: 0;
+        height: 100%;
+        border-radius: inherit;
+        transition: width 0.12s linear;
+      }
+
+      .gauge-fill.scan {
+        background: linear-gradient(90deg, var(--cyan), #a4fbff);
+      }
+
+      .gauge-fill.heat {
+        background: linear-gradient(
+          90deg,
+          var(--acid),
+          var(--warning),
+          var(--danger)
+        );
+      }
+
+      .stat-strip {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.6rem;
+        margin: 1rem 0;
+      }
+
+      .stat-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+      }
+
+      .stat-pill strong {
+        color: var(--text);
+        font-size: 0.82rem;
+      }
+
+      .info-stack {
+        display: grid;
+        gap: 0.85rem;
+      }
+
+      .info-block {
+        padding: 0.85rem 0.9rem;
+        border-radius: var(--r-sm);
+        border: 1px solid rgba(113, 245, 255, 0.1);
+        background: rgba(7, 14, 28, 0.55);
+      }
+
+      .formula-card {
+        margin-top: 0.95rem;
+        padding: 0.85rem 0.9rem;
+        border-radius: var(--r-sm);
+        border: 1px solid rgba(113, 245, 255, 0.1);
+        background: rgba(7, 14, 28, 0.55);
+      }
+
+      .formula-grid {
+        display: grid;
+        gap: 0.65rem;
+        margin-bottom: 0.8rem;
+      }
+
+      .formula-line {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 1rem;
+        color: var(--text);
+      }
+
+      .formula-line strong {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 0.76rem;
+        color: var(--cyan-soft);
+      }
+
+      .formula-line span {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 0.76rem;
+        color: var(--text);
+        text-align: right;
+      }
+
+      .formula-note {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.84rem;
+        line-height: 1.6;
+      }
+
+      .info-label {
+        display: block;
+        margin-bottom: 0.45rem;
+        color: var(--cyan);
+        font-size: 0.7rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        font-family: "IBM Plex Mono", monospace;
+      }
+
+      .result-banner {
+        position: absolute;
+        left: 50%;
+        top: 1rem;
+        transform: translate(-50%, -14px);
+        width: min(560px, calc(100vw - 2rem));
+        opacity: 0;
+        visibility: hidden;
+        transition:
+          opacity 0.2s ease,
+          transform 0.2s ease,
+          visibility 0.2s ease;
+      }
+
+      .result-banner.visible {
+        opacity: 1;
+        visibility: visible;
+        transform: translate(-50%, 0);
+      }
+
+      .result-layout {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+      }
+
+      .result-copy strong {
+        display: block;
+        font-size: 1.14rem;
+        margin-bottom: 0.35rem;
+      }
+
+      .result-copy p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.92rem;
+        line-height: 1.65;
+      }
+
+      .result-banner.success {
+        border-color: rgba(196, 255, 103, 0.28);
+      }
+
+      .result-banner.fail {
+        border-color: rgba(255, 124, 154, 0.28);
+      }
+
+      .result-banner.info {
+        border-color: rgba(113, 245, 255, 0.24);
+      }
+
+      .result-banner.success::before {
+        background: linear-gradient(90deg, var(--acid), transparent 70%);
+      }
+
+      .result-banner.fail::before {
+        background: linear-gradient(90deg, var(--danger), transparent 70%);
+      }
+
+      .result-banner.info::before {
+        background: linear-gradient(90deg, var(--cyan), transparent 70%);
+      }
+
+      .nav-button:hover,
+      .action-btn:hover {
+        transform: translateY(-2px);
+        border-color: var(--line-strong);
+      }
+
+      body.guide-hidden .intro-panel,
+      body.guide-hidden .setup-copy,
+      body.guide-hidden .range-note,
+      body.guide-hidden .formula-card,
+      body.guide-hidden .info-stack {
+        display: none;
+      }
+
+      body.guide-hidden .console-panel,
+      body.guide-hidden .status-panel {
+        width: min(360px, calc(100vw - 2rem));
+      }
+
+      @media (max-width: 980px) {
+        .intro-panel,
+        .console-panel,
+        .status-panel {
+          width: min(410px, calc(100vw - 1.5rem));
         }
 
         .intro-panel {
-            top: 1rem;
-            left: 1rem;
-            width: min(430px, calc(100vw - 2rem));
-        }
-
-        .intro-panel h1 {
-            margin: 0 0 0.8rem;
-            font-size: clamp(1.75rem, 5vw, 2.35rem);
-            line-height: 1.02;
-        }
-
-        .intro-panel p,
-        .setup-copy,
-        .range-note,
-        .lesson-text,
-        .fact-text {
-            margin: 0;
-            color: var(--muted);
-            font-size: 0.94rem;
-            line-height: 1.72;
-        }
-
-        .meta-strip {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.55rem;
-            margin-top: 1rem;
-        }
-
-        .meta-pill,
-        .stat-pill {
-            padding: 0.48rem 0.72rem;
-            border-radius: 999px;
-            border: 1px solid rgba(113, 245, 255, 0.12);
-            background: rgba(7, 14, 28, 0.54);
-            color: var(--muted);
-            font-size: 0.68rem;
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
+          top: 4.7rem;
+          left: 0.75rem;
         }
 
         .console-panel {
-            top: 5rem;
-            right: 1rem;
-            width: min(380px, calc(100vw - 2rem));
-        }
-
-        .setup-copy {
-            margin-bottom: 1rem;
-        }
-
-        .control-grid {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 0.7rem;
-            margin-bottom: 1rem;
-        }
-
-        .action-btn {
-            min-height: 48px;
-            padding: 0.85rem 0.95rem;
-            font-size: 0.74rem;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            display: flex;
-            align-items: flex-start;
-            justify-content: center;
-            flex-direction: column;
-            gap: 0.18rem;
-            text-align: left;
-        }
-
-        .action-btn.primary {
-            background: linear-gradient(135deg, var(--cyan), #a4fbff);
-            color: #04121e;
-            border-color: transparent;
-        }
-
-        .action-btn .btn-title {
-            display: block;
-            width: 100%;
-            font-size: 0.74rem;
-            line-height: 1.1;
-        }
-
-        .action-btn .btn-hint {
-            display: block;
-            width: 100%;
-            font-family: "IBM Plex Mono", monospace;
-            font-size: 0.58rem;
-            line-height: 1.35;
-            letter-spacing: 0.04em;
-            text-transform: none;
-            color: var(--muted);
-        }
-
-        .action-btn.primary .btn-hint {
-            color: rgba(4, 18, 30, 0.76);
-        }
-
-        .action-btn.warning {
-            color: var(--warning);
-        }
-
-        .action-btn.active {
-            background: rgba(113, 245, 255, 0.12);
-            border-color: var(--line-strong);
-            color: var(--cyan-soft);
-        }
-
-        .control-group + .control-group {
-            margin-top: 1rem;
-        }
-
-        .control-head,
-        .gauge-head {
-            display: flex;
-            align-items: baseline;
-            justify-content: space-between;
-            gap: 1rem;
-            margin-bottom: 0.55rem;
-        }
-
-        .label {
-            font-size: 0.72rem;
-            color: var(--cyan);
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-        }
-
-        .value {
-            color: var(--text);
-            font-size: 1rem;
-            font-weight: 600;
-        }
-
-        input[type="range"] {
-            width: 100%;
-            accent-color: var(--cyan);
+          top: 4.7rem;
+          right: 0.75rem;
         }
 
         .status-panel {
-            left: 1rem;
-            bottom: 1rem;
-            width: min(470px, calc(100vw - 2rem));
+          left: 0.75rem;
+          bottom: 0.75rem;
         }
 
-        .telemetry-grid {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 0.75rem;
-            margin-bottom: 1rem;
+        .nav-actions {
+          right: 0.75rem;
+          top: 0.75rem;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .ui-shell {
+          overflow-y: auto;
+          padding: 4.3rem 0.75rem 0.75rem;
         }
 
-        .telemetry-item {
-            padding: 0.8rem 0.85rem;
-            border-radius: var(--r-sm);
-            border: 1px solid rgba(113, 245, 255, 0.1);
-            background: rgba(7, 14, 28, 0.55);
+        .nav-actions {
+          position: fixed;
+          top: 0.75rem;
+          left: 0.75rem;
+          right: 0.75rem;
+          justify-content: flex-end;
+          flex-wrap: wrap;
+          z-index: 5;
         }
 
-        .telemetry-item span {
-            display: block;
-            font-size: 0.66rem;
-            color: var(--cyan);
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-            margin-bottom: 0.45rem;
-        }
-
-        .telemetry-item strong {
-            display: block;
-            font-size: 1rem;
-            line-height: 1.35;
-        }
-
-        .gauge-group + .gauge-group {
-            margin-top: 0.85rem;
-        }
-
-        .gauge-head {
-            margin-bottom: 0.4rem;
-            color: var(--muted);
-            font-size: 0.74rem;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-        }
-
-        .gauge-track {
-            height: 12px;
-            border-radius: 999px;
-            overflow: hidden;
-            background: rgba(7, 14, 28, 0.65);
-            border: 1px solid rgba(113, 245, 255, 0.08);
-        }
-
-        .gauge-fill {
-            width: 0;
-            height: 100%;
-            border-radius: inherit;
-            transition: width 0.12s linear;
-        }
-
-        .gauge-fill.scan {
-            background: linear-gradient(90deg, var(--cyan), #a4fbff);
-        }
-
-        .gauge-fill.heat {
-            background: linear-gradient(90deg, var(--acid), var(--warning), var(--danger));
-        }
-
-        .stat-strip {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.6rem;
-            margin: 1rem 0;
-        }
-
-        .stat-pill {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.45rem;
-        }
-
-        .stat-pill strong {
-            color: var(--text);
-            font-size: 0.82rem;
-        }
-
-        .info-stack {
-            display: grid;
-            gap: 0.85rem;
-        }
-
-        .info-block {
-            padding: 0.85rem 0.9rem;
-            border-radius: var(--r-sm);
-            border: 1px solid rgba(113, 245, 255, 0.1);
-            background: rgba(7, 14, 28, 0.55);
-        }
-
-        .formula-card {
-            margin-top: 0.95rem;
-            padding: 0.85rem 0.9rem;
-            border-radius: var(--r-sm);
-            border: 1px solid rgba(113, 245, 255, 0.1);
-            background: rgba(7, 14, 28, 0.55);
-        }
-
-        .formula-grid {
-            display: grid;
-            gap: 0.65rem;
-            margin-bottom: 0.8rem;
-        }
-
-        .formula-line {
-            display: flex;
-            align-items: baseline;
-            justify-content: space-between;
-            gap: 1rem;
-            color: var(--text);
-        }
-
-        .formula-line strong {
-            font-family: "IBM Plex Mono", monospace;
-            font-size: 0.76rem;
-            color: var(--cyan-soft);
-        }
-
-        .formula-line span {
-            font-family: "IBM Plex Mono", monospace;
-            font-size: 0.76rem;
-            color: var(--text);
-            text-align: right;
-        }
-
-        .formula-note {
-            margin: 0;
-            color: var(--muted);
-            font-size: 0.84rem;
-            line-height: 1.6;
-        }
-
-        .info-label {
-            display: block;
-            margin-bottom: 0.45rem;
-            color: var(--cyan);
-            font-size: 0.7rem;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-            font-family: "IBM Plex Mono", monospace;
+        .intro-panel,
+        .console-panel,
+        .status-panel {
+          position: relative;
+          left: auto;
+          right: auto;
+          top: auto;
+          bottom: auto;
+          width: auto;
+          margin: 0 0 0.75rem;
+          max-height: none;
+          overflow: visible;
         }
 
         .result-banner {
-            position: absolute;
-            left: 50%;
-            top: 1rem;
-            transform: translate(-50%, -14px);
-            width: min(560px, calc(100vw - 2rem));
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
-        }
-
-        .result-banner.visible {
-            opacity: 1;
-            visibility: visible;
-            transform: translate(-50%, 0);
+          top: 8rem;
         }
 
         .result-layout {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 1rem;
-        }
-
-        .result-copy strong {
-            display: block;
-            font-size: 1.14rem;
-            margin-bottom: 0.35rem;
-        }
-
-        .result-copy p {
-            margin: 0;
-            color: var(--muted);
-            font-size: 0.92rem;
-            line-height: 1.65;
-        }
-
-        .result-banner.success {
-            border-color: rgba(196, 255, 103, 0.28);
-        }
-
-        .result-banner.fail {
-            border-color: rgba(255, 124, 154, 0.28);
-        }
-
-        .result-banner.info {
-            border-color: rgba(113, 245, 255, 0.24);
-        }
-
-        .result-banner.success::before {
-            background: linear-gradient(90deg, var(--acid), transparent 70%);
-        }
-
-        .result-banner.fail::before {
-            background: linear-gradient(90deg, var(--danger), transparent 70%);
-        }
-
-        .result-banner.info::before {
-            background: linear-gradient(90deg, var(--cyan), transparent 70%);
-        }
-
-        .nav-button:hover,
-        .action-btn:hover {
-            transform: translateY(-2px);
-            border-color: var(--line-strong);
-        }
-
-        body.guide-hidden .intro-panel,
-        body.guide-hidden .setup-copy,
-        body.guide-hidden .range-note,
-        body.guide-hidden .formula-card,
-        body.guide-hidden .info-stack {
-            display: none;
+          flex-direction: column;
+          align-items: flex-start;
         }
 
         body.guide-hidden .console-panel,
         body.guide-hidden .status-panel {
-            width: min(360px, calc(100vw - 2rem));
+          width: auto;
         }
-
-        @media (max-width: 980px) {
-            .intro-panel,
-            .console-panel,
-            .status-panel {
-                width: min(410px, calc(100vw - 1.5rem));
-            }
-
-            .intro-panel {
-                top: 4.7rem;
-                left: 0.75rem;
-            }
-
-            .console-panel {
-                top: 4.7rem;
-                right: 0.75rem;
-            }
-
-            .status-panel {
-                left: 0.75rem;
-                bottom: 0.75rem;
-            }
-
-            .nav-actions {
-                right: 0.75rem;
-                top: 0.75rem;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .ui-shell {
-                overflow-y: auto;
-                padding: 4.3rem 0.75rem 0.75rem;
-            }
-
-            .nav-actions {
-                position: fixed;
-                top: 0.75rem;
-                left: 0.75rem;
-                right: 0.75rem;
-                justify-content: flex-end;
-                flex-wrap: wrap;
-                z-index: 5;
-            }
-
-            .intro-panel,
-            .console-panel,
-            .status-panel {
-                position: relative;
-                left: auto;
-                right: auto;
-                top: auto;
-                bottom: auto;
-                width: auto;
-                margin: 0 0 0.75rem;
-                max-height: none;
-                overflow: visible;
-            }
-
-            .result-banner {
-                top: 8rem;
-            }
-
-            .result-layout {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            body.guide-hidden .console-panel,
-            body.guide-hidden .status-panel {
-                width: auto;
-            }
-        }
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <canvas id="solarCanvas"></canvas>
 
     <div class="ui-shell">
-        <div class="nav-actions">
-            <button id="guideToggle" class="nav-button" type="button">Focus View</button>
-            <a href="index.html#lab" class="nav-button">Back to Lab</a>
-            <a href="orbital-launch.html" class="nav-button primary">Open Orbital Launch</a>
+      <div class="nav-actions">
+        <button id="guideToggle" class="nav-button" type="button">
+          Focus View
+        </button>
+        <a href="index.html#lab" class="nav-button">Back to Tech-Ant</a>
+        <a href="orbital-launch.html" class="nav-button primary"
+          >Open Orbital Launch Trainer</a
+        >
+      </div>
+
+      <section class="panel intro-panel">
+        <div class="panel-inner">
+          <div class="panel-kicker">Tech-Ant Lab // Interactive Demo 00</div>
+          <h1>Solar System Survey</h1>
+          <p>
+            Guide a lightweight survey probe through the Solar System, reshape
+            its orbit with small burns and build the longest scan chain you can.
+            The module shows why inner orbits move faster, outer orbits move
+            slower and why interception is about meeting a planet where it will
+            be.
+          </p>
+          <div class="meta-strip">
+            <div class="meta-pill">Low-bandwidth canvas simulation</div>
+            <div class="meta-pill">Endless scan chain</div>
+            <div class="meta-pill">Teaches orbital intuition</div>
+          </div>
         </div>
+      </section>
 
-        <section class="panel intro-panel">
-            <div class="panel-inner">
-                <div class="panel-kicker">Tech-Ant Lab // Physics Game 00</div>
-                <h1>Solar System Survey</h1>
-                <p>Guide a lightweight survey probe through the Solar System, reshape its orbit with small burns and build the longest scan chain you can. The game teaches why inner orbits move faster, outer orbits move slower and why interception is about meeting a planet where it will be.</p>
-                <div class="meta-strip">
-                    <div class="meta-pill">Low-bandwidth canvas game</div>
-                    <div class="meta-pill">Endless scan chain</div>
-                    <div class="meta-pill">Teaches orbital intuition</div>
-                </div>
+      <section class="panel console-panel">
+        <div class="panel-inner">
+          <div class="panel-kicker">Survey Console</div>
+          <p class="setup-copy">
+            A prograde burn adds tangential speed and usually lifts the far side
+            of the orbit outward. A retrograde burn removes tangential speed and
+            usually drops the orbit inward toward the Sun.
+          </p>
+
+          <div class="control-grid">
+            <button id="raiseBtn" class="action-btn primary" type="button">
+              <span class="btn-title">Fire Prograde Burn</span>
+              <span class="btn-hint"
+                >+ tangential speed for chosen burn time</span
+              >
+            </button>
+            <button id="dropBtn" class="action-btn warning" type="button">
+              <span class="btn-title">Fire Retrograde Burn</span>
+              <span class="btn-hint"
+                >- tangential speed for chosen burn time</span
+              >
+            </button>
+            <button id="pauseBtn" class="action-btn" type="button">
+              Pause
+            </button>
+            <button id="resetBtn" class="action-btn" type="button">
+              Reset Survey
+            </button>
+          </div>
+
+          <div class="control-group">
+            <div class="control-head">
+              <span class="label">Burn Duration</span>
+              <span class="value" id="burnDurationValue">5.0 s</span>
             </div>
-        </section>
+            <input
+              id="burnDurationSlider"
+              type="range"
+              min="1"
+              max="12"
+              step="0.5"
+              value="5"
+            />
+            <p class="range-note">
+              The burn equation here is practical:
+              <span class="mono">Delta-v ≈ a x t_burn</span>. Longer burn means
+              larger orbit change, but it also spends more reserve.
+            </p>
+          </div>
 
-        <section class="panel console-panel">
-            <div class="panel-inner">
-                <div class="panel-kicker">Mission Console</div>
-                <p class="setup-copy">A prograde burn adds tangential speed and usually lifts the far side of the orbit outward. A retrograde burn removes tangential speed and usually drops the orbit inward toward the Sun.</p>
-
-                <div class="control-grid">
-                    <button id="raiseBtn" class="action-btn primary" type="button">
-                        <span class="btn-title">Fire Prograde Burn</span>
-                        <span class="btn-hint">+ tangential speed for chosen burn time</span>
-                    </button>
-                    <button id="dropBtn" class="action-btn warning" type="button">
-                        <span class="btn-title">Fire Retrograde Burn</span>
-                        <span class="btn-hint">- tangential speed for chosen burn time</span>
-                    </button>
-                    <button id="pauseBtn" class="action-btn" type="button">Pause</button>
-                    <button id="resetBtn" class="action-btn" type="button">Restart Run</button>
-                </div>
-
-                <div class="control-group">
-                    <div class="control-head">
-                        <span class="label">Burn Duration</span>
-                        <span class="value" id="burnDurationValue">5.0 s</span>
-                    </div>
-                    <input id="burnDurationSlider" type="range" min="1" max="12" step="0.5" value="5">
-                    <p class="range-note">The burn equation here is practical: <span class="mono">Delta-v ≈ a x t_burn</span>. Longer burn means larger orbit change, but it also spends more reserve.</p>
-                </div>
-
-                <div class="control-group">
-                    <div class="control-head">
-                        <span class="label">Time Warp</span>
-                        <span class="value" id="speedValue">4.0x</span>
-                    </div>
-                    <input id="speedSlider" type="range" min="0.5" max="18" step="0.5" value="4">
-                    <p class="range-note">Fast-forward during long cruise phases, then reduce warp before you try to lock the scan near a target planet.</p>
-                </div>
+          <div class="control-group">
+            <div class="control-head">
+              <span class="label">Time Warp</span>
+              <span class="value" id="speedValue">4.0x</span>
             </div>
-        </section>
+            <input
+              id="speedSlider"
+              type="range"
+              min="0.5"
+              max="18"
+              step="0.5"
+              value="4"
+            />
+            <p class="range-note">
+              Fast-forward during long cruise phases, then reduce warp before
+              you try to lock the scan near a target planet.
+            </p>
+          </div>
+        </div>
+      </section>
 
-        <section class="panel status-panel">
-            <div class="panel-inner">
-                <div class="panel-kicker">Flight Telemetry</div>
+      <section class="panel status-panel">
+        <div class="panel-inner">
+          <div class="panel-kicker">Survey Telemetry</div>
 
-                <div class="telemetry-grid">
-                    <div class="telemetry-item">
-                        <span>Target</span>
-                        <strong id="targetValue">Mars</strong>
-                    </div>
-                    <div class="telemetry-item">
-                        <span>Status</span>
-                        <strong id="statusValue">Ready</strong>
-                    </div>
-                    <div class="telemetry-item">
-                        <span>Elapsed Years</span>
-                        <strong id="yearsValue">0.00 y</strong>
-                    </div>
-                    <div class="telemetry-item">
-                        <span>Heliocentric Radius</span>
-                        <strong id="radiusValue">-</strong>
-                    </div>
-                    <div class="telemetry-item">
-                        <span>Burn State</span>
-                        <strong id="burnValue">Ready 5.0 s</strong>
-                    </div>
-                    <div class="telemetry-item">
-                        <span>Intercept Range</span>
-                        <strong id="distanceValue">-</strong>
-                    </div>
-                    <div class="telemetry-item">
-                        <span>Relative Speed</span>
-                        <strong id="relativeValue">-</strong>
-                    </div>
-                    <div class="telemetry-item">
-                        <span>Delta-v Reserve</span>
-                        <strong id="fuelValue">100%</strong>
-                    </div>
-                </div>
-
-                <div class="gauge-group">
-                    <div class="gauge-head">
-                        <span>Scan Lock</span>
-                        <strong id="scanText">0%</strong>
-                    </div>
-                    <div class="gauge-track">
-                        <div id="scanBar" class="gauge-fill scan"></div>
-                    </div>
-                </div>
-
-                <div class="gauge-group">
-                    <div class="gauge-head">
-                        <span>Solar Heat</span>
-                        <strong id="heatText">0%</strong>
-                    </div>
-                    <div class="gauge-track">
-                        <div id="heatBar" class="gauge-fill heat"></div>
-                    </div>
-                </div>
-
-                <div class="stat-strip">
-                    <div class="stat-pill">
-                        <span>Session</span>
-                        <strong id="sessionValue">0</strong>
-                    </div>
-                    <div class="stat-pill">
-                        <span>Chain</span>
-                        <strong id="chainValue">0</strong>
-                    </div>
-                    <div class="stat-pill">
-                        <span>Best</span>
-                        <strong id="bestValue">0</strong>
-                    </div>
-                </div>
-
-                <div class="formula-card">
-                    <span class="info-label">Orbit Formula</span>
-                    <div class="formula-grid">
-                        <div class="formula-line">
-                            <strong>v_circ = sqrt(mu / r)</strong>
-                            <span id="circularSpeedValue">-</span>
-                        </div>
-                        <div class="formula-line">
-                            <strong>Delta = v_probe - v_circ</strong>
-                            <span id="speedDeltaValue">-</span>
-                        </div>
-                        <div class="formula-line">
-                            <strong>Delta-v_burn ≈ a x t_burn</strong>
-                            <span id="burnPlanValue">-</span>
-                        </div>
-                        <div class="formula-line">
-                            <strong>epsilon = v^2/2 - mu/r</strong>
-                            <span id="energyValue">-</span>
-                        </div>
-                    </div>
-                    <p class="formula-note" id="formulaNote">If the probe is faster than circular speed at the same radius, the opposite side of the orbit rises. If it is slower, the orbit falls inward.</p>
-                </div>
-
-                <div class="info-stack">
-                    <div class="info-block">
-                        <span class="info-label">Flight Lesson</span>
-                        <p class="lesson-text" id="lessonText">Use prograde burn to add tangential speed and reach Mars, Jupiter and the outer planets. Use retrograde burn to drop inward and move faster around the Sun.</p>
-                    </div>
-                    <div class="info-block">
-                        <span class="info-label">Discovery Feed</span>
-                        <p class="fact-text" id="factText">Each completed scan unlocks a short planet fact and refuels the probe for a longer run.</p>
-                    </div>
-                </div>
+          <div class="telemetry-grid">
+            <div class="telemetry-item">
+              <span>Target</span>
+              <strong id="targetValue">Mars</strong>
             </div>
-        </section>
-
-        <section class="panel result-banner" id="resultBanner">
-            <div class="panel-inner result-layout">
-                <div class="result-copy">
-                    <strong id="resultTitle">Mission Update</strong>
-                    <p id="resultCopy">Intercept the target planet and hold a stable scan lock.</p>
-                </div>
+            <div class="telemetry-item">
+              <span>Status</span>
+              <strong id="statusValue">Ready</strong>
             </div>
-        </section>
+            <div class="telemetry-item">
+              <span>Elapsed Years</span>
+              <strong id="yearsValue">0.00 y</strong>
+            </div>
+            <div class="telemetry-item">
+              <span>Heliocentric Radius</span>
+              <strong id="radiusValue">-</strong>
+            </div>
+            <div class="telemetry-item">
+              <span>Burn State</span>
+              <strong id="burnValue">Ready 5.0 s</strong>
+            </div>
+            <div class="telemetry-item">
+              <span>Intercept Range</span>
+              <strong id="distanceValue">-</strong>
+            </div>
+            <div class="telemetry-item">
+              <span>Relative Speed</span>
+              <strong id="relativeValue">-</strong>
+            </div>
+            <div class="telemetry-item">
+              <span>Delta-v Reserve</span>
+              <strong id="fuelValue">100%</strong>
+            </div>
+          </div>
+
+          <div class="gauge-group">
+            <div class="gauge-head">
+              <span>Scan Lock</span>
+              <strong id="scanText">0%</strong>
+            </div>
+            <div class="gauge-track">
+              <div id="scanBar" class="gauge-fill scan"></div>
+            </div>
+          </div>
+
+          <div class="gauge-group">
+            <div class="gauge-head">
+              <span>Solar Heat</span>
+              <strong id="heatText">0%</strong>
+            </div>
+            <div class="gauge-track">
+              <div id="heatBar" class="gauge-fill heat"></div>
+            </div>
+          </div>
+
+          <div class="stat-strip">
+            <div class="stat-pill">
+              <span>Session</span>
+              <strong id="sessionValue">0</strong>
+            </div>
+            <div class="stat-pill">
+              <span>Chain</span>
+              <strong id="chainValue">0</strong>
+            </div>
+            <div class="stat-pill">
+              <span>Best</span>
+              <strong id="bestValue">0</strong>
+            </div>
+          </div>
+
+          <div class="formula-card">
+            <span class="info-label">Orbit Formula</span>
+            <div class="formula-grid">
+              <div class="formula-line">
+                <strong>v_circ = sqrt(mu / r)</strong>
+                <span id="circularSpeedValue">-</span>
+              </div>
+              <div class="formula-line">
+                <strong>Delta = v_probe - v_circ</strong>
+                <span id="speedDeltaValue">-</span>
+              </div>
+              <div class="formula-line">
+                <strong>Delta-v_burn ≈ a x t_burn</strong>
+                <span id="burnPlanValue">-</span>
+              </div>
+              <div class="formula-line">
+                <strong>epsilon = v^2/2 - mu/r</strong>
+                <span id="energyValue">-</span>
+              </div>
+            </div>
+            <p class="formula-note" id="formulaNote">
+              If the probe is faster than circular speed at the same radius, the
+              opposite side of the orbit rises. If it is slower, the orbit falls
+              inward.
+            </p>
+          </div>
+
+          <div class="info-stack">
+            <div class="info-block">
+              <span class="info-label">Flight Lesson</span>
+              <p class="lesson-text" id="lessonText">
+                Use prograde burn to add tangential speed and reach Mars,
+                Jupiter and the outer planets. Use retrograde burn to drop
+                inward and move faster around the Sun.
+              </p>
+            </div>
+            <div class="info-block">
+              <span class="info-label">Discovery Feed</span>
+              <p class="fact-text" id="factText">
+                Each completed scan unlocks a short planet fact and refuels the
+                probe for a longer run.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel result-banner" id="resultBanner">
+        <div class="panel-inner result-layout">
+          <div class="result-copy">
+            <strong id="resultTitle">Mission Update</strong>
+            <p id="resultCopy">
+              Intercept the target planet and hold a stable scan lock.
+            </p>
+          </div>
+        </div>
+      </section>
     </div>
 
     <script>
-        const canvas = document.getElementById("solarCanvas");
-        const ctx = canvas.getContext("2d");
+      const canvas = document.getElementById("solarCanvas");
+      const ctx = canvas.getContext("2d");
 
-        const burnDurationSlider = document.getElementById("burnDurationSlider");
-        const burnDurationValue = document.getElementById("burnDurationValue");
-        const speedSlider = document.getElementById("speedSlider");
-        const speedValue = document.getElementById("speedValue");
-        const guideToggle = document.getElementById("guideToggle");
-        const raiseBtn = document.getElementById("raiseBtn");
-        const dropBtn = document.getElementById("dropBtn");
-        const pauseBtn = document.getElementById("pauseBtn");
-        const resetBtn = document.getElementById("resetBtn");
-        const raiseHint = raiseBtn.querySelector(".btn-hint");
-        const dropHint = dropBtn.querySelector(".btn-hint");
+      const burnDurationSlider = document.getElementById("burnDurationSlider");
+      const burnDurationValue = document.getElementById("burnDurationValue");
+      const speedSlider = document.getElementById("speedSlider");
+      const speedValue = document.getElementById("speedValue");
+      const guideToggle = document.getElementById("guideToggle");
+      const raiseBtn = document.getElementById("raiseBtn");
+      const dropBtn = document.getElementById("dropBtn");
+      const pauseBtn = document.getElementById("pauseBtn");
+      const resetBtn = document.getElementById("resetBtn");
+      const raiseHint = raiseBtn.querySelector(".btn-hint");
+      const dropHint = dropBtn.querySelector(".btn-hint");
 
-        const targetValue = document.getElementById("targetValue");
-        const statusValue = document.getElementById("statusValue");
-        const yearsValue = document.getElementById("yearsValue");
-        const radiusValue = document.getElementById("radiusValue");
-        const burnValue = document.getElementById("burnValue");
-        const distanceValue = document.getElementById("distanceValue");
-        const relativeValue = document.getElementById("relativeValue");
-        const fuelValue = document.getElementById("fuelValue");
-        const scanText = document.getElementById("scanText");
-        const scanBar = document.getElementById("scanBar");
-        const heatText = document.getElementById("heatText");
-        const heatBar = document.getElementById("heatBar");
-        const sessionValue = document.getElementById("sessionValue");
-        const chainValue = document.getElementById("chainValue");
-        const bestValue = document.getElementById("bestValue");
-        const lessonText = document.getElementById("lessonText");
-        const factText = document.getElementById("factText");
-        const circularSpeedValue = document.getElementById("circularSpeedValue");
-        const speedDeltaValue = document.getElementById("speedDeltaValue");
-        const burnPlanValue = document.getElementById("burnPlanValue");
-        const energyValue = document.getElementById("energyValue");
-        const formulaNote = document.getElementById("formulaNote");
-        const resultBanner = document.getElementById("resultBanner");
-        const resultTitle = document.getElementById("resultTitle");
-        const resultCopy = document.getElementById("resultCopy");
+      const targetValue = document.getElementById("targetValue");
+      const statusValue = document.getElementById("statusValue");
+      const yearsValue = document.getElementById("yearsValue");
+      const radiusValue = document.getElementById("radiusValue");
+      const burnValue = document.getElementById("burnValue");
+      const distanceValue = document.getElementById("distanceValue");
+      const relativeValue = document.getElementById("relativeValue");
+      const fuelValue = document.getElementById("fuelValue");
+      const scanText = document.getElementById("scanText");
+      const scanBar = document.getElementById("scanBar");
+      const heatText = document.getElementById("heatText");
+      const heatBar = document.getElementById("heatBar");
+      const sessionValue = document.getElementById("sessionValue");
+      const chainValue = document.getElementById("chainValue");
+      const bestValue = document.getElementById("bestValue");
+      const lessonText = document.getElementById("lessonText");
+      const factText = document.getElementById("factText");
+      const circularSpeedValue = document.getElementById("circularSpeedValue");
+      const speedDeltaValue = document.getElementById("speedDeltaValue");
+      const burnPlanValue = document.getElementById("burnPlanValue");
+      const energyValue = document.getElementById("energyValue");
+      const formulaNote = document.getElementById("formulaNote");
+      const resultBanner = document.getElementById("resultBanner");
+      const resultTitle = document.getElementById("resultTitle");
+      const resultCopy = document.getElementById("resultCopy");
 
-        const STORAGE_KEY = "tech_ant_solar_best_chain";
-        const GUIDE_KEY = "tech_ant_solar_guide_hidden";
+      const STORAGE_KEY = "tech_ant_solar_best_chain";
+      const GUIDE_KEY = "tech_ant_solar_guide_hidden";
 
-        const SUN = {
-            radius: 18,
-            glow: 56,
-            mu: 9000
+      const SUN = {
+        radius: 18,
+        glow: 56,
+        mu: 9000,
+      };
+
+      const FIELD_RADIUS = 470;
+      const ESCAPE_RADIUS = 680;
+      const HEAT_RADIUS = 82;
+      const FIXED_STEP = 0.02;
+      const TRAIL_INTERVAL = 0.03;
+      const MAX_TRAIL_POINTS = 340;
+      const SCAN_LOCK_TIME = 1.45;
+      const SCAN_REL_SPEED = 3.4;
+      const BURN_ACCEL = 0.2;
+      const FUEL_BURN_RATE = 8;
+      const HEAT_GAIN = 1.8;
+      const HEAT_COOL = 15;
+      const INTRO_TARGETS = ["Mars", "Venus", "Jupiter"];
+
+      const PLANET_DATA = [
+        {
+          name: "Mercury",
+          orbit: 70,
+          size: 4.5,
+          colorA: "#f3f4f8",
+          colorB: "#8d95a6",
+          phase: 1.4,
+          fact: "Mercury races around the Sun in only 88 Earth days.",
+          hint: "Mercury sits deep in the Sun's gravity well. A retrograde burn drops you inward and makes you sweep angle faster.",
+        },
+        {
+          name: "Venus",
+          orbit: 103,
+          size: 7,
+          colorA: "#ffe0a1",
+          colorB: "#c89242",
+          phase: 4.65,
+          fact: "Venus has a year shorter than its day because it rotates extremely slowly.",
+          hint: "Venus is inside Earth's orbit. Retrograde burn lowers your solar orbit and increases angular speed.",
+        },
+        {
+          name: "Earth",
+          orbit: 135,
+          size: 7.5,
+          colorA: "#8dd8ff",
+          colorB: "#2f63ff",
+          phase: 0.2,
+          fact: "Earth is the reference orbit for this probe and your home reset point.",
+          hint: "Earth is your baseline orbit. Compare probe speed against circular speed here before making a transfer.",
+        },
+        {
+          name: "Mars",
+          orbit: 175,
+          size: 6,
+          colorA: "#ffb37d",
+          colorB: "#b94728",
+          phase: 0.95,
+          fact: "Mars moves more slowly around the Sun than Earth because it orbits farther out.",
+          hint: "Mars sits farther out. A prograde burn lifts apoapsis and starts a slower outer transfer.",
+        },
+        {
+          name: "Jupiter",
+          orbit: 250,
+          size: 13,
+          colorA: "#ffe6ba",
+          colorB: "#b77748",
+          phase: 2.15,
+          fact: "Jupiter holds most of the planetary mass in the Solar System outside the Sun.",
+          hint: "Jupiter needs a wide outward transfer. Use prograde burn, then time-warp through the long cruise.",
+        },
+        {
+          name: "Saturn",
+          orbit: 320,
+          size: 11,
+          colorA: "#fff1be",
+          colorB: "#baa66a",
+          phase: 5.05,
+          rings: true,
+          fact: "Saturn's rings are broad but extremely thin compared with their huge diameter.",
+          hint: "Saturn lies far outside Earth. Prograde burn raises the far side of the orbit, but patience still matters.",
+        },
+        {
+          name: "Uranus",
+          orbit: 385,
+          size: 9,
+          colorA: "#dcfbff",
+          colorB: "#8ad5e8",
+          phase: 3.45,
+          fact: "Uranus rotates tipped on its side compared with most planets.",
+          hint: "Uranus rewards clean, fuel-efficient prograde transfers. Ride a calm outer ellipse and avoid overburning.",
+        },
+        {
+          name: "Neptune",
+          orbit: 440,
+          size: 9,
+          colorA: "#99bfff",
+          colorB: "#3558d3",
+          phase: 1.95,
+          fact: "Neptune completes one trip around the Sun in roughly 165 Earth years.",
+          hint: "Neptune is the long-haul test. Prograde burn outward, conserve delta-v and use time warp wisely.",
+        },
+      ];
+      const EARTH_YEAR =
+        (2 * Math.PI) /
+        Math.sqrt(
+          SUN.mu /
+            Math.pow(
+              PLANET_DATA.find((planet) => planet.name === "Earth").orbit,
+              3,
+            ),
+        );
+
+      let width = 0;
+      let height = 0;
+      let scale = 1;
+      let centerX = 0;
+      let centerY = 0;
+      let lastFrame = performance.now();
+      let accumulator = 0;
+      let bannerTimeout = null;
+
+      const stars = [];
+      const planets = PLANET_DATA.map((data) => ({
+        ...data,
+        omega: Math.sqrt(SUN.mu / Math.pow(data.orbit, 3)),
+        angle: data.phase,
+        x: 0,
+        y: 0,
+        vx: 0,
+        vy: 0,
+      }));
+
+      const probe = {
+        x: 0,
+        y: 0,
+        vx: 0,
+        vy: 0,
+        fuel: 100,
+        heat: 0,
+        trail: [],
+        trailTimer: 0,
+      };
+
+      const state = {
+        speed: 4,
+        burnDuration: 5,
+        burnDirection: 0,
+        burnRemaining: 0,
+        paused: false,
+        simTime: 0,
+        sessionScans: 0,
+        chain: 0,
+        bestChain: readBestChain(),
+        missionCursor: 0,
+        missionCount: 0,
+        scanProgress: 0,
+        target: null,
+        status: "Mission ready",
+        lesson:
+          "Use prograde burn to add tangential speed and reach outer planets. Use retrograde burn to drop inward and move faster around the Sun.",
+        discovery:
+          "Each completed scan unlocks a short planet fact and refuels the probe for a longer run.",
+      };
+
+      function readBestChain() {
+        try {
+          const stored = window.localStorage.getItem(STORAGE_KEY);
+          return stored ? Math.max(0, parseInt(stored, 10) || 0) : 0;
+        } catch (error) {
+          return 0;
+        }
+      }
+
+      function readGuidePreference() {
+        try {
+          return window.localStorage.getItem(GUIDE_KEY) === "1";
+        } catch (error) {
+          return false;
+        }
+      }
+
+      function saveBestChain() {
+        try {
+          window.localStorage.setItem(STORAGE_KEY, String(state.bestChain));
+        } catch (error) {
+          // Ignore storage failures and keep the game fully local.
+        }
+      }
+
+      function setGuideVisibility(hidden) {
+        document.body.classList.toggle("guide-hidden", hidden);
+        guideToggle.textContent = hidden ? "Show Guidance" : "Focus View";
+
+        try {
+          window.localStorage.setItem(GUIDE_KEY, hidden ? "1" : "0");
+        } catch (error) {
+          // Ignore storage failures and keep UI fully local.
+        }
+      }
+
+      function clamp(value, min, max) {
+        return Math.max(min, Math.min(max, value));
+      }
+
+      function normalizeAngle(angle) {
+        let value = angle;
+        while (value > Math.PI) value -= Math.PI * 2;
+        while (value < -Math.PI) value += Math.PI * 2;
+        return value;
+      }
+
+      function formatDistance(value) {
+        return `${Math.round(value)} u`;
+      }
+
+      function formatSpeed(value) {
+        return `${value.toFixed(2)} u/s`;
+      }
+
+      function formatYears(value) {
+        return `${value < 10 ? value.toFixed(2) : value.toFixed(1)} y`;
+      }
+
+      function worldToScreen(x, y) {
+        return {
+          x: centerX + x * scale,
+          y: centerY + y * scale,
         };
+      }
 
-        const FIELD_RADIUS = 470;
-        const ESCAPE_RADIUS = 680;
-        const HEAT_RADIUS = 82;
-        const FIXED_STEP = 0.02;
-        const TRAIL_INTERVAL = 0.03;
-        const MAX_TRAIL_POINTS = 340;
-        const SCAN_LOCK_TIME = 1.45;
-        const SCAN_REL_SPEED = 3.4;
-        const BURN_ACCEL = 0.2;
-        const FUEL_BURN_RATE = 8;
-        const HEAT_GAIN = 1.8;
-        const HEAT_COOL = 15;
-        const INTRO_TARGETS = ["Mars", "Venus", "Jupiter"];
+      function setBanner(type, title, copy, duration = 2600) {
+        if (bannerTimeout) {
+          window.clearTimeout(bannerTimeout);
+        }
 
-        const PLANET_DATA = [
-            {
-                name: "Mercury",
-                orbit: 70,
-                size: 4.5,
-                colorA: "#f3f4f8",
-                colorB: "#8d95a6",
-                phase: 1.4,
-                fact: "Mercury races around the Sun in only 88 Earth days.",
-                hint: "Mercury sits deep in the Sun's gravity well. A retrograde burn drops you inward and makes you sweep angle faster."
-            },
-            {
-                name: "Venus",
-                orbit: 103,
-                size: 7,
-                colorA: "#ffe0a1",
-                colorB: "#c89242",
-                phase: 4.65,
-                fact: "Venus has a year shorter than its day because it rotates extremely slowly.",
-                hint: "Venus is inside Earth's orbit. Retrograde burn lowers your solar orbit and increases angular speed."
-            },
-            {
-                name: "Earth",
-                orbit: 135,
-                size: 7.5,
-                colorA: "#8dd8ff",
-                colorB: "#2f63ff",
-                phase: 0.2,
-                fact: "Earth is the reference orbit for this probe and your home reset point.",
-                hint: "Earth is your baseline orbit. Compare probe speed against circular speed here before making a transfer."
-            },
-            {
-                name: "Mars",
-                orbit: 175,
-                size: 6,
-                colorA: "#ffb37d",
-                colorB: "#b94728",
-                phase: 0.95,
-                fact: "Mars moves more slowly around the Sun than Earth because it orbits farther out.",
-                hint: "Mars sits farther out. A prograde burn lifts apoapsis and starts a slower outer transfer."
-            },
-            {
-                name: "Jupiter",
-                orbit: 250,
-                size: 13,
-                colorA: "#ffe6ba",
-                colorB: "#b77748",
-                phase: 2.15,
-                fact: "Jupiter holds most of the planetary mass in the Solar System outside the Sun.",
-                hint: "Jupiter needs a wide outward transfer. Use prograde burn, then time-warp through the long cruise."
-            },
-            {
-                name: "Saturn",
-                orbit: 320,
-                size: 11,
-                colorA: "#fff1be",
-                colorB: "#baa66a",
-                phase: 5.05,
-                rings: true,
-                fact: "Saturn's rings are broad but extremely thin compared with their huge diameter.",
-                hint: "Saturn lies far outside Earth. Prograde burn raises the far side of the orbit, but patience still matters."
-            },
-            {
-                name: "Uranus",
-                orbit: 385,
-                size: 9,
-                colorA: "#dcfbff",
-                colorB: "#8ad5e8",
-                phase: 3.45,
-                fact: "Uranus rotates tipped on its side compared with most planets.",
-                hint: "Uranus rewards clean, fuel-efficient prograde transfers. Ride a calm outer ellipse and avoid overburning."
-            },
-            {
-                name: "Neptune",
-                orbit: 440,
-                size: 9,
-                colorA: "#99bfff",
-                colorB: "#3558d3",
-                phase: 1.95,
-                fact: "Neptune completes one trip around the Sun in roughly 165 Earth years.",
-                hint: "Neptune is the long-haul test. Prograde burn outward, conserve delta-v and use time warp wisely."
-            }
-        ];
-        const EARTH_YEAR = 2 * Math.PI / Math.sqrt(SUN.mu / Math.pow(PLANET_DATA.find(planet => planet.name === "Earth").orbit, 3));
+        resultTitle.textContent = title;
+        resultCopy.textContent = copy;
+        resultBanner.classList.remove("success", "fail", "info");
+        resultBanner.classList.add("visible", type);
 
-        let width = 0;
-        let height = 0;
-        let scale = 1;
-        let centerX = 0;
-        let centerY = 0;
-        let lastFrame = performance.now();
-        let accumulator = 0;
-        let bannerTimeout = null;
+        bannerTimeout = window.setTimeout(() => {
+          resultBanner.classList.remove("visible", "success", "fail", "info");
+        }, duration);
+      }
 
-        const stars = [];
-        const planets = PLANET_DATA.map(data => ({
-            ...data,
-            omega: Math.sqrt(SUN.mu / Math.pow(data.orbit, 3)),
-            angle: data.phase,
-            x: 0,
-            y: 0,
-            vx: 0,
-            vy: 0
-        }));
+      function updateButtonStates() {
+        raiseBtn.classList.toggle(
+          "active",
+          state.burnDirection > 0 && state.burnRemaining > 0 && !state.paused,
+        );
+        dropBtn.classList.toggle(
+          "active",
+          state.burnDirection < 0 && state.burnRemaining > 0 && !state.paused,
+        );
+        pauseBtn.textContent = state.paused ? "Resume" : "Pause";
+      }
 
-        const probe = {
-            x: 0,
-            y: 0,
-            vx: 0,
-            vy: 0,
-            fuel: 100,
-            heat: 0,
-            trail: [],
-            trailTimer: 0
+      function updateControlLabels() {
+        const plannedDeltaV = BURN_ACCEL * state.burnDuration;
+        burnDurationValue.textContent = `${state.burnDuration.toFixed(1)} s`;
+        speedValue.textContent = `${state.speed.toFixed(1)}x`;
+        raiseHint.textContent = `+ tangential speed, Delta-v≈${plannedDeltaV.toFixed(2)} u/s`;
+        dropHint.textContent = `- tangential speed, Delta-v≈${plannedDeltaV.toFixed(2)} u/s`;
+      }
+
+      function resizeCanvas() {
+        width = window.innerWidth;
+        height = window.innerHeight;
+        canvas.width = width;
+        canvas.height = height;
+
+        scale = Math.min(
+          (width * 0.84) / (FIELD_RADIUS * 2),
+          (height * 0.84) / (FIELD_RADIUS * 2),
+        );
+        centerX = width / 2 - (width > 980 ? Math.min(90, width * 0.06) : 0);
+        centerY = height / 2 + (height > 900 ? 16 : 0);
+
+        stars.length = 0;
+        for (let i = 0; i < 260; i++) {
+          stars.push({
+            x: Math.random() * width,
+            y: Math.random() * height,
+            size: Math.random() * 1.8 + 0.2,
+            alpha: Math.random() * 0.75 + 0.2,
+          });
+        }
+      }
+
+      function updatePlanet(planet, dt) {
+        planet.angle = normalizeAngle(planet.angle + planet.omega * dt);
+        planet.x = Math.cos(planet.angle) * planet.orbit;
+        planet.y = Math.sin(planet.angle) * planet.orbit;
+        planet.vx = -Math.sin(planet.angle) * planet.orbit * planet.omega;
+        planet.vy = Math.cos(planet.angle) * planet.orbit * planet.omega;
+      }
+
+      function resetPlanets() {
+        planets.forEach((planet) => {
+          planet.angle = planet.phase;
+          updatePlanet(planet, 0);
+        });
+      }
+
+      function getPlanet(name) {
+        return planets.find((planet) => planet.name === name);
+      }
+
+      function resetProbe() {
+        const earth = getPlanet("Earth");
+        const launchAngle = earth.angle - 0.12;
+        const radius = earth.orbit + 10;
+        const tangent = {
+          x: -Math.sin(launchAngle),
+          y: Math.cos(launchAngle),
         };
+        const circularSpeed = Math.sqrt(SUN.mu / radius);
 
-        const state = {
-            speed: 4,
-            burnDuration: 5,
-            burnDirection: 0,
-            burnRemaining: 0,
-            paused: false,
-            simTime: 0,
-            sessionScans: 0,
-            chain: 0,
-            bestChain: readBestChain(),
-            missionCursor: 0,
-            missionCount: 0,
-            scanProgress: 0,
-            target: null,
-            status: "Mission ready",
-            lesson: "Use prograde burn to add tangential speed and reach outer planets. Use retrograde burn to drop inward and move faster around the Sun.",
-            discovery: "Each completed scan unlocks a short planet fact and refuels the probe for a longer run."
-        };
+        probe.x = Math.cos(launchAngle) * radius;
+        probe.y = Math.sin(launchAngle) * radius;
+        probe.vx = tangent.x * circularSpeed;
+        probe.vy = tangent.y * circularSpeed;
+        probe.fuel = 100;
+        probe.heat = 0;
+        probe.trail = [{ x: probe.x, y: probe.y }];
+        probe.trailTimer = 0;
+        state.scanProgress = 0;
+      }
 
-        function readBestChain() {
-            try {
-                const stored = window.localStorage.getItem(STORAGE_KEY);
-                return stored ? Math.max(0, parseInt(stored, 10) || 0) : 0;
-            } catch (error) {
-                return 0;
+      function chooseNextTarget(excludeName = "") {
+        let nextName = "";
+
+        if (state.missionCursor < INTRO_TARGETS.length) {
+          nextName = INTRO_TARGETS[state.missionCursor];
+          state.missionCursor += 1;
+        } else {
+          const currentName = state.target ? state.target.name : "";
+          const pool = planets.filter(
+            (planet) =>
+              planet.name !== "Earth" &&
+              planet.name !== currentName &&
+              planet.name !== excludeName,
+          );
+          const shortlist = pool.filter((planet) => {
+            if (state.chain < 2) {
+              return ["Mercury", "Venus", "Mars", "Jupiter"].includes(
+                planet.name,
+              );
             }
-        }
-
-        function readGuidePreference() {
-            try {
-                return window.localStorage.getItem(GUIDE_KEY) === "1";
-            } catch (error) {
-                return false;
+            if (state.chain < 5) {
+              return planet.name !== "Neptune";
             }
+            return true;
+          });
+          const candidates = shortlist.length ? shortlist : pool;
+          nextName =
+            candidates[Math.floor(Math.random() * candidates.length)].name;
         }
 
-        function saveBestChain() {
-            try {
-                window.localStorage.setItem(STORAGE_KEY, String(state.bestChain));
-            } catch (error) {
-                // Ignore storage failures and keep the game fully local.
-            }
-        }
-
-        function setGuideVisibility(hidden) {
-            document.body.classList.toggle("guide-hidden", hidden);
-            guideToggle.textContent = hidden ? "Show Guide" : "Focus View";
-
-            try {
-                window.localStorage.setItem(GUIDE_KEY, hidden ? "1" : "0");
-            } catch (error) {
-                // Ignore storage failures and keep UI fully local.
-            }
-        }
-
-        function clamp(value, min, max) {
-            return Math.max(min, Math.min(max, value));
-        }
-
-        function normalizeAngle(angle) {
-            let value = angle;
-            while (value > Math.PI) value -= Math.PI * 2;
-            while (value < -Math.PI) value += Math.PI * 2;
-            return value;
-        }
-
-        function formatDistance(value) {
-            return `${Math.round(value)} u`;
-        }
-
-        function formatSpeed(value) {
-            return `${value.toFixed(2)} u/s`;
-        }
-
-        function formatYears(value) {
-            return `${value < 10 ? value.toFixed(2) : value.toFixed(1)} y`;
-        }
-
-        function worldToScreen(x, y) {
-            return {
-                x: centerX + x * scale,
-                y: centerY + y * scale
-            };
-        }
-
-        function setBanner(type, title, copy, duration = 2600) {
-            if (bannerTimeout) {
-                window.clearTimeout(bannerTimeout);
-            }
-
-            resultTitle.textContent = title;
-            resultCopy.textContent = copy;
-            resultBanner.classList.remove("success", "fail", "info");
-            resultBanner.classList.add("visible", type);
-
-            bannerTimeout = window.setTimeout(() => {
-                resultBanner.classList.remove("visible", "success", "fail", "info");
-            }, duration);
-        }
-
-        function updateButtonStates() {
-            raiseBtn.classList.toggle("active", state.burnDirection > 0 && state.burnRemaining > 0 && !state.paused);
-            dropBtn.classList.toggle("active", state.burnDirection < 0 && state.burnRemaining > 0 && !state.paused);
-            pauseBtn.textContent = state.paused ? "Resume" : "Pause";
-        }
-
-        function updateControlLabels() {
-            const plannedDeltaV = BURN_ACCEL * state.burnDuration;
-            burnDurationValue.textContent = `${state.burnDuration.toFixed(1)} s`;
-            speedValue.textContent = `${state.speed.toFixed(1)}x`;
-            raiseHint.textContent = `+ tangential speed, Delta-v≈${plannedDeltaV.toFixed(2)} u/s`;
-            dropHint.textContent = `- tangential speed, Delta-v≈${plannedDeltaV.toFixed(2)} u/s`;
-        }
-
-        function resizeCanvas() {
-            width = window.innerWidth;
-            height = window.innerHeight;
-            canvas.width = width;
-            canvas.height = height;
-
-            scale = Math.min((width * 0.84) / (FIELD_RADIUS * 2), (height * 0.84) / (FIELD_RADIUS * 2));
-            centerX = width / 2 - (width > 980 ? Math.min(90, width * 0.06) : 0);
-            centerY = height / 2 + (height > 900 ? 16 : 0);
-
-            stars.length = 0;
-            for (let i = 0; i < 260; i++) {
-                stars.push({
-                    x: Math.random() * width,
-                    y: Math.random() * height,
-                    size: Math.random() * 1.8 + 0.2,
-                    alpha: Math.random() * 0.75 + 0.2
-                });
-            }
-        }
-
-        function updatePlanet(planet, dt) {
-            planet.angle = normalizeAngle(planet.angle + planet.omega * dt);
-            planet.x = Math.cos(planet.angle) * planet.orbit;
-            planet.y = Math.sin(planet.angle) * planet.orbit;
-            planet.vx = -Math.sin(planet.angle) * planet.orbit * planet.omega;
-            planet.vy = Math.cos(planet.angle) * planet.orbit * planet.omega;
-        }
-
-        function resetPlanets() {
-            planets.forEach(planet => {
-                planet.angle = planet.phase;
-                updatePlanet(planet, 0);
-            });
-        }
-
-        function getPlanet(name) {
-            return planets.find(planet => planet.name === name);
-        }
-
-        function resetProbe() {
-            const earth = getPlanet("Earth");
-            const launchAngle = earth.angle - 0.12;
-            const radius = earth.orbit + 10;
-            const tangent = {
-                x: -Math.sin(launchAngle),
-                y: Math.cos(launchAngle)
-            };
-            const circularSpeed = Math.sqrt(SUN.mu / radius);
-
-            probe.x = Math.cos(launchAngle) * radius;
-            probe.y = Math.sin(launchAngle) * radius;
-            probe.vx = tangent.x * circularSpeed;
-            probe.vy = tangent.y * circularSpeed;
-            probe.fuel = 100;
-            probe.heat = 0;
-            probe.trail = [{ x: probe.x, y: probe.y }];
-            probe.trailTimer = 0;
-            state.scanProgress = 0;
-        }
-
-        function chooseNextTarget(excludeName = "") {
-            let nextName = "";
-
-            if (state.missionCursor < INTRO_TARGETS.length) {
-                nextName = INTRO_TARGETS[state.missionCursor];
-                state.missionCursor += 1;
-            } else {
-                const currentName = state.target ? state.target.name : "";
-                const pool = planets.filter(planet => planet.name !== "Earth" && planet.name !== currentName && planet.name !== excludeName);
-                const shortlist = pool.filter(planet => {
-                    if (state.chain < 2) {
-                        return ["Mercury", "Venus", "Mars", "Jupiter"].includes(planet.name);
-                    }
-                    if (state.chain < 5) {
-                        return planet.name !== "Neptune";
-                    }
-                    return true;
-                });
-                const candidates = shortlist.length ? shortlist : pool;
-                nextName = candidates[Math.floor(Math.random() * candidates.length)].name;
-            }
-
-            state.target = getPlanet(nextName);
-            state.missionCount += 1;
-            state.scanProgress = 0;
-            return state.target;
-        }
-
-        function restartRun(showBanner = true) {
-            resetPlanets();
-            state.simTime = 0;
-            state.sessionScans = 0;
-            state.chain = 0;
-            state.missionCursor = 0;
-            state.missionCount = 0;
-            state.burnDirection = 0;
-            state.burnRemaining = 0;
-            state.paused = false;
-            state.status = "Mission ready";
-            state.discovery = "Each completed scan unlocks a short planet fact and refuels the probe for a longer run.";
-            accumulator = 0;
-            chooseNextTarget();
-            resetProbe();
-            updateButtonStates();
-            updateLesson();
-            updateTelemetry();
-
-            if (showBanner) {
-                setBanner("info", `Mission start: ${state.target.name}`, `${state.target.hint} Use time warp during cruise and slow down before the scan window.`);
-            }
-        }
-
-        function failRun(title, copy) {
-            const previousTarget = state.target ? state.target.name : "";
-            state.chain = 0;
-            state.burnDirection = 0;
-            state.burnRemaining = 0;
-            resetProbe();
-            chooseNextTarget(previousTarget);
-            state.status = title;
-            updateLesson();
-            updateTelemetry();
-            setBanner("fail", title, `${copy} Next target: ${state.target.name}.`);
-            updateButtonStates();
-        }
-
-        function completeScan() {
-            const clearedTarget = state.target;
-            state.sessionScans += 1;
-            state.chain += 1;
-            state.bestChain = Math.max(state.bestChain, state.chain);
-            saveBestChain();
-            state.discovery = `${clearedTarget.name}: ${clearedTarget.fact}`;
-            probe.fuel = clamp(probe.fuel + 28, 0, 100);
-            const nextTarget = chooseNextTarget(clearedTarget.name);
-            state.status = `${clearedTarget.name} scan complete`;
-            updateLesson();
-            updateTelemetry();
-            setBanner("success", `${clearedTarget.name} scanned`, `${clearedTarget.fact} Next target: ${nextTarget.name}.`);
-        }
-
-        function getBurnMode() {
-            if (state.paused) return 0;
-            return state.burnRemaining > 0 ? state.burnDirection : 0;
-        }
-
-        function getScanRadius(target) {
-            return 18 + target.size * 1.8;
-        }
-
-        function startBurn(direction) {
-            if (state.paused) return;
-            if (probe.fuel <= 0) {
-                setBanner("fail", "No delta-v reserve", "The probe is out of burn reserve. Finish a scan for refuel or restart the run.");
-                return;
-            }
-            if (state.burnRemaining > 0) {
-                setBanner("info", "Burn in progress", `Wait until the current ${state.burnDirection > 0 ? "prograde" : "retrograde"} burn finishes.`);
-                return;
-            }
-
-            state.burnDirection = direction;
-            state.burnRemaining = state.burnDuration;
-            state.status = direction > 0 ? "Timed prograde burn" : "Timed retrograde burn";
-            updateButtonStates();
-        }
-
-        function updateLesson() {
-            if (!state.target) return;
-
-            const target = state.target;
-            const probeRadius = Math.hypot(probe.x, probe.y);
-            const targetRadius = target.orbit;
-            const targetRange = Math.hypot(target.x - probe.x, target.y - probe.y);
-            const relativeSpeed = Math.hypot(target.vx - probe.vx, target.vy - probe.vy);
-            const probeAngle = Math.atan2(probe.y, probe.x);
-            const targetAngleDelta = normalizeAngle(target.angle - probeAngle);
-
-            if (probe.heat > 72) {
-                state.lesson = "Solar heat is climbing. Use prograde burn or simple outward coasting to increase radius and cool the probe.";
-                return;
-            }
-
-            if (state.burnRemaining > 0) {
-                state.lesson = `${state.burnDirection > 0 ? "Prograde" : "Retrograde"} burn is active for ${state.burnRemaining.toFixed(1)} more simulation seconds. Burn timing matters because Delta-v grows roughly in proportion to burn duration.`;
-                return;
-            }
-
-            if (targetRange < getScanRadius(target) * 1.7 && relativeSpeed < SCAN_REL_SPEED + 0.9) {
-                state.lesson = relativeSpeed < SCAN_REL_SPEED
-                    ? `You are inside the scan window. Hold the approach and keep relative speed low enough for lock on ${target.name}.`
-                    : `You are close to ${target.name}, but still too fast. Match orbit more gently to complete the scan.`;
-                return;
-            }
-
-            if (targetRadius - probeRadius > 22) {
-                state.lesson = `${target.name} orbits farther from the Sun than the probe. Burn prograde to add tangential speed, raise the opposite side of the orbit and drift outward.`;
-                return;
-            }
-
-            if (probeRadius - targetRadius > 22) {
-                state.lesson = `${target.name} sits deeper in the Sun's gravity field. Burn retrograde to remove tangential speed, drop inward and gain angular speed.`;
-                return;
-            }
-
-            if (targetAngleDelta > 0.35) {
-                state.lesson = `${target.name} is ahead of you on a similar orbit. A small retrograde burn drops you inward, where faster orbital motion helps close the angle.`;
-                return;
-            }
-
-            if (targetAngleDelta < -0.35) {
-                state.lesson = `${target.name} is behind you. A small prograde burn lifts you outward, slows angular pace and lets the target catch up.`;
-                return;
-            }
-
-            state.lesson = target.hint;
-        }
-
-        function updateTelemetry() {
-            if (!state.target) return;
-
-            const target = state.target;
-            const probeRadius = Math.hypot(probe.x, probe.y);
-            const probeSpeed = Math.hypot(probe.vx, probe.vy);
-            const circularSpeed = Math.sqrt(SUN.mu / probeRadius);
-            const speedDelta = probeSpeed - circularSpeed;
-            const specificEnergy = (probeSpeed * probeSpeed) / 2 - SUN.mu / probeRadius;
-            const yearsElapsed = state.simTime / EARTH_YEAR;
-            const plannedDeltaV = BURN_ACCEL * state.burnDuration;
-            const targetRange = Math.hypot(target.x - probe.x, target.y - probe.y);
-            const relativeSpeed = Math.hypot(target.vx - probe.vx, target.vy - probe.vy);
-
-            let liveStatus = state.status;
-            const burnMode = getBurnMode();
-
-            if (!state.paused) {
-                if (burnMode !== 0) {
-                    liveStatus = burnMode > 0 ? "Timed prograde burn" : "Timed retrograde burn";
-                } else if (state.scanProgress > 0.02 && targetRange < getScanRadius(target) * 1.7) {
-                    liveStatus = "Scan lock building";
-                } else {
-                    liveStatus = "Coasting";
-                }
-            } else {
-                liveStatus = "Paused";
-            }
-
-            targetValue.textContent = target.name;
-            statusValue.textContent = liveStatus;
-            yearsValue.textContent = formatYears(yearsElapsed);
-            radiusValue.textContent = formatDistance(probeRadius);
-            burnValue.textContent = burnMode !== 0
-                ? `${burnMode > 0 ? "Pro" : "Retro"} ${state.burnRemaining.toFixed(1)} s`
-                : `Ready ${state.burnDuration.toFixed(1)} s`;
-            distanceValue.textContent = formatDistance(targetRange);
-            relativeValue.textContent = formatSpeed(relativeSpeed);
-            fuelValue.textContent = `${Math.round(probe.fuel)}%`;
-            circularSpeedValue.textContent = formatSpeed(circularSpeed);
-            speedDeltaValue.textContent = `${speedDelta >= 0 ? "+" : ""}${speedDelta.toFixed(2)} u/s`;
-            burnPlanValue.textContent = `${plannedDeltaV.toFixed(2)} u/s @ ${state.burnDuration.toFixed(1)} s`;
-            energyValue.textContent = `${specificEnergy.toFixed(2)}`;
-            scanText.textContent = `${Math.round(state.scanProgress * 100)}%`;
-            heatText.textContent = `${Math.round(probe.heat)}%`;
-            sessionValue.textContent = String(state.sessionScans);
-            chainValue.textContent = String(state.chain);
-            bestValue.textContent = String(state.bestChain);
-            scanBar.style.width = `${state.scanProgress * 100}%`;
-            heatBar.style.width = `${probe.heat}%`;
-            lessonText.textContent = state.lesson;
-            factText.textContent = state.discovery;
-
-            if (speedDelta > 0.18) {
-                formulaNote.textContent = "The probe is faster than circular speed at this radius. That extra tangential speed lifts the far side of the orbit outward.";
-            } else if (speedDelta < -0.18) {
-                formulaNote.textContent = "The probe is slower than circular speed at this radius. The orbit will fall inward toward a lower perihelion.";
-            } else {
-                formulaNote.textContent = "The probe is close to circular speed here. Timed burns now make clean, easy-to-read orbital changes.";
-            }
-        }
-
-        function pushTrailPoint() {
-            probe.trail.push({ x: probe.x, y: probe.y });
-            if (probe.trail.length > MAX_TRAIL_POINTS) {
-                probe.trail.shift();
-            }
-        }
-
-        function updateProbe(dt) {
-            const radius = Math.hypot(probe.x, probe.y);
-            const gravity = SUN.mu / (radius * radius);
-            const ax = (-probe.x / radius) * gravity;
-            const ay = (-probe.y / radius) * gravity;
-
-            const burnMode = getBurnMode();
-            const burnDt = burnMode !== 0 ? Math.min(dt, state.burnRemaining) : 0;
-            if (burnDt > 0 && probe.fuel > 0) {
-                const speed = Math.hypot(probe.vx, probe.vy) || 1;
-                const direction = burnMode > 0
-                    ? { x: probe.vx / speed, y: probe.vy / speed }
-                    : { x: -probe.vx / speed, y: -probe.vy / speed };
-
-                probe.vx += direction.x * BURN_ACCEL * burnDt;
-                probe.vy += direction.y * BURN_ACCEL * burnDt;
-                probe.fuel = clamp(probe.fuel - FUEL_BURN_RATE * burnDt, 0, 100);
-                state.burnRemaining = Math.max(0, state.burnRemaining - burnDt);
-
-                if (state.burnRemaining <= 0 || probe.fuel <= 0) {
-                    state.burnRemaining = 0;
-                    state.burnDirection = 0;
-                    updateButtonStates();
-                }
-            }
-
-            probe.vx += ax * dt;
-            probe.vy += ay * dt;
-            probe.x += probe.vx * dt;
-            probe.y += probe.vy * dt;
-
-            const nextRadius = Math.hypot(probe.x, probe.y);
-            if (nextRadius < HEAT_RADIUS) {
-                probe.heat = clamp(probe.heat + (HEAT_RADIUS - nextRadius) * HEAT_GAIN * dt, 0, 100);
-            } else {
-                probe.heat = clamp(probe.heat - HEAT_COOL * dt, 0, 100);
-            }
-
-            if (nextRadius < SUN.radius + 2) {
-                failRun("Solar impact", "The probe fell into the Sun. Use prograde burn sooner and avoid staying too deep in the gravity well.");
-                return;
-            }
-
-            if (probe.heat >= 100) {
-                failRun("Thermal overload", "The probe stayed too close to the Sun for too long and overheated.");
-                return;
-            }
-
-            if (nextRadius > ESCAPE_RADIUS) {
-                failRun("Deep space drift", "The probe escaped the survey field. Use smaller burns and stay bound to the Solar System.");
-                return;
-            }
-
-            probe.trailTimer += dt;
-            if (probe.trailTimer >= TRAIL_INTERVAL) {
-                probe.trailTimer = 0;
-                pushTrailPoint();
-            }
-        }
-
-        function updateMission(dt) {
-            if (!state.target) return;
-
-            const target = state.target;
-            const dx = target.x - probe.x;
-            const dy = target.y - probe.y;
-            const targetRange = Math.hypot(dx, dy);
-            const relativeSpeed = Math.hypot(target.vx - probe.vx, target.vy - probe.vy);
-
-            if (targetRange < getScanRadius(target) && relativeSpeed < SCAN_REL_SPEED) {
-                state.scanProgress = clamp(state.scanProgress + dt / SCAN_LOCK_TIME, 0, 1);
-                if (state.scanProgress >= 1) {
-                    completeScan();
-                }
-            } else {
-                state.scanProgress = clamp(state.scanProgress - dt * 0.5, 0, 1);
-            }
-        }
-
-        function stepSimulation(dt) {
-            state.simTime += dt;
-            planets.forEach(planet => updatePlanet(planet, dt));
-            updateProbe(dt);
-            updateMission(dt);
-            updateLesson();
-        }
-
-        function drawBackground() {
-            ctx.fillStyle = "#030711";
-            ctx.fillRect(0, 0, width, height);
-
-            stars.forEach(star => {
-                ctx.globalAlpha = star.alpha;
-                ctx.fillStyle = "#f4fbff";
-                ctx.beginPath();
-                ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
-                ctx.fill();
-            });
-
-            ctx.globalAlpha = 1;
-        }
-
-        function drawOrbitRings() {
-            ctx.lineWidth = 1;
-            planets.forEach(planet => {
-                const screen = worldToScreen(0, 0);
-                ctx.strokeStyle = planet === state.target ? "rgba(196,255,103,0.24)" : "rgba(113,245,255,0.1)";
-                ctx.setLineDash(planet === state.target ? [8, 8] : []);
-                ctx.beginPath();
-                ctx.arc(screen.x, screen.y, planet.orbit * scale, 0, Math.PI * 2);
-                ctx.stroke();
-            });
-            ctx.setLineDash([]);
-        }
-
-        function drawSun() {
-            const screen = worldToScreen(0, 0);
-            const glow = ctx.createRadialGradient(screen.x, screen.y, SUN.radius * scale, screen.x, screen.y, SUN.glow * scale);
-            glow.addColorStop(0, "rgba(255, 237, 135, 0.95)");
-            glow.addColorStop(0.4, "rgba(255, 182, 78, 0.55)");
-            glow.addColorStop(1, "rgba(255, 160, 70, 0)");
-            ctx.fillStyle = glow;
-            ctx.beginPath();
-            ctx.arc(screen.x, screen.y, SUN.glow * scale, 0, Math.PI * 2);
-            ctx.fill();
-
-            const core = ctx.createRadialGradient(screen.x - 3, screen.y - 3, 1, screen.x, screen.y, SUN.radius * scale);
-            core.addColorStop(0, "#fff59f");
-            core.addColorStop(0.55, "#ffbe56");
-            core.addColorStop(1, "#f86f2f");
-            ctx.fillStyle = core;
-            ctx.beginPath();
-            ctx.arc(screen.x, screen.y, SUN.radius * scale, 0, Math.PI * 2);
-            ctx.fill();
-        }
-
-        function drawPlanet(planet) {
-            const screen = worldToScreen(planet.x, planet.y);
-            const radius = Math.max(planet.size * scale, 3);
-
-            if (planet === state.target) {
-                ctx.strokeStyle = "rgba(196,255,103,0.8)";
-                ctx.lineWidth = 1.5;
-                ctx.beginPath();
-                ctx.arc(screen.x, screen.y, radius + 7, 0, Math.PI * 2);
-                ctx.stroke();
-            }
-
-            if (planet.rings) {
-                ctx.beginPath();
-                ctx.strokeStyle = "rgba(238, 245, 255, 0.5)";
-                ctx.lineWidth = 2;
-                ctx.ellipse(screen.x, screen.y, radius * 2.15, radius * 0.9, Math.PI / 6, 0, Math.PI * 2);
-                ctx.stroke();
-            }
-
-            const gradient = ctx.createRadialGradient(screen.x - radius * 0.32, screen.y - radius * 0.32, 1, screen.x, screen.y, radius);
-            gradient.addColorStop(0, planet.colorA);
-            gradient.addColorStop(1, planet.colorB);
-            ctx.fillStyle = gradient;
-            ctx.beginPath();
-            ctx.arc(screen.x, screen.y, radius, 0, Math.PI * 2);
-            ctx.fill();
-
-            if (width > 900 || planet === state.target || planet.name === "Earth") {
-                ctx.fillStyle = planet === state.target ? "#f0ffcf" : "rgba(213,253,255,0.8)";
-                ctx.font = `${Math.max(11, 10 * scale + 1)}px "IBM Plex Mono"`;
-                ctx.textAlign = "center";
-                ctx.fillText(planet.name, screen.x, screen.y - radius - 10);
-            }
-        }
-
-        function drawTrail() {
-            if (probe.trail.length < 2) return;
-
-            ctx.beginPath();
-            probe.trail.forEach((point, index) => {
-                const screen = worldToScreen(point.x, point.y);
-                if (index === 0) {
-                    ctx.moveTo(screen.x, screen.y);
-                } else {
-                    ctx.lineTo(screen.x, screen.y);
-                }
-            });
-            ctx.strokeStyle = "rgba(113,245,255,0.46)";
-            ctx.lineWidth = 2;
-            ctx.stroke();
-        }
-
-        function drawProbe() {
-            const screen = worldToScreen(probe.x, probe.y);
-            const angle = Math.atan2(probe.vy, probe.vx);
-            const size = clamp(scale * 8.5, 5, 11);
-            const burnMode = getBurnMode();
-
-            ctx.save();
-            ctx.translate(screen.x, screen.y);
-            ctx.rotate(angle);
-
-            if (burnMode !== 0 && probe.fuel > 0 && !state.paused) {
-                ctx.beginPath();
-                ctx.moveTo(-size * 0.9, 0);
-                ctx.lineTo(-size * 1.7, size * 0.45);
-                ctx.lineTo(-size * 1.7, -size * 0.45);
-                ctx.closePath();
-                ctx.fillStyle = burnMode > 0 ? "rgba(255, 208, 90, 0.9)" : "rgba(255, 124, 154, 0.8)";
-                ctx.fill();
-            }
-
-            ctx.beginPath();
-            ctx.moveTo(size, 0);
-            ctx.lineTo(-size * 0.75, size * 0.45);
-            ctx.lineTo(-size * 0.28, 0);
-            ctx.lineTo(-size * 0.75, -size * 0.45);
-            ctx.closePath();
-            ctx.fillStyle = "#f6fbff";
-            ctx.fill();
-
-            ctx.beginPath();
-            ctx.moveTo(size * 0.18, 0);
-            ctx.lineTo(-size * 0.42, size * 0.17);
-            ctx.lineTo(-size * 0.42, -size * 0.17);
-            ctx.closePath();
-            ctx.fillStyle = "#71f5ff";
-            ctx.fill();
-
-            ctx.restore();
-        }
-
-        function drawTargetWindow() {
-            if (!state.target) return;
-
-            const target = state.target;
-            const screen = worldToScreen(target.x, target.y);
-            const scanRadius = getScanRadius(target) * scale;
-
-            ctx.beginPath();
-            ctx.strokeStyle = "rgba(196,255,103,0.44)";
-            ctx.lineWidth = 1.4;
-            ctx.setLineDash([6, 5]);
-            ctx.arc(screen.x, screen.y, scanRadius, 0, Math.PI * 2);
-            ctx.stroke();
-            ctx.setLineDash([]);
-        }
-
-        function render() {
-            drawBackground();
-            drawOrbitRings();
-            drawSun();
-            drawTrail();
-            drawTargetWindow();
-            planets.forEach(drawPlanet);
-            drawProbe();
-        }
-
-        function frame(now) {
-            const realDt = Math.min(0.05, (now - lastFrame) / 1000);
-            lastFrame = now;
-
-            if (!state.paused) {
-                accumulator += realDt * state.speed;
-                accumulator = Math.min(accumulator, 0.5);
-
-                while (accumulator >= FIXED_STEP) {
-                    stepSimulation(FIXED_STEP);
-                    accumulator -= FIXED_STEP;
-                }
-            }
-
-            updateTelemetry();
-            render();
-            requestAnimationFrame(frame);
-        }
-
-        raiseBtn.addEventListener("click", () => startBurn(1));
-        dropBtn.addEventListener("click", () => startBurn(-1));
-
-        burnDurationSlider.addEventListener("input", event => {
-            state.burnDuration = parseFloat(event.target.value);
-            updateControlLabels();
-            updateTelemetry();
-        });
-
-        window.addEventListener("keydown", event => {
-            if (event.repeat) return;
-
-            if (event.code === "KeyW" || event.code === "ArrowUp") {
-                startBurn(1);
-            }
-            if (event.code === "KeyS" || event.code === "ArrowDown") {
-                startBurn(-1);
-            }
-            if (event.code === "Space") {
-                event.preventDefault();
-                state.paused = !state.paused;
-                updateButtonStates();
-            }
-            if (event.code === "KeyR") {
-                restartRun(true);
-            }
-        });
-
-        speedSlider.addEventListener("input", event => {
-            state.speed = parseFloat(event.target.value);
-            updateControlLabels();
-        });
-
-        guideToggle.addEventListener("click", () => {
-            setGuideVisibility(!document.body.classList.contains("guide-hidden"));
-        });
-
-        pauseBtn.addEventListener("click", () => {
-            state.paused = !state.paused;
-            updateButtonStates();
-        });
-
-        resetBtn.addEventListener("click", () => {
-            restartRun(true);
-        });
-
-        window.addEventListener("resize", resizeCanvas);
-
-        resizeCanvas();
-        setGuideVisibility(readGuidePreference());
-        updateControlLabels();
-        restartRun(true);
+        state.target = getPlanet(nextName);
+        state.missionCount += 1;
+        state.scanProgress = 0;
+        return state.target;
+      }
+
+      function restartRun(showBanner = true) {
+        resetPlanets();
+        state.simTime = 0;
+        state.sessionScans = 0;
+        state.chain = 0;
+        state.missionCursor = 0;
+        state.missionCount = 0;
+        state.burnDirection = 0;
+        state.burnRemaining = 0;
+        state.paused = false;
+        state.status = "Mission ready";
+        state.discovery =
+          "Each completed scan unlocks a short planet fact and refuels the probe for a longer run.";
+        accumulator = 0;
+        chooseNextTarget();
+        resetProbe();
         updateButtonStates();
+        updateLesson();
+        updateTelemetry();
+
+        if (showBanner) {
+          setBanner(
+            "info",
+            `Mission start: ${state.target.name}`,
+            `${state.target.hint} Use time warp during cruise and slow down before the scan window.`,
+          );
+        }
+      }
+
+      function failRun(title, copy) {
+        const previousTarget = state.target ? state.target.name : "";
+        state.chain = 0;
+        state.burnDirection = 0;
+        state.burnRemaining = 0;
+        resetProbe();
+        chooseNextTarget(previousTarget);
+        state.status = title;
+        updateLesson();
+        updateTelemetry();
+        setBanner("fail", title, `${copy} Next target: ${state.target.name}.`);
+        updateButtonStates();
+      }
+
+      function completeScan() {
+        const clearedTarget = state.target;
+        state.sessionScans += 1;
+        state.chain += 1;
+        state.bestChain = Math.max(state.bestChain, state.chain);
+        saveBestChain();
+        state.discovery = `${clearedTarget.name}: ${clearedTarget.fact}`;
+        probe.fuel = clamp(probe.fuel + 28, 0, 100);
+        const nextTarget = chooseNextTarget(clearedTarget.name);
+        state.status = `${clearedTarget.name} scan complete`;
+        updateLesson();
+        updateTelemetry();
+        setBanner(
+          "success",
+          `${clearedTarget.name} scanned`,
+          `${clearedTarget.fact} Next target: ${nextTarget.name}.`,
+        );
+      }
+
+      function getBurnMode() {
+        if (state.paused) return 0;
+        return state.burnRemaining > 0 ? state.burnDirection : 0;
+      }
+
+      function getScanRadius(target) {
+        return 18 + target.size * 1.8;
+      }
+
+      function startBurn(direction) {
+        if (state.paused) return;
+        if (probe.fuel <= 0) {
+          setBanner(
+            "fail",
+            "No delta-v reserve",
+            "The probe is out of burn reserve. Finish a scan for refuel or restart the run.",
+          );
+          return;
+        }
+        if (state.burnRemaining > 0) {
+          setBanner(
+            "info",
+            "Burn in progress",
+            `Wait until the current ${state.burnDirection > 0 ? "prograde" : "retrograde"} burn finishes.`,
+          );
+          return;
+        }
+
+        state.burnDirection = direction;
+        state.burnRemaining = state.burnDuration;
+        state.status =
+          direction > 0 ? "Timed prograde burn" : "Timed retrograde burn";
+        updateButtonStates();
+      }
+
+      function updateLesson() {
+        if (!state.target) return;
+
+        const target = state.target;
+        const probeRadius = Math.hypot(probe.x, probe.y);
+        const targetRadius = target.orbit;
+        const targetRange = Math.hypot(target.x - probe.x, target.y - probe.y);
+        const relativeSpeed = Math.hypot(
+          target.vx - probe.vx,
+          target.vy - probe.vy,
+        );
+        const probeAngle = Math.atan2(probe.y, probe.x);
+        const targetAngleDelta = normalizeAngle(target.angle - probeAngle);
+
+        if (probe.heat > 72) {
+          state.lesson =
+            "Solar heat is climbing. Use prograde burn or simple outward coasting to increase radius and cool the probe.";
+          return;
+        }
+
+        if (state.burnRemaining > 0) {
+          state.lesson = `${state.burnDirection > 0 ? "Prograde" : "Retrograde"} burn is active for ${state.burnRemaining.toFixed(1)} more simulation seconds. Burn timing matters because Delta-v grows roughly in proportion to burn duration.`;
+          return;
+        }
+
+        if (
+          targetRange < getScanRadius(target) * 1.7 &&
+          relativeSpeed < SCAN_REL_SPEED + 0.9
+        ) {
+          state.lesson =
+            relativeSpeed < SCAN_REL_SPEED
+              ? `You are inside the scan window. Hold the approach and keep relative speed low enough for lock on ${target.name}.`
+              : `You are close to ${target.name}, but still too fast. Match orbit more gently to complete the scan.`;
+          return;
+        }
+
+        if (targetRadius - probeRadius > 22) {
+          state.lesson = `${target.name} orbits farther from the Sun than the probe. Burn prograde to add tangential speed, raise the opposite side of the orbit and drift outward.`;
+          return;
+        }
+
+        if (probeRadius - targetRadius > 22) {
+          state.lesson = `${target.name} sits deeper in the Sun's gravity field. Burn retrograde to remove tangential speed, drop inward and gain angular speed.`;
+          return;
+        }
+
+        if (targetAngleDelta > 0.35) {
+          state.lesson = `${target.name} is ahead of you on a similar orbit. A small retrograde burn drops you inward, where faster orbital motion helps close the angle.`;
+          return;
+        }
+
+        if (targetAngleDelta < -0.35) {
+          state.lesson = `${target.name} is behind you. A small prograde burn lifts you outward, slows angular pace and lets the target catch up.`;
+          return;
+        }
+
+        state.lesson = target.hint;
+      }
+
+      function updateTelemetry() {
+        if (!state.target) return;
+
+        const target = state.target;
+        const probeRadius = Math.hypot(probe.x, probe.y);
+        const probeSpeed = Math.hypot(probe.vx, probe.vy);
+        const circularSpeed = Math.sqrt(SUN.mu / probeRadius);
+        const speedDelta = probeSpeed - circularSpeed;
+        const specificEnergy =
+          (probeSpeed * probeSpeed) / 2 - SUN.mu / probeRadius;
+        const yearsElapsed = state.simTime / EARTH_YEAR;
+        const plannedDeltaV = BURN_ACCEL * state.burnDuration;
+        const targetRange = Math.hypot(target.x - probe.x, target.y - probe.y);
+        const relativeSpeed = Math.hypot(
+          target.vx - probe.vx,
+          target.vy - probe.vy,
+        );
+
+        let liveStatus = state.status;
+        const burnMode = getBurnMode();
+
+        if (!state.paused) {
+          if (burnMode !== 0) {
+            liveStatus =
+              burnMode > 0 ? "Timed prograde burn" : "Timed retrograde burn";
+          } else if (
+            state.scanProgress > 0.02 &&
+            targetRange < getScanRadius(target) * 1.7
+          ) {
+            liveStatus = "Scan lock building";
+          } else {
+            liveStatus = "Coasting";
+          }
+        } else {
+          liveStatus = "Paused";
+        }
+
+        targetValue.textContent = target.name;
+        statusValue.textContent = liveStatus;
+        yearsValue.textContent = formatYears(yearsElapsed);
+        radiusValue.textContent = formatDistance(probeRadius);
+        burnValue.textContent =
+          burnMode !== 0
+            ? `${burnMode > 0 ? "Pro" : "Retro"} ${state.burnRemaining.toFixed(1)} s`
+            : `Ready ${state.burnDuration.toFixed(1)} s`;
+        distanceValue.textContent = formatDistance(targetRange);
+        relativeValue.textContent = formatSpeed(relativeSpeed);
+        fuelValue.textContent = `${Math.round(probe.fuel)}%`;
+        circularSpeedValue.textContent = formatSpeed(circularSpeed);
+        speedDeltaValue.textContent = `${speedDelta >= 0 ? "+" : ""}${speedDelta.toFixed(2)} u/s`;
+        burnPlanValue.textContent = `${plannedDeltaV.toFixed(2)} u/s @ ${state.burnDuration.toFixed(1)} s`;
+        energyValue.textContent = `${specificEnergy.toFixed(2)}`;
+        scanText.textContent = `${Math.round(state.scanProgress * 100)}%`;
+        heatText.textContent = `${Math.round(probe.heat)}%`;
+        sessionValue.textContent = String(state.sessionScans);
+        chainValue.textContent = String(state.chain);
+        bestValue.textContent = String(state.bestChain);
+        scanBar.style.width = `${state.scanProgress * 100}%`;
+        heatBar.style.width = `${probe.heat}%`;
+        lessonText.textContent = state.lesson;
+        factText.textContent = state.discovery;
+
+        if (speedDelta > 0.18) {
+          formulaNote.textContent =
+            "The probe is faster than circular speed at this radius. That extra tangential speed lifts the far side of the orbit outward.";
+        } else if (speedDelta < -0.18) {
+          formulaNote.textContent =
+            "The probe is slower than circular speed at this radius. The orbit will fall inward toward a lower perihelion.";
+        } else {
+          formulaNote.textContent =
+            "The probe is close to circular speed here. Timed burns now make clean, easy-to-read orbital changes.";
+        }
+      }
+
+      function pushTrailPoint() {
+        probe.trail.push({ x: probe.x, y: probe.y });
+        if (probe.trail.length > MAX_TRAIL_POINTS) {
+          probe.trail.shift();
+        }
+      }
+
+      function updateProbe(dt) {
+        const radius = Math.hypot(probe.x, probe.y);
+        const gravity = SUN.mu / (radius * radius);
+        const ax = (-probe.x / radius) * gravity;
+        const ay = (-probe.y / radius) * gravity;
+
+        const burnMode = getBurnMode();
+        const burnDt = burnMode !== 0 ? Math.min(dt, state.burnRemaining) : 0;
+        if (burnDt > 0 && probe.fuel > 0) {
+          const speed = Math.hypot(probe.vx, probe.vy) || 1;
+          const direction =
+            burnMode > 0
+              ? { x: probe.vx / speed, y: probe.vy / speed }
+              : { x: -probe.vx / speed, y: -probe.vy / speed };
+
+          probe.vx += direction.x * BURN_ACCEL * burnDt;
+          probe.vy += direction.y * BURN_ACCEL * burnDt;
+          probe.fuel = clamp(probe.fuel - FUEL_BURN_RATE * burnDt, 0, 100);
+          state.burnRemaining = Math.max(0, state.burnRemaining - burnDt);
+
+          if (state.burnRemaining <= 0 || probe.fuel <= 0) {
+            state.burnRemaining = 0;
+            state.burnDirection = 0;
+            updateButtonStates();
+          }
+        }
+
+        probe.vx += ax * dt;
+        probe.vy += ay * dt;
+        probe.x += probe.vx * dt;
+        probe.y += probe.vy * dt;
+
+        const nextRadius = Math.hypot(probe.x, probe.y);
+        if (nextRadius < HEAT_RADIUS) {
+          probe.heat = clamp(
+            probe.heat + (HEAT_RADIUS - nextRadius) * HEAT_GAIN * dt,
+            0,
+            100,
+          );
+        } else {
+          probe.heat = clamp(probe.heat - HEAT_COOL * dt, 0, 100);
+        }
+
+        if (nextRadius < SUN.radius + 2) {
+          failRun(
+            "Solar impact",
+            "The probe fell into the Sun. Use prograde burn sooner and avoid staying too deep in the gravity well.",
+          );
+          return;
+        }
+
+        if (probe.heat >= 100) {
+          failRun(
+            "Thermal overload",
+            "The probe stayed too close to the Sun for too long and overheated.",
+          );
+          return;
+        }
+
+        if (nextRadius > ESCAPE_RADIUS) {
+          failRun(
+            "Deep space drift",
+            "The probe escaped the survey field. Use smaller burns and stay bound to the Solar System.",
+          );
+          return;
+        }
+
+        probe.trailTimer += dt;
+        if (probe.trailTimer >= TRAIL_INTERVAL) {
+          probe.trailTimer = 0;
+          pushTrailPoint();
+        }
+      }
+
+      function updateMission(dt) {
+        if (!state.target) return;
+
+        const target = state.target;
+        const dx = target.x - probe.x;
+        const dy = target.y - probe.y;
+        const targetRange = Math.hypot(dx, dy);
+        const relativeSpeed = Math.hypot(
+          target.vx - probe.vx,
+          target.vy - probe.vy,
+        );
+
+        if (
+          targetRange < getScanRadius(target) &&
+          relativeSpeed < SCAN_REL_SPEED
+        ) {
+          state.scanProgress = clamp(
+            state.scanProgress + dt / SCAN_LOCK_TIME,
+            0,
+            1,
+          );
+          if (state.scanProgress >= 1) {
+            completeScan();
+          }
+        } else {
+          state.scanProgress = clamp(state.scanProgress - dt * 0.5, 0, 1);
+        }
+      }
+
+      function stepSimulation(dt) {
+        state.simTime += dt;
+        planets.forEach((planet) => updatePlanet(planet, dt));
+        updateProbe(dt);
+        updateMission(dt);
+        updateLesson();
+      }
+
+      function drawBackground() {
+        ctx.fillStyle = "#030711";
+        ctx.fillRect(0, 0, width, height);
+
+        stars.forEach((star) => {
+          ctx.globalAlpha = star.alpha;
+          ctx.fillStyle = "#f4fbff";
+          ctx.beginPath();
+          ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+          ctx.fill();
+        });
+
+        ctx.globalAlpha = 1;
+      }
+
+      function drawOrbitRings() {
+        ctx.lineWidth = 1;
+        planets.forEach((planet) => {
+          const screen = worldToScreen(0, 0);
+          ctx.strokeStyle =
+            planet === state.target
+              ? "rgba(196,255,103,0.24)"
+              : "rgba(113,245,255,0.1)";
+          ctx.setLineDash(planet === state.target ? [8, 8] : []);
+          ctx.beginPath();
+          ctx.arc(screen.x, screen.y, planet.orbit * scale, 0, Math.PI * 2);
+          ctx.stroke();
+        });
+        ctx.setLineDash([]);
+      }
+
+      function drawSun() {
+        const screen = worldToScreen(0, 0);
+        const glow = ctx.createRadialGradient(
+          screen.x,
+          screen.y,
+          SUN.radius * scale,
+          screen.x,
+          screen.y,
+          SUN.glow * scale,
+        );
+        glow.addColorStop(0, "rgba(255, 237, 135, 0.95)");
+        glow.addColorStop(0.4, "rgba(255, 182, 78, 0.55)");
+        glow.addColorStop(1, "rgba(255, 160, 70, 0)");
+        ctx.fillStyle = glow;
+        ctx.beginPath();
+        ctx.arc(screen.x, screen.y, SUN.glow * scale, 0, Math.PI * 2);
+        ctx.fill();
+
+        const core = ctx.createRadialGradient(
+          screen.x - 3,
+          screen.y - 3,
+          1,
+          screen.x,
+          screen.y,
+          SUN.radius * scale,
+        );
+        core.addColorStop(0, "#fff59f");
+        core.addColorStop(0.55, "#ffbe56");
+        core.addColorStop(1, "#f86f2f");
+        ctx.fillStyle = core;
+        ctx.beginPath();
+        ctx.arc(screen.x, screen.y, SUN.radius * scale, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      function drawPlanet(planet) {
+        const screen = worldToScreen(planet.x, planet.y);
+        const radius = Math.max(planet.size * scale, 3);
+
+        if (planet === state.target) {
+          ctx.strokeStyle = "rgba(196,255,103,0.8)";
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.arc(screen.x, screen.y, radius + 7, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+
+        if (planet.rings) {
+          ctx.beginPath();
+          ctx.strokeStyle = "rgba(238, 245, 255, 0.5)";
+          ctx.lineWidth = 2;
+          ctx.ellipse(
+            screen.x,
+            screen.y,
+            radius * 2.15,
+            radius * 0.9,
+            Math.PI / 6,
+            0,
+            Math.PI * 2,
+          );
+          ctx.stroke();
+        }
+
+        const gradient = ctx.createRadialGradient(
+          screen.x - radius * 0.32,
+          screen.y - radius * 0.32,
+          1,
+          screen.x,
+          screen.y,
+          radius,
+        );
+        gradient.addColorStop(0, planet.colorA);
+        gradient.addColorStop(1, planet.colorB);
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(screen.x, screen.y, radius, 0, Math.PI * 2);
+        ctx.fill();
+
+        if (width > 900 || planet === state.target || planet.name === "Earth") {
+          ctx.fillStyle =
+            planet === state.target ? "#f0ffcf" : "rgba(213,253,255,0.8)";
+          ctx.font = `${Math.max(11, 10 * scale + 1)}px "IBM Plex Mono"`;
+          ctx.textAlign = "center";
+          ctx.fillText(planet.name, screen.x, screen.y - radius - 10);
+        }
+      }
+
+      function drawTrail() {
+        if (probe.trail.length < 2) return;
+
+        ctx.beginPath();
+        probe.trail.forEach((point, index) => {
+          const screen = worldToScreen(point.x, point.y);
+          if (index === 0) {
+            ctx.moveTo(screen.x, screen.y);
+          } else {
+            ctx.lineTo(screen.x, screen.y);
+          }
+        });
+        ctx.strokeStyle = "rgba(113,245,255,0.46)";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      }
+
+      function drawProbe() {
+        const screen = worldToScreen(probe.x, probe.y);
+        const angle = Math.atan2(probe.vy, probe.vx);
+        const size = clamp(scale * 8.5, 5, 11);
+        const burnMode = getBurnMode();
+
+        ctx.save();
+        ctx.translate(screen.x, screen.y);
+        ctx.rotate(angle);
+
+        if (burnMode !== 0 && probe.fuel > 0 && !state.paused) {
+          ctx.beginPath();
+          ctx.moveTo(-size * 0.9, 0);
+          ctx.lineTo(-size * 1.7, size * 0.45);
+          ctx.lineTo(-size * 1.7, -size * 0.45);
+          ctx.closePath();
+          ctx.fillStyle =
+            burnMode > 0
+              ? "rgba(255, 208, 90, 0.9)"
+              : "rgba(255, 124, 154, 0.8)";
+          ctx.fill();
+        }
+
+        ctx.beginPath();
+        ctx.moveTo(size, 0);
+        ctx.lineTo(-size * 0.75, size * 0.45);
+        ctx.lineTo(-size * 0.28, 0);
+        ctx.lineTo(-size * 0.75, -size * 0.45);
+        ctx.closePath();
+        ctx.fillStyle = "#f6fbff";
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.moveTo(size * 0.18, 0);
+        ctx.lineTo(-size * 0.42, size * 0.17);
+        ctx.lineTo(-size * 0.42, -size * 0.17);
+        ctx.closePath();
+        ctx.fillStyle = "#71f5ff";
+        ctx.fill();
+
+        ctx.restore();
+      }
+
+      function drawTargetWindow() {
+        if (!state.target) return;
+
+        const target = state.target;
+        const screen = worldToScreen(target.x, target.y);
+        const scanRadius = getScanRadius(target) * scale;
+
+        ctx.beginPath();
+        ctx.strokeStyle = "rgba(196,255,103,0.44)";
+        ctx.lineWidth = 1.4;
+        ctx.setLineDash([6, 5]);
+        ctx.arc(screen.x, screen.y, scanRadius, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+
+      function render() {
+        drawBackground();
+        drawOrbitRings();
+        drawSun();
+        drawTrail();
+        drawTargetWindow();
+        planets.forEach(drawPlanet);
+        drawProbe();
+      }
+
+      function frame(now) {
+        const realDt = Math.min(0.05, (now - lastFrame) / 1000);
+        lastFrame = now;
+
+        if (!state.paused) {
+          accumulator += realDt * state.speed;
+          accumulator = Math.min(accumulator, 0.5);
+
+          while (accumulator >= FIXED_STEP) {
+            stepSimulation(FIXED_STEP);
+            accumulator -= FIXED_STEP;
+          }
+        }
+
+        updateTelemetry();
+        render();
         requestAnimationFrame(frame);
+      }
+
+      raiseBtn.addEventListener("click", () => startBurn(1));
+      dropBtn.addEventListener("click", () => startBurn(-1));
+
+      burnDurationSlider.addEventListener("input", (event) => {
+        state.burnDuration = parseFloat(event.target.value);
+        updateControlLabels();
+        updateTelemetry();
+      });
+
+      window.addEventListener("keydown", (event) => {
+        if (event.repeat) return;
+
+        if (event.code === "KeyW" || event.code === "ArrowUp") {
+          startBurn(1);
+        }
+        if (event.code === "KeyS" || event.code === "ArrowDown") {
+          startBurn(-1);
+        }
+        if (event.code === "Space") {
+          event.preventDefault();
+          state.paused = !state.paused;
+          updateButtonStates();
+        }
+        if (event.code === "KeyR") {
+          restartRun(true);
+        }
+      });
+
+      speedSlider.addEventListener("input", (event) => {
+        state.speed = parseFloat(event.target.value);
+        updateControlLabels();
+      });
+
+      guideToggle.addEventListener("click", () => {
+        setGuideVisibility(!document.body.classList.contains("guide-hidden"));
+      });
+
+      pauseBtn.addEventListener("click", () => {
+        state.paused = !state.paused;
+        updateButtonStates();
+      });
+
+      resetBtn.addEventListener("click", () => {
+        restartRun(true);
+      });
+
+      window.addEventListener("resize", resizeCanvas);
+
+      resizeCanvas();
+      setGuideVisibility(readGuidePreference());
+      updateControlLabels();
+      restartRun(true);
+      updateButtonStates();
+      requestAnimationFrame(frame);
     </script>
-</body>
+  </body>
 </html>

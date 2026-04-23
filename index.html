@@ -1,1825 +1,2623 @@
-<!DOCTYPE html>
-<html lang="en" data-lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tech-Ant Oy | AI, Robotics, 3D Product Development</title>
-  <meta name="description" content="Tech-Ant Oy builds technical products, rapid prototypes and branded demos at the intersection of AI, robotics and 3D manufacturing." />
-  <meta name="theme-color" content="#050816" />
-  <link rel="canonical" href="https://tech-ant.fi/" />
-  <link rel="icon" type="image/png" href="tech-antLOGO.png" />
-  <meta property="og:title" content="Tech-Ant Oy | AI, Robotics, 3D Product Development" />
-  <meta property="og:description" content="Technical products, rapid prototypes, interactive demos and bilingual brand-building content from engineer and inventor Jere Nevalainen." />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://tech-ant.fi/" />
-  <meta property="og:image" content="https://tech-ant.fi/tech-antLOGO.png" />
-  <meta property="og:image:alt" content="Tech-Ant Oy logo" />
-  <meta name="twitter:card" content="summary" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
-  <style>
-    :root {
-      --bg: #050816;
-      --bg2: #091024;
-      --panel: rgba(11, 21, 44, 0.82);
-      --panel-strong: rgba(16, 30, 59, 0.92);
-      --panel-soft: rgba(12, 20, 39, 0.72);
-      --line: rgba(113, 245, 255, 0.14);
-      --line-strong: rgba(113, 245, 255, 0.34);
-      --cyan: #71f5ff;
-      --cyan-soft: #d5fdff;
-      --acid: #c4ff67;
-      --text: #eef5ff;
-      --muted: #97a6c1;
-      --muted-strong: #bfd0eb;
-      --shadow: 0 32px 90px rgba(2, 8, 20, 0.42);
-      --r: 18px;
-      --r-sm: 12px;
-    }
-
-    * , *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
-    body {
-      background:
-        radial-gradient(circle at 15% 0%, rgba(113, 245, 255, 0.11), transparent 32%),
-        radial-gradient(circle at 85% 8%, rgba(196, 255, 103, 0.08), transparent 24%),
-        linear-gradient(180deg, #050816 0%, #060b18 38%, #091024 100%);
-      color: var(--text);
-      font-family: "Space Grotesk", sans-serif;
-      line-height: 1.7;
-      overflow-x: hidden;
-    }
-    body.menu-open { overflow: hidden; }
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      background-image:
-        linear-gradient(rgba(113, 245, 255, 0.045) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(113, 245, 255, 0.045) 1px, transparent 1px);
-      background-size: 72px 72px;
-      opacity: 0.42;
-      pointer-events: none;
-      z-index: 0;
-      mask-image: linear-gradient(180deg, rgba(0,0,0,0.7), rgba(0,0,0,0.18));
-    }
-    body::after {
-      content: "";
-      position: fixed;
-      inset: 0;
-      background:
-        radial-gradient(circle at 50% 35%, rgba(113, 245, 255, 0.06), transparent 30%),
-        radial-gradient(circle at 75% 65%, rgba(196, 255, 103, 0.05), transparent 18%);
-      pointer-events: none;
-      z-index: 0;
-    }
-    img { display: block; max-width: 100%; }
-    a { color: inherit; text-decoration: none; }
-    button, input { font: inherit; }
-
-    [data-fi] { display: none; }
-    [data-lang="fi"] [data-en] { display: none !important; }
-    [data-lang="fi"] [data-fi] { display: revert !important; }
-
-    .mono { font-family: "IBM Plex Mono", monospace; }
-    h1, h2, h3 { font-family: "Space Grotesk", sans-serif; letter-spacing: -0.03em; line-height: 1; }
-    section, footer, nav { position: relative; z-index: 1; }
-    section { padding: 5.5rem 5%; }
-    .container { max-width: 1180px; margin: 0 auto; }
-    .section-kicker {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.65rem;
-      padding: 0.45rem 0.8rem;
-      border-radius: 999px;
-      border: 1px solid var(--line);
-      background: rgba(10, 20, 39, 0.55);
-      color: var(--cyan);
-      font-family: "IBM Plex Mono", monospace;
-      font-size: 0.76rem;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      margin-bottom: 1.15rem;
-    }
-    .section-title {
-      font-size: clamp(2rem, 4.8vw, 4.2rem);
-      max-width: 12ch;
-      margin-bottom: 1rem;
-    }
-    .section-copy {
-      max-width: 680px;
-      color: var(--muted);
-      font-size: 1rem;
-      line-height: 1.82;
-    }
-    .eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.75rem;
-      padding: 0.55rem 0.9rem;
-      border-radius: 999px;
-      border: 1px solid var(--line);
-      background: rgba(12, 20, 39, 0.55);
-      color: var(--cyan);
-      font-family: "IBM Plex Mono", monospace;
-      font-size: 0.76rem;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-    }
-    .eyebrow::before {
-      content: "";
-      width: 8px;
-      height: 8px;
-      border-radius: 999px;
-      background: var(--acid);
-      box-shadow: 0 0 20px rgba(196, 255, 103, 0.45);
-    }
-    .btn-primary,
-    .btn-secondary,
-    .text-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.7rem;
-      transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease, color 0.18s ease;
-    }
-    .btn-primary {
-      padding: 0.95rem 1.35rem;
-      border-radius: 999px;
-      background: linear-gradient(135deg, var(--cyan), #a4fbff);
-      color: #04121e;
-      font-weight: 700;
-      border: 1px solid transparent;
-      box-shadow: 0 10px 30px rgba(113, 245, 255, 0.2);
-    }
-    .btn-primary:hover { transform: translateY(-2px); }
-    .btn-secondary {
-      padding: 0.95rem 1.35rem;
-      border-radius: 999px;
-      border: 1px solid var(--line);
-      background: rgba(12, 20, 39, 0.45);
-      color: var(--text);
-    }
-    .btn-secondary:hover,
-    .text-link:hover {
-      transform: translateY(-2px);
-      border-color: var(--line-strong);
-      color: var(--cyan-soft);
-    }
-    .text-link {
-      color: var(--cyan);
-      font-family: "IBM Plex Mono", monospace;
-      font-size: 0.88rem;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-    }
-    .card {
-      background: linear-gradient(180deg, rgba(12, 20, 39, 0.85), rgba(8, 15, 30, 0.78));
-      border: 1px solid var(--line);
-      border-radius: var(--r);
-      box-shadow: var(--shadow);
-    }
-
-    nav {
-      position: fixed;
-      inset: 0 0 auto 0;
-      padding: 1rem 5%;
-      backdrop-filter: blur(16px);
-      background: rgba(5, 8, 22, 0.64);
-      border-bottom: 1px solid rgba(113, 245, 255, 0.08);
-      z-index: 100;
-    }
-    .nav-inner {
-      max-width: 1180px;
-      margin: 0 auto;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-    }
-    .nav-brand {
-      display: flex;
-      align-items: center;
-      gap: 0.9rem;
-      min-width: 0;
-    }
-    .nav-brand img {
-      height: 34px;
-      width: auto;
-      filter: drop-shadow(0 0 16px rgba(113, 245, 255, 0.15));
-    }
-    .brand-copy strong {
-      display: block;
-      font-size: 0.96rem;
-      letter-spacing: 0.04em;
-    }
-    .brand-copy span {
-      display: block;
-      color: var(--muted);
-      font-family: "IBM Plex Mono", monospace;
-      font-size: 0.7rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-    }
-    .nav-links {
-      display: flex;
-      list-style: none;
-      gap: 1.6rem;
-    }
-    .nav-links a {
-      color: var(--muted-strong);
-      font-size: 0.9rem;
-      position: relative;
-      transition: color 0.18s ease;
-    }
-    .nav-links a::after {
-      content: "";
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: -0.45rem;
-      height: 1px;
-      background: var(--cyan);
-      transform: scaleX(0);
-      transform-origin: left;
-      transition: transform 0.18s ease;
-    }
-    .nav-links a:hover { color: var(--text); }
-    .nav-links a:hover::after { transform: scaleX(1); }
-    .nav-actions {
-      display: flex;
-      align-items: center;
-      gap: 0.7rem;
-      flex-shrink: 0;
-    }
-    .lang-btn {
-      display: flex;
-      align-items: center;
-      gap: 0.2rem;
-      padding: 0.22rem;
-      background: rgba(10, 20, 39, 0.72);
-      border: 1px solid var(--line);
-      border-radius: 999px;
-    }
-    .lang-opt {
-      padding: 0.35rem 0.65rem;
-      border-radius: 999px;
-      color: var(--muted);
-      font-family: "IBM Plex Mono", monospace;
-      font-size: 0.72rem;
-      letter-spacing: 0.08em;
-      cursor: pointer;
-      user-select: none;
-      transition: background 0.18s ease, color 0.18s ease;
-    }
-    .lang-opt.active {
-      background: var(--cyan);
-      color: #041018;
-    }
-    .nav-toggle {
-      width: 44px;
-      height: 44px;
-      border-radius: 999px;
-      border: 1px solid var(--line);
-      background: rgba(10, 20, 39, 0.72);
-      color: var(--text);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      position: relative;
-    }
-    .nav-toggle::before,
-    .nav-toggle::after,
-    .nav-toggle span {
-      content: "";
-      position: absolute;
-      width: 18px;
-      height: 2px;
-      background: currentColor;
-      transition: transform 0.18s ease, opacity 0.18s ease;
-    }
-    .nav-toggle::before { transform: translateY(-6px); }
-    .nav-toggle::after { transform: translateY(6px); }
-    nav.menu-open .nav-toggle::before { transform: rotate(45deg); }
-    nav.menu-open .nav-toggle::after { transform: rotate(-45deg); }
-    nav.menu-open .nav-toggle span { opacity: 0; }
-    .mobile-menu {
-      position: fixed;
-      top: 78px;
-      left: 5%;
-      right: 5%;
-      display: none;
-      flex-direction: column;
-      gap: 0.75rem;
-      padding: 1rem;
-      border: 1px solid var(--line);
-      border-radius: var(--r);
-      background: rgba(8, 15, 30, 0.96);
-      backdrop-filter: blur(18px);
-      opacity: 0;
-      transform: translateY(-10px);
-      visibility: hidden;
-      pointer-events: none;
-      transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s ease;
-      z-index: 99;
-    }
-    .mobile-menu.open {
-      opacity: 1;
-      transform: translateY(0);
-      visibility: visible;
-      pointer-events: auto;
-    }
-    .mobile-menu a {
-      padding: 0.95rem 1rem;
-      border-radius: var(--r-sm);
-      border: 1px solid rgba(113, 245, 255, 0.08);
-      background: rgba(12, 20, 39, 0.62);
-      color: var(--muted-strong);
-    }
-
-    .hero {
-      padding-top: 9rem;
-      padding-bottom: 4.75rem;
-    }
-    .hero-grid {
-      max-width: 1180px;
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: minmax(0, 1.15fr) minmax(330px, 0.85fr);
-      gap: 2rem;
-      align-items: end;
-    }
-    .hero-copy {
-      max-width: 720px;
-    }
-    .display {
-      font-size: clamp(3.2rem, 8vw, 6.8rem);
-      line-height: 0.95;
-      margin: 1.35rem 0 1.25rem;
-      max-width: 11ch;
-      text-wrap: balance;
-    }
-    .display em {
-      font-style: normal;
-      color: var(--cyan);
-      text-shadow: 0 0 32px rgba(113, 245, 255, 0.2);
-    }
-    .hero-lead {
-      max-width: 620px;
-      color: var(--muted-strong);
-      font-size: 1.07rem;
-      line-height: 1.82;
-      margin-bottom: 2rem;
-    }
-    .hero-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.9rem;
-      margin-bottom: 1.6rem;
-    }
-    .hero-strip {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-    }
-    .signal-chip {
-      padding: 0.7rem 0.9rem;
-      border-radius: 999px;
-      border: 1px solid var(--line);
-      background: rgba(12, 20, 39, 0.48);
-      color: var(--muted-strong);
-      font-family: "IBM Plex Mono", monospace;
-      font-size: 0.78rem;
-      letter-spacing: 0.04em;
-    }
-    .hero-panel {
-      padding: 1.35rem;
-      position: relative;
-      overflow: hidden;
-    }
-    .hero-panel::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background:
-        linear-gradient(180deg, rgba(113, 245, 255, 0.08), transparent 28%),
-        linear-gradient(90deg, rgba(113, 245, 255, 0.06), transparent 35%);
-      pointer-events: none;
-    }
-    .panel-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-      margin-bottom: 1rem;
-      padding-bottom: 1rem;
-      border-bottom: 1px solid var(--line);
-      position: relative;
-    }
-    .panel-head span,
-    .panel-row span,
-    .metric-label,
-    .card-index,
-    .status-tag,
-    .demo-meta,
-    .process-step,
-    footer {
-      font-family: "IBM Plex Mono", monospace;
-    }
-    .panel-head span,
-    .panel-row span,
-    .metric-label,
-    .card-index,
-    .demo-meta,
-    .process-step {
-      font-size: 0.72rem;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--cyan);
-    }
-    .panel-head strong {
-      font-size: 0.88rem;
-      letter-spacing: 0.04em;
-    }
-    .panel-rows {
-      display: grid;
-      gap: 0.85rem;
-      position: relative;
-    }
-    .panel-row {
-      display: flex;
-      gap: 1rem;
-      justify-content: space-between;
-      align-items: baseline;
-      padding-bottom: 0.8rem;
-      border-bottom: 1px solid rgba(113, 245, 255, 0.08);
-    }
-    .panel-row strong {
-      flex: 1;
-      text-align: right;
-      font-size: 0.95rem;
-      color: var(--muted-strong);
-    }
-    .hero-stack {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 0.8rem;
-      margin-top: 1.15rem;
-      position: relative;
-    }
-    .stack-card {
-      padding: 0.9rem;
-      border-radius: var(--r-sm);
-      border: 1px solid rgba(113, 245, 255, 0.08);
-      background: rgba(7, 14, 28, 0.65);
-      min-height: 112px;
-    }
-    .stack-card h3 {
-      font-size: 1rem;
-      margin: 0.55rem 0 0.45rem;
-    }
-    .stack-card p {
-      color: var(--muted);
-      font-size: 0.88rem;
-      line-height: 1.65;
-    }
-
-    .metrics {
-      padding-top: 0;
-    }
-    .metrics-grid {
-      max-width: 1180px;
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 1rem;
-    }
-    .metric-card {
-      padding: 1.15rem 1.2rem;
-      border-radius: var(--r-sm);
-      border: 1px solid var(--line);
-      background: rgba(8, 15, 30, 0.58);
-    }
-    .metric-card strong {
-      display: block;
-      margin-top: 0.55rem;
-      font-size: 1rem;
-      line-height: 1.4;
-    }
-    .metric-card p {
-      margin-top: 0.45rem;
-      color: var(--muted);
-      font-size: 0.9rem;
-      line-height: 1.65;
-    }
-
-    .capabilities-grid,
-    .products-grid,
-    .process-grid {
-      display: grid;
-      gap: 1.1rem;
-      margin-top: 2rem;
-    }
-    .capabilities-grid {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
-    .capability-card,
-    .product-card,
-    .process-card,
-    .story-card,
-    .lab-card,
-    .about-card,
-    .contact-card {
-      padding: 1.5rem;
-      position: relative;
-      overflow: hidden;
-    }
-    .capability-card::before,
-    .product-card::before,
-    .story-card::before,
-    .lab-card::before,
-    .about-card::before,
-    .contact-card::before {
-      content: "";
-      position: absolute;
-      inset: 0 auto auto 0;
-      width: 100%;
-      height: 1px;
-      background: linear-gradient(90deg, var(--cyan), transparent 70%);
-      opacity: 0.7;
-    }
-    .card-index {
-      display: inline-block;
-      margin-bottom: 1rem;
-    }
-    .capability-card h3,
-    .product-card h3,
-    .story-card h3,
-    .lab-card h3,
-    .about-card h3,
-    .process-card h3 {
-      font-size: 1.35rem;
-      margin-bottom: 0.85rem;
-    }
-    .capability-card p,
-    .product-card p,
-    .story-card p,
-    .lab-card p,
-    .about-card p,
-    .process-card p {
-      color: var(--muted);
-      font-size: 0.94rem;
-      line-height: 1.75;
-    }
-    .capability-list,
-    .story-list,
-    .about-list,
-    .lab-list {
-      list-style: none;
-      display: grid;
-      gap: 0.7rem;
-      margin-top: 1rem;
-    }
-    .capability-list li,
-    .story-list li,
-    .about-list li,
-    .lab-list li {
-      display: flex;
-      gap: 0.7rem;
-      color: var(--muted-strong);
-      font-size: 0.9rem;
-      line-height: 1.6;
-    }
-    .capability-list li::before,
-    .story-list li::before,
-    .about-list li::before,
-    .lab-list li::before {
-      content: "";
-      width: 8px;
-      height: 8px;
-      border-radius: 999px;
-      background: var(--cyan);
-      margin-top: 0.45rem;
-      flex-shrink: 0;
-      box-shadow: 0 0 18px rgba(113, 245, 255, 0.24);
-    }
-
-    .products {
-      background: linear-gradient(180deg, rgba(9, 16, 36, 0.5), rgba(5, 8, 22, 0));
-    }
-    .filters {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-      margin-top: 1.6rem;
-    }
-    .filter-btn {
-      padding: 0.72rem 1rem;
-      border-radius: 999px;
-      border: 1px solid var(--line);
-      background: rgba(12, 20, 39, 0.5);
-      color: var(--muted-strong);
-      cursor: pointer;
-      font-family: "IBM Plex Mono", monospace;
-      font-size: 0.8rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
-    }
-    .filter-btn.active,
-    .filter-btn:hover {
-      background: rgba(113, 245, 255, 0.12);
-      border-color: var(--line-strong);
-      color: var(--cyan-soft);
-    }
-    .products-grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      margin-top: 1.5rem;
-    }
-    .product-card.is-hidden { display: none; }
-    .product-top {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 1rem;
-      margin-bottom: 1rem;
-    }
-    .status-tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.45rem;
-      padding: 0.42rem 0.75rem;
-      border-radius: 999px;
-      border: 1px solid transparent;
-      font-size: 0.7rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-    }
-    .status-active {
-      color: #08161c;
-      background: var(--cyan);
-    }
-    .status-build {
-      color: var(--acid);
-      border-color: rgba(196, 255, 103, 0.26);
-      background: rgba(196, 255, 103, 0.08);
-    }
-    .status-prelaunch {
-      color: var(--cyan);
-      border-color: rgba(113, 245, 255, 0.24);
-      background: rgba(113, 245, 255, 0.07);
-    }
-    .product-meta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.65rem;
-      margin: 1rem 0 1.15rem;
-    }
-    .meta-pill {
-      padding: 0.38rem 0.68rem;
-      border-radius: 999px;
-      border: 1px solid rgba(113, 245, 255, 0.1);
-      background: rgba(7, 14, 28, 0.55);
-      color: var(--muted-strong);
-      font-family: "IBM Plex Mono", monospace;
-      font-size: 0.72rem;
-      letter-spacing: 0.06em;
-    }
-    .product-fit {
-      color: var(--muted-strong);
-      margin-bottom: 1rem;
-      font-size: 0.92rem;
-      line-height: 1.7;
-    }
-    .product-bottom {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-      margin-top: 1.25rem;
-      padding-top: 1rem;
-      border-top: 1px solid rgba(113, 245, 255, 0.08);
-    }
-    .product-bottom span {
-      color: var(--muted);
-      font-family: "IBM Plex Mono", monospace;
-      font-size: 0.78rem;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-    }
-
-    .media-grid,
-    .about-grid,
-    .contact-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 1.1rem;
-      margin-top: 2rem;
-    }
-    .story-split {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 0.85rem;
-      margin-top: 1rem;
-    }
-    .mini-panel {
-      padding: 1rem;
-      border-radius: var(--r-sm);
-      border: 1px solid rgba(113, 245, 255, 0.08);
-      background: rgba(7, 14, 28, 0.58);
-    }
-    .mini-panel strong {
-      display: block;
-      margin-top: 0.45rem;
-      font-size: 1rem;
-    }
-    .mini-panel p {
-      margin-top: 0.35rem;
-      color: var(--muted);
-      font-size: 0.88rem;
-      line-height: 1.65;
-    }
-
-    .lab-layout {
-      display: grid;
-      grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
-      gap: 1.1rem;
-      margin-top: 2rem;
-    }
-    .demo-viewport {
-      position: relative;
-      min-height: 330px;
-      border-radius: var(--r);
-      border: 1px solid rgba(113, 245, 255, 0.12);
-      background:
-        radial-gradient(circle at center, rgba(255, 196, 66, 0.18), transparent 10%),
-        radial-gradient(circle at center, rgba(113, 245, 255, 0.06), transparent 18%),
-        linear-gradient(180deg, rgba(6, 10, 18, 0.9), rgba(8, 15, 30, 0.96));
-      overflow: hidden;
-      margin: 1rem 0 1.15rem;
-    }
-    .demo-viewport::before,
-    .demo-viewport::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-    }
-    .demo-viewport::before {
-      background:
-        radial-gradient(circle at center, rgba(255, 220, 96, 0.95) 0 3%, transparent 4%),
-        radial-gradient(circle at center, transparent 0 17%, rgba(113, 245, 255, 0.14) 17.2% 17.5%, transparent 17.8%),
-        radial-gradient(circle at center, transparent 0 30%, rgba(113, 245, 255, 0.12) 30.2% 30.5%, transparent 30.8%),
-        radial-gradient(circle at center, transparent 0 42%, rgba(113, 245, 255, 0.1) 42.2% 42.5%, transparent 42.8%);
-      transform: scale(1.15);
-    }
-    .demo-viewport::after {
-      background:
-        radial-gradient(circle at 58% 30%, rgba(76, 165, 255, 0.95) 0 1.6%, transparent 1.8%),
-        radial-gradient(circle at 68% 65%, rgba(208, 178, 112, 0.9) 0 2.2%, transparent 2.4%),
-        radial-gradient(circle at 30% 58%, rgba(196, 255, 103, 0.85) 0 1.5%, transparent 1.7%),
-        radial-gradient(circle at 76% 45%, rgba(132, 114, 255, 0.65) 0 2.5%, transparent 2.7%);
-    }
-    .demo-overlay {
-      position: absolute;
-      left: 1rem;
-      right: 1rem;
-      bottom: 1rem;
-      padding: 0.95rem 1rem;
-      border-radius: var(--r-sm);
-      border: 1px solid rgba(113, 245, 255, 0.12);
-      background: rgba(6, 10, 18, 0.72);
-      backdrop-filter: blur(8px);
-    }
-    .demo-overlay strong {
-      display: block;
-      margin-top: 0.35rem;
-      font-size: 1.05rem;
-    }
-    .demo-overlay p {
-      color: var(--muted);
-      font-size: 0.9rem;
-      margin-top: 0.35rem;
-      line-height: 1.65;
-    }
-
-    .process-grid {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
-    .process-step {
-      display: block;
-      margin-bottom: 1rem;
-    }
-
-    .about-grid {
-      align-items: start;
-    }
-    .about-card p + p {
-      margin-top: 1rem;
-    }
-    .cred-grid {
-      display: grid;
-      gap: 0.85rem;
-    }
-    .cred-item {
-      padding: 1rem;
-      border-radius: var(--r-sm);
-      border: 1px solid rgba(113, 245, 255, 0.08);
-      background: rgba(7, 14, 28, 0.58);
-    }
-    .cred-item strong {
-      display: block;
-      font-size: 1rem;
-      margin-top: 0.45rem;
-    }
-    .cred-item p {
-      color: var(--muted);
-      font-size: 0.88rem;
-      line-height: 1.7;
-      margin-top: 0.4rem;
-    }
-
-    .contact-card {
-      min-height: 100%;
-    }
-    .contact-copy {
-      color: var(--muted-strong);
-      font-size: 1rem;
-      line-height: 1.82;
-      margin: 1rem 0 1.4rem;
-      max-width: 52ch;
-    }
-    .contact-pills {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.7rem;
-      margin-bottom: 1.4rem;
-    }
-    .contact-pill {
-      padding: 0.55rem 0.8rem;
-      border-radius: 999px;
-      border: 1px solid rgba(113, 245, 255, 0.12);
-      background: rgba(7, 14, 28, 0.5);
-      color: var(--muted-strong);
-      font-family: "IBM Plex Mono", monospace;
-      font-size: 0.74rem;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-    }
-    .contact-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.85rem;
-      margin-top: 1.2rem;
-    }
-    .contact-side {
-      display: grid;
-      gap: 1rem;
-    }
-    .contact-side .mini-panel {
-      min-height: 100%;
-    }
-
-    footer {
-      padding: 2rem 5%;
-      border-top: 1px solid rgba(113, 245, 255, 0.08);
-      color: var(--muted);
-      font-size: 0.75rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-    .footer-inner {
-      max-width: 1180px;
-      margin: 0 auto;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      gap: 0.8rem;
-    }
-
-    .reveal { transition: opacity 0.6s ease, transform 0.6s ease; }
-    html.js .reveal { opacity: 0; transform: translateY(24px); }
-    html.js .reveal.is-visible { opacity: 1; transform: translateY(0); }
-    .reveal-delay-1 { transition-delay: 0.08s; }
-    .reveal-delay-2 { transition-delay: 0.16s; }
-    .reveal-delay-3 { transition-delay: 0.24s; }
-
-    @media (max-width: 1024px) {
-      .hero-grid,
-      .media-grid,
-      .about-grid,
-      .contact-grid,
-      .lab-layout {
-        grid-template-columns: 1fr;
+<!doctype html>
+<html lang="fi" data-lang="fi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Tech-Ant Oy | 3D-tuotteet, prototyypit ja digitaaliset ratkaisut
+    </title>
+    <meta
+      name="description"
+      content="Tech-Ant Oy suunnittelee 3D-tulostettuja tuotteita, prototyyppejä, digitaalisia tuotteita ja AI-avusteisia demoja. Uskottavuus rakentuu käytännön tekemisestä, yhteistyöstä ja rehellisestä projektitilasta."
+    />
+    <meta name="theme-color" content="#050816" />
+    <link rel="canonical" href="https://tech-ant.fi/" />
+    <link rel="icon" type="image/png" href="tech-antLOGO.png" />
+    <meta
+      property="og:title"
+      content="Tech-Ant Oy | 3D-tuotteet, prototyypit ja digitaaliset ratkaisut"
+    />
+    <meta
+      property="og:description"
+      content="Tech-Ant Oy tekee fyysisiä tuotteita, digitaalisia tuotteita, prototyyppejä ja AI-avusteisia demoja. Uskottavuus rakentuu yhteistyöstä, testauksesta ja rehellisestä projektitilasta."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://tech-ant.fi/" />
+    <meta property="og:image" content="https://tech-ant.fi/tech-antLOGO.png" />
+    <meta property="og:image:alt" content="Tech-Ant Oy logo" />
+    <meta name="twitter:card" content="summary" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #060a13;
+        --bg2: #0b1322;
+        --panel: rgba(11, 18, 31, 0.84);
+        --panel-strong: rgba(16, 25, 41, 0.94);
+        --panel-soft: rgba(12, 18, 30, 0.78);
+        --line: rgba(124, 214, 225, 0.14);
+        --line-strong: rgba(124, 214, 225, 0.34);
+        --cyan: #7cd6e1;
+        --cyan-soft: #dcf9fb;
+        --acid: #c9ff7d;
+        --text: #f1f5fb;
+        --muted: #a8b4c5;
+        --muted-strong: #d4deea;
+        --shadow: 0 30px 80px rgba(2, 6, 16, 0.42);
+        --r: 18px;
+        --r-sm: 12px;
       }
-      .capabilities-grid,
-      .process-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-      .hero-panel { max-width: 760px; }
-    }
 
-    @media (max-width: 768px) {
-      nav { padding: 0.85rem 5%; }
-      section { padding: 4.25rem 5%; }
-      .nav-links,
-      .nav-actions > .btn-primary {
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        background:
+          radial-gradient(
+            circle at 15% 0%,
+            rgba(113, 245, 255, 0.11),
+            transparent 32%
+          ),
+          radial-gradient(
+            circle at 85% 8%,
+            rgba(196, 255, 103, 0.08),
+            transparent 24%
+          ),
+          linear-gradient(180deg, #050816 0%, #060b18 38%, #091024 100%);
+        color: var(--text);
+        font-family: "Space Grotesk", sans-serif;
+        line-height: 1.7;
+        overflow-x: hidden;
+      }
+      body.menu-open {
+        overflow: hidden;
+      }
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background-image:
+          linear-gradient(rgba(113, 245, 255, 0.045) 1px, transparent 1px),
+          linear-gradient(
+            90deg,
+            rgba(113, 245, 255, 0.045) 1px,
+            transparent 1px
+          );
+        background-size: 72px 72px;
+        opacity: 0.42;
+        pointer-events: none;
+        z-index: 0;
+        mask-image: linear-gradient(
+          180deg,
+          rgba(0, 0, 0, 0.7),
+          rgba(0, 0, 0, 0.18)
+        );
+      }
+      body::after {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background:
+          radial-gradient(
+            circle at 50% 35%,
+            rgba(113, 245, 255, 0.06),
+            transparent 30%
+          ),
+          radial-gradient(
+            circle at 75% 65%,
+            rgba(196, 255, 103, 0.05),
+            transparent 18%
+          );
+        pointer-events: none;
+        z-index: 0;
+      }
+      img {
+        display: block;
+        max-width: 100%;
+      }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+      button,
+      input {
+        font: inherit;
+      }
+
+      [data-fi] {
         display: none;
       }
-      .nav-toggle { display: inline-flex; }
-      .mobile-menu { display: flex; }
-      .hero { padding-top: 7.8rem; }
-      .display { font-size: clamp(2.8rem, 16vw, 4.3rem); }
-      .hero-actions,
-      .contact-actions {
+      [data-lang="en"] [data-fi] {
+        display: none !important;
+      }
+      [data-lang="en"] [data-en] {
+        display: revert !important;
+      }
+      [data-lang="fi"] [data-en] {
+        display: none !important;
+      }
+      [data-lang="fi"] [data-fi] {
+        display: revert !important;
+      }
+
+      .mono {
+        font-family: "IBM Plex Mono", monospace;
+      }
+      h1,
+      h2,
+      h3 {
+        font-family: "Space Grotesk", sans-serif;
+        letter-spacing: -0.03em;
+        line-height: 1;
+      }
+      section,
+      footer,
+      nav {
+        position: relative;
+        z-index: 1;
+      }
+      section {
+        padding: 5.5rem 5%;
+      }
+      .container {
+        max-width: 1180px;
+        margin: 0 auto;
+      }
+      .section-kicker {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.65rem;
+        padding: 0.45rem 0.8rem;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: rgba(10, 20, 39, 0.55);
+        color: var(--cyan);
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 0.76rem;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        margin-bottom: 1.15rem;
+      }
+      .section-title {
+        font-size: clamp(2rem, 4.8vw, 4.2rem);
+        max-width: 12ch;
+        margin-bottom: 1rem;
+      }
+      .section-copy {
+        max-width: 680px;
+        color: var(--muted);
+        font-size: 1rem;
+        line-height: 1.82;
+      }
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.55rem 0.9rem;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: rgba(12, 20, 39, 0.55);
+        color: var(--cyan);
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 0.76rem;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+      }
+      .eyebrow::before {
+        content: "";
+        width: 8px;
+        height: 8px;
+        border-radius: 999px;
+        background: var(--acid);
+        box-shadow: 0 0 20px rgba(196, 255, 103, 0.45);
+      }
+      .btn-primary,
+      .btn-secondary,
+      .text-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.7rem;
+        transition:
+          transform 0.18s ease,
+          border-color 0.18s ease,
+          background 0.18s ease,
+          color 0.18s ease;
+      }
+      .btn-primary {
+        padding: 0.95rem 1.35rem;
+        border-radius: 999px;
+        background: linear-gradient(135deg, var(--cyan), #a4fbff);
+        color: #04121e;
+        font-weight: 700;
+        border: 1px solid transparent;
+        box-shadow: 0 10px 30px rgba(113, 245, 255, 0.2);
+      }
+      .btn-primary:hover {
+        transform: translateY(-2px);
+      }
+      .btn-secondary {
+        padding: 0.95rem 1.35rem;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: rgba(12, 20, 39, 0.45);
+        color: var(--text);
+      }
+      .btn-secondary:hover,
+      .text-link:hover {
+        transform: translateY(-2px);
+        border-color: var(--line-strong);
+        color: var(--cyan-soft);
+      }
+      .text-link {
+        color: var(--cyan);
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 0.88rem;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+      .card {
+        background: linear-gradient(
+          180deg,
+          rgba(12, 20, 39, 0.85),
+          rgba(8, 15, 30, 0.78)
+        );
+        border: 1px solid var(--line);
+        border-radius: var(--r);
+        box-shadow: var(--shadow);
+      }
+
+      nav {
+        position: fixed;
+        inset: 0 0 auto 0;
+        padding: 1rem 5%;
+        backdrop-filter: blur(16px);
+        background: rgba(5, 8, 22, 0.64);
+        border-bottom: 1px solid rgba(113, 245, 255, 0.08);
+        z-index: 100;
+      }
+      .nav-inner {
+        max-width: 1180px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+      }
+      .nav-brand {
+        display: flex;
+        align-items: center;
+        gap: 0.9rem;
+        min-width: 0;
+      }
+      .nav-brand img {
+        height: 34px;
+        width: auto;
+        filter: drop-shadow(0 0 16px rgba(113, 245, 255, 0.15));
+      }
+      .brand-copy strong {
+        display: block;
+        font-size: 0.96rem;
+        letter-spacing: 0.04em;
+      }
+      .brand-copy span {
+        display: block;
+        color: var(--muted);
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 0.7rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+      .nav-links {
+        display: flex;
+        list-style: none;
+        gap: 1.6rem;
+      }
+      .nav-links a {
+        color: var(--muted-strong);
+        font-size: 0.9rem;
+        position: relative;
+        transition: color 0.18s ease;
+      }
+      .nav-links a::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: -0.45rem;
+        height: 1px;
+        background: var(--cyan);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.18s ease;
+      }
+      .nav-links a:hover {
+        color: var(--text);
+      }
+      .nav-links a:hover::after {
+        transform: scaleX(1);
+      }
+      .nav-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+        flex-shrink: 0;
+      }
+      .lang-btn {
+        display: flex;
+        align-items: center;
+        gap: 0.2rem;
+        padding: 0.22rem;
+        background: rgba(10, 20, 39, 0.72);
+        border: 1px solid var(--line);
+        border-radius: 999px;
+      }
+      .lang-opt {
+        padding: 0.35rem 0.65rem;
+        border-radius: 999px;
+        color: var(--muted);
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 0.72rem;
+        letter-spacing: 0.08em;
+        cursor: pointer;
+        user-select: none;
+        transition:
+          background 0.18s ease,
+          color 0.18s ease;
+      }
+      .lang-opt.active {
+        background: var(--cyan);
+        color: #041018;
+      }
+      .nav-toggle {
+        width: 44px;
+        height: 44px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: rgba(10, 20, 39, 0.72);
+        color: var(--text);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        position: relative;
+      }
+      .nav-toggle::before,
+      .nav-toggle::after,
+      .nav-toggle span {
+        content: "";
+        position: absolute;
+        width: 18px;
+        height: 2px;
+        background: currentColor;
+        transition:
+          transform 0.18s ease,
+          opacity 0.18s ease;
+      }
+      .nav-toggle::before {
+        transform: translateY(-6px);
+      }
+      .nav-toggle::after {
+        transform: translateY(6px);
+      }
+      nav.menu-open .nav-toggle::before {
+        transform: rotate(45deg);
+      }
+      nav.menu-open .nav-toggle::after {
+        transform: rotate(-45deg);
+      }
+      nav.menu-open .nav-toggle span {
+        opacity: 0;
+      }
+      .mobile-menu {
+        position: fixed;
+        top: 78px;
+        left: 5%;
+        right: 5%;
+        display: none;
         flex-direction: column;
-        align-items: stretch;
+        gap: 0.75rem;
+        padding: 1rem;
+        border: 1px solid var(--line);
+        border-radius: var(--r);
+        background: rgba(8, 15, 30, 0.96);
+        backdrop-filter: blur(18px);
+        opacity: 0;
+        transform: translateY(-10px);
+        visibility: hidden;
+        pointer-events: none;
+        transition:
+          opacity 0.18s ease,
+          transform 0.18s ease,
+          visibility 0.18s ease;
+        z-index: 99;
       }
-      .metrics-grid,
-      .capabilities-grid,
-      .products-grid,
-      .process-grid,
-      .story-split,
-      .hero-stack {
-        grid-template-columns: 1fr;
+      .mobile-menu.open {
+        opacity: 1;
+        transform: translateY(0);
+        visibility: visible;
+        pointer-events: auto;
       }
-      .filters,
-      .contact-pills {
-        gap: 0.55rem;
+      .mobile-menu a {
+        padding: 0.95rem 1rem;
+        border-radius: var(--r-sm);
+        border: 1px solid rgba(113, 245, 255, 0.08);
+        background: rgba(12, 20, 39, 0.62);
+        color: var(--muted-strong);
+      }
+
+      .hero {
+        padding-top: 9rem;
+        padding-bottom: 4.75rem;
+      }
+      .hero-grid {
+        max-width: 1180px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: minmax(0, 1.15fr) minmax(330px, 0.85fr);
+        gap: 2rem;
+        align-items: end;
+      }
+      .hero-copy {
+        max-width: 720px;
+      }
+      .display {
+        font-size: clamp(3.2rem, 8vw, 6.8rem);
+        line-height: 0.95;
+        margin: 1.35rem 0 1.25rem;
+        max-width: 11ch;
+        text-wrap: balance;
+      }
+      .display em {
+        font-style: normal;
+        color: var(--cyan);
+        text-shadow: 0 0 32px rgba(113, 245, 255, 0.2);
+      }
+      .hero-lead {
+        max-width: 620px;
+        color: var(--muted-strong);
+        font-size: 1.07rem;
+        line-height: 1.82;
+        margin-bottom: 2rem;
+      }
+      .hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.9rem;
+        margin-bottom: 1.6rem;
+      }
+      .hero-strip {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+      }
+      .signal-chip {
+        padding: 0.7rem 0.9rem;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: rgba(12, 20, 39, 0.48);
+        color: var(--muted-strong);
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 0.78rem;
+        letter-spacing: 0.04em;
+      }
+      .hero-panel {
+        padding: 1.35rem;
+        position: relative;
+        overflow: hidden;
+      }
+      .hero-panel::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+          linear-gradient(180deg, rgba(113, 245, 255, 0.08), transparent 28%),
+          linear-gradient(90deg, rgba(113, 245, 255, 0.06), transparent 35%);
+        pointer-events: none;
+      }
+      .panel-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--line);
+        position: relative;
+      }
+      .panel-head span,
+      .panel-row span,
+      .metric-label,
+      .card-index,
+      .status-tag,
+      .demo-meta,
+      .process-step,
+      footer {
+        font-family: "IBM Plex Mono", monospace;
+      }
+      .panel-head span,
+      .panel-row span,
+      .metric-label,
+      .card-index,
+      .demo-meta,
+      .process-step {
+        font-size: 0.72rem;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--cyan);
+      }
+      .panel-head strong {
+        font-size: 0.88rem;
+        letter-spacing: 0.04em;
+      }
+      .panel-rows {
+        display: grid;
+        gap: 0.85rem;
+        position: relative;
       }
       .panel-row {
-        display: grid;
-        gap: 0.35rem;
+        display: flex;
+        gap: 1rem;
+        justify-content: space-between;
+        align-items: baseline;
+        padding-bottom: 0.8rem;
+        border-bottom: 1px solid rgba(113, 245, 255, 0.08);
       }
-      .panel-row strong { text-align: left; }
-    }
-  </style>
-</head>
-<body>
+      .panel-row strong {
+        flex: 1;
+        text-align: right;
+        font-size: 0.95rem;
+        color: var(--muted-strong);
+      }
+      .hero-stack {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.8rem;
+        margin-top: 1.15rem;
+        position: relative;
+      }
+      .stack-card {
+        padding: 0.9rem;
+        border-radius: var(--r-sm);
+        border: 1px solid rgba(113, 245, 255, 0.08);
+        background: rgba(7, 14, 28, 0.65);
+        min-height: 112px;
+      }
+      .stack-card h3 {
+        font-size: 1rem;
+        margin: 0.55rem 0 0.45rem;
+      }
+      .stack-card p {
+        color: var(--muted);
+        font-size: 0.88rem;
+        line-height: 1.65;
+      }
 
-  <nav>
-    <div class="nav-inner">
-      <a href="#top" class="nav-brand">
-        <img src="tech-antLOGO.png" alt="Tech-Ant Oy" />
-        <div class="brand-copy">
-          <strong>Tech-Ant Oy</strong>
-          <span data-en>AI // Robotics // 3D Product Development</span>
-          <span data-fi>AI // Robotiikka // 3D-tuotekehitys</span>
-        </div>
-      </a>
+      .metrics {
+        padding-top: 0;
+      }
+      .metrics-grid {
+        max-width: 1180px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 1rem;
+      }
+      .metric-card {
+        padding: 1.15rem 1.2rem;
+        border-radius: var(--r-sm);
+        border: 1px solid var(--line);
+        background: rgba(8, 15, 30, 0.58);
+      }
+      .metric-card strong {
+        display: block;
+        margin-top: 0.55rem;
+        font-size: 1rem;
+        line-height: 1.4;
+      }
+      .metric-card p {
+        margin-top: 0.45rem;
+        color: var(--muted);
+        font-size: 0.9rem;
+        line-height: 1.65;
+      }
 
-      <ul class="nav-links">
-        <li>
-          <a href="#capabilities" data-en>Capabilities</a>
-          <a href="#capabilities" data-fi>Osaaminen</a>
-        </li>
-        <li>
-          <a href="#products" data-en>Products</a>
-          <a href="#products" data-fi>Tuotteet</a>
-        </li>
-        <li>
-          <a href="#media" data-en>Media</a>
-          <a href="#media" data-fi>Media</a>
-        </li>
-        <li>
-          <a href="#lab" data-en>Lab</a>
-          <a href="#lab" data-fi>Lab</a>
-        </li>
-        <li>
-          <a href="#contact" data-en>Contact</a>
-          <a href="#contact" data-fi>Yhteys</a>
-        </li>
-      </ul>
+      .capabilities-grid,
+      .products-grid,
+      .process-grid {
+        display: grid;
+        gap: 1.1rem;
+        margin-top: 2rem;
+      }
+      .capabilities-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+      .capability-card,
+      .product-card,
+      .process-card,
+      .story-card,
+      .lab-card,
+      .about-card,
+      .contact-card {
+        padding: 1.5rem;
+        position: relative;
+        overflow: hidden;
+      }
+      .capability-card::before,
+      .product-card::before,
+      .story-card::before,
+      .lab-card::before,
+      .about-card::before,
+      .contact-card::before {
+        content: "";
+        position: absolute;
+        inset: 0 auto auto 0;
+        width: 100%;
+        height: 1px;
+        background: linear-gradient(90deg, var(--cyan), transparent 70%);
+        opacity: 0.7;
+      }
+      .card-index {
+        display: inline-block;
+        margin-bottom: 1rem;
+      }
+      .capability-card h3,
+      .product-card h3,
+      .story-card h3,
+      .lab-card h3,
+      .about-card h3,
+      .process-card h3 {
+        font-size: 1.35rem;
+        margin-bottom: 0.85rem;
+      }
+      .capability-card p,
+      .product-card p,
+      .story-card p,
+      .lab-card p,
+      .about-card p,
+      .process-card p {
+        color: var(--muted);
+        font-size: 0.94rem;
+        line-height: 1.75;
+      }
+      .capability-list,
+      .story-list,
+      .about-list,
+      .lab-list {
+        list-style: none;
+        display: grid;
+        gap: 0.7rem;
+        margin-top: 1rem;
+      }
+      .capability-list li,
+      .story-list li,
+      .about-list li,
+      .lab-list li {
+        display: flex;
+        gap: 0.7rem;
+        color: var(--muted-strong);
+        font-size: 0.9rem;
+        line-height: 1.6;
+      }
+      .capability-list li::before,
+      .story-list li::before,
+      .about-list li::before,
+      .lab-list li::before {
+        content: "";
+        width: 8px;
+        height: 8px;
+        border-radius: 999px;
+        background: var(--cyan);
+        margin-top: 0.45rem;
+        flex-shrink: 0;
+        box-shadow: 0 0 18px rgba(113, 245, 255, 0.24);
+      }
 
-      <div class="nav-actions">
-        <div class="lang-btn" id="langBtn">
-          <span class="lang-opt active" data-switch="en">EN</span>
-          <span class="lang-opt" data-switch="fi">FI</span>
-        </div>
-        <a href="#contact" class="btn-primary">
-          <span data-en>Start a Project</span>
-          <span data-fi>Aloita projekti</span>
+      .products {
+        background: linear-gradient(
+          180deg,
+          rgba(9, 16, 36, 0.5),
+          rgba(5, 8, 22, 0)
+        );
+      }
+      .filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        margin-top: 1.6rem;
+      }
+      .filter-btn {
+        padding: 0.72rem 1rem;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: rgba(12, 20, 39, 0.5);
+        color: var(--muted-strong);
+        cursor: pointer;
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 0.8rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        transition:
+          background 0.18s ease,
+          border-color 0.18s ease,
+          color 0.18s ease;
+      }
+      .filter-btn.active,
+      .filter-btn:hover {
+        background: rgba(113, 245, 255, 0.12);
+        border-color: var(--line-strong);
+        color: var(--cyan-soft);
+      }
+      .products-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        margin-top: 1.5rem;
+      }
+      .product-card.is-hidden {
+        display: none;
+      }
+      .product-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 1rem;
+      }
+      .status-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        padding: 0.42rem 0.75rem;
+        border-radius: 999px;
+        border: 1px solid transparent;
+        font-size: 0.7rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+      .status-active {
+        color: #08161c;
+        background: var(--cyan);
+      }
+      .status-build {
+        color: var(--acid);
+        border-color: rgba(196, 255, 103, 0.26);
+        background: rgba(196, 255, 103, 0.08);
+      }
+      .status-prelaunch {
+        color: var(--cyan);
+        border-color: rgba(113, 245, 255, 0.24);
+        background: rgba(113, 245, 255, 0.07);
+      }
+      .product-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.65rem;
+        margin: 1rem 0 1.15rem;
+      }
+      .meta-pill {
+        padding: 0.38rem 0.68rem;
+        border-radius: 999px;
+        border: 1px solid rgba(113, 245, 255, 0.1);
+        background: rgba(7, 14, 28, 0.55);
+        color: var(--muted-strong);
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 0.72rem;
+        letter-spacing: 0.06em;
+      }
+      .product-fit {
+        color: var(--muted-strong);
+        margin-bottom: 1rem;
+        font-size: 0.92rem;
+        line-height: 1.7;
+      }
+      .product-bottom {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-top: 1.25rem;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(113, 245, 255, 0.08);
+      }
+      .product-bottom span {
+        color: var(--muted);
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 0.78rem;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      .media-grid,
+      .about-grid,
+      .contact-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1.1rem;
+        margin-top: 2rem;
+      }
+      .story-split {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.85rem;
+        margin-top: 1rem;
+      }
+      .mini-panel {
+        padding: 1rem;
+        border-radius: var(--r-sm);
+        border: 1px solid rgba(113, 245, 255, 0.08);
+        background: rgba(7, 14, 28, 0.58);
+      }
+      .mini-panel strong {
+        display: block;
+        margin-top: 0.45rem;
+        font-size: 1rem;
+      }
+      .mini-panel p {
+        margin-top: 0.35rem;
+        color: var(--muted);
+        font-size: 0.88rem;
+        line-height: 1.65;
+      }
+
+      .lab-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
+        gap: 1.1rem;
+        margin-top: 2rem;
+      }
+      .demo-viewport {
+        position: relative;
+        min-height: 330px;
+        border-radius: var(--r);
+        border: 1px solid rgba(113, 245, 255, 0.12);
+        background:
+          radial-gradient(
+            circle at center,
+            rgba(255, 196, 66, 0.18),
+            transparent 10%
+          ),
+          radial-gradient(
+            circle at center,
+            rgba(113, 245, 255, 0.06),
+            transparent 18%
+          ),
+          linear-gradient(180deg, rgba(6, 10, 18, 0.9), rgba(8, 15, 30, 0.96));
+        overflow: hidden;
+        margin: 1rem 0 1.15rem;
+      }
+      .demo-viewport::before,
+      .demo-viewport::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+      }
+      .demo-viewport::before {
+        background:
+          radial-gradient(
+            circle at center,
+            rgba(255, 220, 96, 0.95) 0 3%,
+            transparent 4%
+          ),
+          radial-gradient(
+            circle at center,
+            transparent 0 17%,
+            rgba(113, 245, 255, 0.14) 17.2% 17.5%,
+            transparent 17.8%
+          ),
+          radial-gradient(
+            circle at center,
+            transparent 0 30%,
+            rgba(113, 245, 255, 0.12) 30.2% 30.5%,
+            transparent 30.8%
+          ),
+          radial-gradient(
+            circle at center,
+            transparent 0 42%,
+            rgba(113, 245, 255, 0.1) 42.2% 42.5%,
+            transparent 42.8%
+          );
+        transform: scale(1.15);
+      }
+      .demo-viewport::after {
+        background:
+          radial-gradient(
+            circle at 58% 30%,
+            rgba(76, 165, 255, 0.95) 0 1.6%,
+            transparent 1.8%
+          ),
+          radial-gradient(
+            circle at 68% 65%,
+            rgba(208, 178, 112, 0.9) 0 2.2%,
+            transparent 2.4%
+          ),
+          radial-gradient(
+            circle at 30% 58%,
+            rgba(196, 255, 103, 0.85) 0 1.5%,
+            transparent 1.7%
+          ),
+          radial-gradient(
+            circle at 76% 45%,
+            rgba(132, 114, 255, 0.65) 0 2.5%,
+            transparent 2.7%
+          );
+      }
+      .demo-overlay {
+        position: absolute;
+        left: 1rem;
+        right: 1rem;
+        bottom: 1rem;
+        padding: 0.95rem 1rem;
+        border-radius: var(--r-sm);
+        border: 1px solid rgba(113, 245, 255, 0.12);
+        background: rgba(6, 10, 18, 0.72);
+        backdrop-filter: blur(8px);
+      }
+      .demo-overlay strong {
+        display: block;
+        margin-top: 0.35rem;
+        font-size: 1.05rem;
+      }
+      .demo-overlay p {
+        color: var(--muted);
+        font-size: 0.9rem;
+        margin-top: 0.35rem;
+        line-height: 1.65;
+      }
+
+      .process-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+      .process-step {
+        display: block;
+        margin-bottom: 1rem;
+      }
+
+      .about-grid {
+        align-items: start;
+      }
+      .about-card p + p {
+        margin-top: 1rem;
+      }
+      .cred-grid {
+        display: grid;
+        gap: 0.85rem;
+      }
+      .cred-item {
+        padding: 1rem;
+        border-radius: var(--r-sm);
+        border: 1px solid rgba(113, 245, 255, 0.08);
+        background: rgba(7, 14, 28, 0.58);
+      }
+      .cred-item strong {
+        display: block;
+        font-size: 1rem;
+        margin-top: 0.45rem;
+      }
+      .cred-item p {
+        color: var(--muted);
+        font-size: 0.88rem;
+        line-height: 1.7;
+        margin-top: 0.4rem;
+      }
+
+      .contact-card {
+        min-height: 100%;
+      }
+      .contact-copy {
+        color: var(--muted-strong);
+        font-size: 1rem;
+        line-height: 1.82;
+        margin: 1rem 0 1.4rem;
+        max-width: 52ch;
+      }
+      .contact-pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.7rem;
+        margin-bottom: 1.4rem;
+      }
+      .contact-pill {
+        padding: 0.55rem 0.8rem;
+        border-radius: 999px;
+        border: 1px solid rgba(113, 245, 255, 0.12);
+        background: rgba(7, 14, 28, 0.5);
+        color: var(--muted-strong);
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 0.74rem;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+      .contact-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.85rem;
+        margin-top: 1.2rem;
+      }
+      .contact-side {
+        display: grid;
+        gap: 1rem;
+      }
+      .contact-side .mini-panel {
+        min-height: 100%;
+      }
+
+      footer {
+        padding: 2rem 5%;
+        border-top: 1px solid rgba(113, 245, 255, 0.08);
+        color: var(--muted);
+        font-size: 0.75rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      .footer-inner {
+        max-width: 1180px;
+        margin: 0 auto;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 0.8rem;
+      }
+
+      .reveal {
+        transition:
+          opacity 0.6s ease,
+          transform 0.6s ease;
+      }
+      html.js .reveal {
+        opacity: 0;
+        transform: translateY(24px);
+      }
+      html.js .reveal.is-visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .reveal-delay-1 {
+        transition-delay: 0.08s;
+      }
+      .reveal-delay-2 {
+        transition-delay: 0.16s;
+      }
+      .reveal-delay-3 {
+        transition-delay: 0.24s;
+      }
+
+      @media (max-width: 1024px) {
+        .hero-grid,
+        .media-grid,
+        .about-grid,
+        .contact-grid,
+        .lab-layout {
+          grid-template-columns: 1fr;
+        }
+        .capabilities-grid,
+        .process-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        .hero-panel {
+          max-width: 760px;
+        }
+      }
+
+      @media (max-width: 768px) {
+        nav {
+          padding: 0.85rem 5%;
+        }
+        section {
+          padding: 4.25rem 5%;
+        }
+        .nav-links,
+        .nav-actions > .btn-primary {
+          display: none;
+        }
+        .nav-toggle {
+          display: inline-flex;
+        }
+        .mobile-menu {
+          display: flex;
+        }
+        .hero {
+          padding-top: 7.8rem;
+        }
+        .display {
+          font-size: clamp(2.8rem, 16vw, 4.3rem);
+        }
+        .hero-actions,
+        .contact-actions {
+          flex-direction: column;
+          align-items: stretch;
+        }
+        .metrics-grid,
+        .capabilities-grid,
+        .products-grid,
+        .process-grid,
+        .story-split,
+        .hero-stack {
+          grid-template-columns: 1fr;
+        }
+        .filters,
+        .contact-pills {
+          gap: 0.55rem;
+        }
+        .panel-row {
+          display: grid;
+          gap: 0.35rem;
+        }
+        .panel-row strong {
+          text-align: left;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <div class="nav-inner">
+        <a href="#top" class="nav-brand">
+          <img src="tech-antLOGO.png" alt="Tech-Ant Oy" />
+          <div class="brand-copy">
+            <strong>Tech-Ant Oy</strong>
+            <span data-en>3D products // prototypes // digital work</span>
+            <span data-fi
+              >3D-tuotteet // prototyypit // digitaaliset ratkaisut</span
+            >
+          </div>
         </a>
-        <button class="nav-toggle" id="navToggle" type="button" aria-expanded="false" aria-controls="mobileMenu" aria-label="Toggle navigation">
-          <span></span>
-        </button>
+
+        <ul class="nav-links">
+          <li>
+            <a href="#capabilities" data-en>Capabilities</a>
+            <a href="#capabilities" data-fi>Osaaminen</a>
+          </li>
+          <li>
+            <a href="#products" data-en>Products</a>
+            <a href="#products" data-fi>Tuotteet</a>
+          </li>
+          <li>
+            <a href="#media" data-en>Proof</a>
+            <a href="#media" data-fi>Näyttö</a>
+          </li>
+          <li>
+            <a href="#validation" data-en>Validation</a>
+            <a href="#validation" data-fi>Validointi</a>
+          </li>
+          <li>
+            <a href="#lab" data-en>Lab</a>
+            <a href="#lab" data-fi>Lab</a>
+          </li>
+          <li>
+            <a href="#contact" data-en>Contact</a>
+            <a href="#contact" data-fi>Yhteys</a>
+          </li>
+        </ul>
+
+        <div class="nav-actions">
+          <div class="lang-btn" id="langBtn">
+            <span class="lang-opt" data-switch="en">EN</span>
+            <span class="lang-opt active" data-switch="fi">FI</span>
+          </div>
+          <a href="#contact" class="btn-primary">
+            <span data-en>Contact</span>
+            <span data-fi>Ota yhteyttä</span>
+          </a>
+          <button
+            class="nav-toggle"
+            id="navToggle"
+            type="button"
+            aria-expanded="false"
+            aria-controls="mobileMenu"
+            aria-label="Toggle navigation"
+          >
+            <span></span>
+          </button>
+        </div>
       </div>
+    </nav>
+
+    <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+      <a href="#capabilities">
+        <span data-en>Capabilities</span>
+        <span data-fi>Osaaminen</span>
+      </a>
+      <a href="#products">
+        <span data-en>Products</span>
+        <span data-fi>Tuotteet</span>
+      </a>
+      <a href="#media">
+        <span data-en>Proof</span>
+        <span data-fi>Näyttö</span>
+      </a>
+      <a href="#validation">
+        <span data-en>Validation</span>
+        <span data-fi>Validointi</span>
+      </a>
+      <a href="#lab">
+        <span data-en>Lab</span>
+        <span data-fi>Lab</span>
+      </a>
+      <a href="#contact">
+        <span data-en>Contact</span>
+        <span data-fi>Yhteys</span>
+      </a>
     </div>
-  </nav>
 
-  <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
-    <a href="#capabilities">
-      <span data-en>Capabilities</span>
-      <span data-fi>Osaaminen</span>
-    </a>
-    <a href="#products">
-      <span data-en>Products</span>
-      <span data-fi>Tuotteet</span>
-    </a>
-    <a href="#media">
-      <span data-en>Media</span>
-      <span data-fi>Media</span>
-    </a>
-    <a href="#lab">
-      <span data-en>Lab</span>
-      <span data-fi>Lab</span>
-    </a>
-    <a href="#contact">
-      <span data-en>Contact</span>
-      <span data-fi>Yhteys</span>
-    </a>
-  </div>
-
-  <main id="top">
-    <section class="hero">
-      <div class="hero-grid">
-        <div class="hero-copy reveal">
-          <div class="eyebrow">
-            <span data-en>Tech-Ant Oy // AI • Robotics • Additive Manufacturing</span>
-            <span data-fi>Tech-Ant Oy // AI • Robotiikka • Additiivinen valmistus</span>
-          </div>
-          <h1 class="display">
-            <span data-en>Technical products, demos and <em>brand systems</em> for an intelligent world.</span>
-            <span data-fi>Teknisiä tuotteita, demoja ja <em>brändijärjestelmiä</em> älykkääseen maailmaan.</span>
-          </h1>
-          <p class="hero-lead" data-en>
-            Tech-Ant combines AI-assisted workflows, robotics thinking, 3D manufacturing and product design into sellable concepts, rapid prototypes and technical content that makes the brand feel real.
-          </p>
-          <p class="hero-lead" data-fi>
-            Tech-Ant yhdistää AI-avusteiset työnkulut, robotiikka-ajattelun, 3D-tuotannon ja tuotesuunnittelun myytäviksi konsepteiksi, nopeiksi prototyypeiksi ja tekniseksi sisällöksi, joka tekee brändistä uskottavan.
-          </p>
-          <div class="hero-actions">
-            <a href="#capabilities" class="btn-primary">
-              <span data-en>View Capabilities</span>
-              <span data-fi>Tutustu osaamiseen</span>
-            </a>
-            <a href="#products" class="btn-secondary">
-              <span data-en>See Product Tracks</span>
-              <span data-fi>Katso tuotelinjat</span>
-            </a>
-            <a href="orbital-launch.html" class="text-link">
-              <span data-en>Open Featured Demo</span>
-              <span data-fi>Avaa päädemo</span>
-            </a>
-          </div>
-          <div class="hero-strip">
-            <div class="signal-chip">
-              <span data-en>AI-assisted concepting and iteration</span>
-              <span data-fi>AI-avusteinen konseptointi ja iterointi</span>
+    <main id="top">
+      <section class="hero">
+        <div class="hero-grid">
+          <div class="hero-copy reveal">
+            <div class="eyebrow">
+              <span data-en
+                >Tech-Ant Oy // small product and prototype studio</span
+              >
+              <span data-fi
+                >Tech-Ant Oy // pieni tuote- ja prototyyppistudio</span
+              >
             </div>
-            <div class="signal-chip">
-              <span data-en>Mechanical product thinking</span>
-              <span data-fi>Mekaaninen tuoteajattelu</span>
-            </div>
-            <div class="signal-chip">
-              <span data-en>Bilingual technical brand building</span>
-              <span data-fi>Kaksikielinen tekninen brändinrakennus</span>
-            </div>
-          </div>
-        </div>
-
-        <aside class="hero-panel card reveal reveal-delay-1">
-          <div class="panel-head">
-            <span data-en>System Overview</span>
-            <span data-fi>Järjestelmäkuva</span>
-            <strong data-en>Active Build Direction</strong>
-            <strong data-fi>Aktiivinen suunta</strong>
-          </div>
-          <div class="panel-rows">
-            <div class="panel-row">
-              <span data-en>Focus</span>
-              <span data-fi>Fokus</span>
-              <strong data-en>Products, prototypes and technical demos</strong>
-              <strong data-fi>Tuotteet, prototyypit ja tekniset demot</strong>
-            </div>
-            <div class="panel-row">
-              <span data-en>Stack</span>
-              <span data-fi>Pino</span>
-              <strong>AI / CAD / Robotics / 3D Print</strong>
-            </div>
-            <div class="panel-row">
-              <span data-en>Commercial Use</span>
-              <span data-fi>Kaupallinen käyttö</span>
-              <strong data-en>Own products, custom work and partnerships</strong>
-              <strong data-fi>Omat tuotteet, tilaustyö ja kumppanuudet</strong>
-            </div>
-            <div class="panel-row">
-              <span data-en>Demo Node</span>
-              <span data-fi>Demo-solmu</span>
-              <strong data-en>Physics game live now: Orbital Launch Trainer</strong>
-              <strong data-fi>Fysiikkapeli livenä nyt: Orbital Launch Trainer</strong>
-            </div>
-          </div>
-
-          <div class="hero-stack">
-            <div class="stack-card">
-              <span class="mono" data-en>Track 01</span>
-              <span class="mono" data-fi>Linja 01</span>
-              <h3 data-en>Product Engine</h3>
-              <h3 data-fi>Tuotemoottori</h3>
-              <p data-en>Physical concepts that can move from idea to prototype without losing momentum.</p>
-              <p data-fi>Fyysiset konseptit, jotka etenevät ideasta prototyypiksi ilman että vauhti katoaa.</p>
-            </div>
-            <div class="stack-card">
-              <span class="mono" data-en>Track 02</span>
-              <span class="mono" data-fi>Linja 02</span>
-              <h3 data-en>Demo Lab</h3>
-              <h3 data-fi>Demo Lab</h3>
-              <p data-en>Interactive experiments that make AI and technical ideas visible to customers.</p>
-              <p data-fi>Interaktiiviset kokeilut, jotka tekevät AI- ja tekniikkaideoista näkyviä asiakkaille.</p>
-            </div>
-            <div class="stack-card">
-              <span class="mono" data-en>Track 03</span>
-              <span class="mono" data-fi>Linja 03</span>
-              <h3 data-en>Media Layer</h3>
-              <h3 data-fi>Mediakerros</h3>
-              <p data-en>Technical storytelling that turns engineering work into trust, reach and brand value.</p>
-              <p data-fi>Tekninen tarinankerronta, joka muuttaa insinöörityön luottamukseksi, näkyvyydeksi ja brändiarvoksi.</p>
-            </div>
-          </div>
-        </aside>
-      </div>
-    </section>
-
-    <section class="metrics">
-      <div class="metrics-grid">
-        <article class="metric-card reveal">
-          <span class="metric-label" data-en>Build Mode</span>
-          <span class="metric-label" data-fi>Rakennustila</span>
-          <strong data-en>AI-assisted, product-first execution</strong>
-          <strong data-fi>AI-avusteinen, tuotelähtöinen toteutus</strong>
-          <p data-en>Use AI where it improves speed, clarity and iteration instead of adding noise.</p>
-          <p data-fi>Käytä AI:ta siellä missä se parantaa nopeutta, selkeyttä ja iterointia eikä lisää kohinaa.</p>
-        </article>
-        <article class="metric-card reveal reveal-delay-1">
-          <span class="metric-label" data-en>Validation</span>
-          <span class="metric-label" data-fi>Validointi</span>
-          <strong>CAD → Prototype</strong>
-          <p data-en>Design intent can move quickly into a physical object or demonstrable concept.</p>
-          <p data-fi>Suunnitteluajatus voidaan siirtää nopeasti fyysiseksi prototyypiksi tai näytettäväksi konseptiksi.</p>
-        </article>
-        <article class="metric-card reveal reveal-delay-2">
-          <span class="metric-label" data-en>Reach</span>
-          <span class="metric-label" data-fi>Tavoittavuus</span>
-          <strong>FI + EN</strong>
-          <p data-en>Bilingual delivery supports both local credibility and broader technical visibility.</p>
-          <p data-fi>Kaksikielinen toteutus tukee sekä paikallista uskottavuutta että laajempaa teknistä näkyvyyttä.</p>
-        </article>
-        <article class="metric-card reveal reveal-delay-3">
-          <span class="metric-label" data-en>Brand Engine</span>
-          <span class="metric-label" data-fi>Brändimoottori</span>
-          <strong data-en>Products + demos + media</strong>
-          <strong data-fi>Tuotteet + demot + media</strong>
-          <p data-en>The site is built to sell output, signal capability and make the brand worth revisiting.</p>
-          <p data-fi>Sivun tehtävä on myydä tuotosta, viestiä osaamisesta ja tehdä brändistä palaamisen arvoinen.</p>
-        </article>
-      </div>
-    </section>
-
-    <section id="capabilities">
-      <div class="container">
-        <div class="section-kicker">
-          <span data-en>Capabilities</span>
-          <span data-fi>Osaaminen</span>
-        </div>
-        <h2 class="section-title reveal">
-          <span data-en>Built for technical customers, not just page views.</span>
-          <span data-fi>Rakennettu teknisille asiakkaille, ei vain sivunäytöille.</span>
-        </h2>
-        <p class="section-copy reveal reveal-delay-1" data-en>
-          The strongest version of Tech-Ant is not a generic portfolio. It is a technical interface for showing what can be designed, prototyped, communicated and commercialized.
-        </p>
-        <p class="section-copy reveal reveal-delay-1" data-fi>
-          Vahvin versio Tech-Antista ei ole geneerinen portfolio. Se on tekninen käyttöliittymä sille, mitä voidaan suunnitella, prototypoida, viestiä ja kaupallistaa.
-        </p>
-
-        <div class="capabilities-grid">
-          <article class="capability-card card reveal">
-            <span class="card-index">01</span>
-            <h3 data-en>AI Workflows</h3>
-            <h3 data-fi>AI-työnkulut</h3>
-            <p data-en>AI is used where it accelerates iteration, technical storytelling, concept evaluation and content production.</p>
-            <p data-fi>AI:ta käytetään siellä missä se nopeuttaa iterointia, teknistä tarinankerrontaa, konseptien arviointia ja sisällöntuotantoa.</p>
-            <ul class="capability-list">
-              <li data-en>Concept support and exploration</li>
-              <li data-fi>Konseptituki ja ideointi</li>
-              <li data-en>Visual and content pipeline acceleration</li>
-              <li data-fi>Visuaalisen ja sisällöllisen työnkulun nopeutus</li>
-            </ul>
-          </article>
-
-          <article class="capability-card card reveal reveal-delay-1">
-            <span class="card-index">02</span>
-            <h3 data-en>Robotics Direction</h3>
-            <h3 data-fi>Robotiikkasuunta</h3>
-            <p data-en>Products and demos are approached with robotics logic: systems thinking, motion, interfaces and future automation fit.</p>
-            <p data-fi>Tuotteita ja demoja lähestytään robotiikan logiikalla: systeemiajattelu, liike, käyttöliittymät ja tuleva automaatioyhteensopivuus.</p>
-            <ul class="capability-list">
-              <li data-en>Mechanical and interaction-minded concepts</li>
-              <li data-fi>Mekaaniset ja vuorovaikutteiset konseptit</li>
-              <li data-en>Future-facing technical direction</li>
-              <li data-fi>Tulevaisuuteen katsova tekninen suunta</li>
-            </ul>
-          </article>
-
-          <article class="capability-card card reveal reveal-delay-2">
-            <span class="card-index">03</span>
-            <h3 data-en>3D Product Development</h3>
-            <h3 data-fi>3D-tuotekehitys</h3>
-            <p data-en>From geometry and ergonomics to printability and small-batch readiness, the aim is tangible progress fast.</p>
-            <p data-fi>Geometriasta ja ergonomiasta tulostettavuuteen ja piensarjavalmiuteen tavoitteena on konkreettinen eteneminen nopeasti.</p>
-            <ul class="capability-list">
-              <li data-en>CAD, rapid prototyping and iteration</li>
-              <li data-fi>CAD, nopeat protot ja iterointi</li>
-              <li data-en>Print-led concept validation</li>
-              <li data-fi>Tulostusvetoinen konseptivalidointi</li>
-            </ul>
-          </article>
-
-          <article class="capability-card card reveal reveal-delay-3">
-            <span class="card-index">04</span>
-            <h3 data-en>Brand & Media</h3>
-            <h3 data-fi>Brändi & media</h3>
-            <p data-en>Technical work is packaged into stories, videos and demos that help customers understand value faster.</p>
-            <p data-fi>Tekninen työ paketoidaan tarinoiksi, videoiksi ja demoiksi, jotka auttavat asiakasta ymmärtämään arvon nopeammin.</p>
-            <ul class="capability-list">
-              <li data-en>Bilingual audience building</li>
-              <li data-fi>Kaksikielinen yleisönrakennus</li>
-              <li data-en>Engineering work made visible</li>
-              <li data-fi>Insinöörityö näkyväksi</li>
-            </ul>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section class="products" id="products">
-      <div class="container">
-        <div class="section-kicker">
-          <span data-en>Product Tracks</span>
-          <span data-fi>Tuotelinjat</span>
-        </div>
-        <h2 class="section-title reveal">
-          <span data-en>Commercial concepts with technical credibility.</span>
-          <span data-fi>Kaupallisia konsepteja teknisellä uskottavuudella.</span>
-        </h2>
-        <p class="section-copy reveal reveal-delay-1" data-en>
-          The product side should not feel like a random idea list. It should show clear tracks: wellness, consumer objects and custom development work.
-        </p>
-        <p class="section-copy reveal reveal-delay-1" data-fi>
-          Tuotepuolen ei pitäisi tuntua satunnaiselta idealistalta. Sen pitää näyttää selkeät linjat: hyvinvointi, kuluttajatuotteet ja tilaustyönä tehtävä kehitys.
-        </p>
-
-        <div class="filters" role="toolbar" aria-label="Product filters">
-          <button class="filter-btn active" type="button" data-filter="all">
-            <span data-en>All</span>
-            <span data-fi>Kaikki</span>
-          </button>
-          <button class="filter-btn" type="button" data-filter="wellness">
-            <span data-en>Wellness</span>
-            <span data-fi>Hyvinvointi</span>
-          </button>
-          <button class="filter-btn" type="button" data-filter="consumer">
-            <span data-en>Consumer</span>
-            <span data-fi>Kuluttaja</span>
-          </button>
-          <button class="filter-btn" type="button" data-filter="service">
-            <span data-en>Custom Work</span>
-            <span data-fi>Tilaustyö</span>
-          </button>
-        </div>
-
-        <div class="products-grid">
-          <article class="product-card card reveal" data-track="wellness">
-            <div class="product-top">
-              <div>
-                <span class="card-index">01</span>
-                <h3>Myhierotin</h3>
-              </div>
-              <span class="status-tag status-build" data-en>In Development</span>
-              <span class="status-tag status-build" data-fi>Kehityksessä</span>
-            </div>
-            <p data-en>A trigger point self-care product for deep back relief with a simple physical operating logic: body weight, leverage and repeatable positioning.</p>
-            <p data-fi>Triggerpisteiden itsehoitotuote syvään selkähelpotukseen yksinkertaisella fyysisellä toimintalogiikalla: kehon paino, vipuvoima ja toistettava asettelu.</p>
-            <div class="product-meta">
-              <span class="meta-pill" data-en>Back Relief</span>
-              <span class="meta-pill" data-fi>Selkähelpotus</span>
-              <span class="meta-pill" data-en>No Electricity</span>
-              <span class="meta-pill" data-fi>Ei sähköä</span>
-              <span class="meta-pill">30-70 EUR</span>
-            </div>
-            <div class="product-fit" data-en>Designed for people who want effective daily relief without expensive powered devices or awkward setup.</div>
-            <div class="product-fit" data-fi>Suunniteltu ihmisille, jotka haluavat tehokasta päivittäistä helpotusta ilman kalliita sähkölaitteita tai hankalaa säätöä.</div>
-            <div class="product-bottom">
-              <span data-en>Commercial track: wellness</span>
-              <span data-fi>Kaupallinen linja: hyvinvointi</span>
-              <a href="mailto:jere.nevalainen@tech-ant.fi?subject=Myhierotin%20interest" class="text-link">
-                <span data-en>Ask About Launch</span>
-                <span data-fi>Kysy julkaisusta</span>
-              </a>
-            </div>
-          </article>
-
-          <article class="product-card card reveal reveal-delay-1" data-track="wellness">
-            <div class="product-top">
-              <div>
-                <span class="card-index">02</span>
-                <h3 data-en>Neck &amp; Shoulder Tool</h3>
-                <h3 data-fi>Niska &amp; hartiatyökalu</h3>
-              </div>
-              <span class="status-tag status-build" data-en>Concept Track</span>
-              <span class="status-tag status-build" data-fi>Konseptilinja</span>
-            </div>
-            <p data-en>An extension of the Myhierotin philosophy focused on upper body tension, desk-work stiffness and repeatable self-treatment.</p>
-            <p data-fi>Myhierotin-filosofian laajennus, joka keskittyy ylävartalon jännitykseen, istumatyön jäykkyyteen ja toistettavaan itsehoitoon.</p>
-            <div class="product-meta">
-              <span class="meta-pill" data-en>Neck</span>
-              <span class="meta-pill" data-fi>Niska</span>
-              <span class="meta-pill" data-en>Shoulders</span>
-              <span class="meta-pill" data-fi>Hartiat</span>
-              <span class="meta-pill" data-en>Desk Users</span>
-              <span class="meta-pill" data-fi>Istumatyö</span>
-            </div>
-            <div class="product-fit" data-en>Built for users whose pain pattern sits higher in the back and shoulders than classic lower-back tools address.</div>
-            <div class="product-fit" data-fi>Rakennettu käyttäjille, joiden kipuprofiili on ylempänä selässä ja hartioissa kuin perinteiset alaselkätyökalut tavoittavat.</div>
-            <div class="product-bottom">
-              <span data-en>Commercial track: wellness</span>
-              <span data-fi>Kaupallinen linja: hyvinvointi</span>
-              <a href="mailto:jere.nevalainen@tech-ant.fi?subject=Neck%20and%20Shoulder%20Tool" class="text-link">
-                <span data-en>Request Update</span>
-                <span data-fi>Pyydä päivitys</span>
-              </a>
-            </div>
-          </article>
-
-          <article class="product-card card reveal reveal-delay-2" data-track="consumer">
-            <div class="product-top">
-              <div>
-                <span class="card-index">03</span>
-                <h3 data-en>Secret Containers</h3>
-                <h3 data-fi>Secret Containers</h3>
-              </div>
-              <span class="status-tag status-prelaunch" data-en>Prelaunch</span>
-              <span class="status-tag status-prelaunch" data-fi>Ennakossa</span>
-            </div>
-            <p data-en>Stealth 3D-printed objects with integrated hidden compartments. Designed as memorable desk objects and giftable consumer items.</p>
-            <p data-fi>Huomaamattomia 3D-tulostettuja objekteja integroiduilla salalokeroilla. Suunniteltu muistettaviksi pöytäesineiksi ja lahjaksi sopiviksi kuluttajatuotteiksi.</p>
-            <div class="product-meta">
-              <span class="meta-pill">Poker Chip</span>
-              <span class="meta-pill">Robot Handshake</span>
-              <span class="meta-pill">Ladybug</span>
-            </div>
-            <div class="product-fit" data-en>Best suited to people who want novelty with a real product moment, not a generic printed trinket.</div>
-            <div class="product-fit" data-fi>Sopii parhaiten ihmisille, jotka haluavat uutuuden tuntua ja oikean tuote-elämyksen, eivät geneeristä tulostettua pikkuesinettä.</div>
-            <div class="product-bottom">
-              <span data-en>Commercial track: consumer objects</span>
-              <span data-fi>Kaupallinen linja: kuluttajaesineet</span>
-              <a href="mailto:jere.nevalainen@tech-ant.fi?subject=Secret%20Containers%20prelaunch" class="text-link">
-                <span data-en>Request Prelaunch Update</span>
-                <span data-fi>Pyydä ennakkojulkaisun päivitys</span>
-              </a>
-            </div>
-          </article>
-
-          <article class="product-card card reveal reveal-delay-3" data-track="service">
-            <div class="product-top">
-              <div>
-                <span class="card-index">04</span>
-                <h3 data-en>Custom Prototype Services</h3>
-                <h3 data-fi>Tilausprotot ja 3D-palvelut</h3>
-              </div>
-              <span class="status-tag status-active" data-en>Available</span>
-              <span class="status-tag status-active" data-fi>Saatavilla</span>
-            </div>
-            <p data-en>CAD design, technical concepting and 3D prototype production for founders, inventors and small technical teams.</p>
-            <p data-fi>CAD-suunnittelu, tekninen konseptointi ja 3D-prototuotanto perustajille, keksijöille ja pienille teknisille tiimeille.</p>
-            <div class="product-meta">
-              <span class="meta-pill">CAD</span>
-              <span class="meta-pill">FDM</span>
-              <span class="meta-pill" data-en>Small Batch</span>
-              <span class="meta-pill" data-fi>Piensarja</span>
-            </div>
-            <div class="product-fit" data-en>Ideal when you need a convincing physical proof point fast, whether for testing, pitching or early customer feedback.</div>
-            <div class="product-fit" data-fi>Erinomainen silloin kun tarvitset uskottavan fyysisen todisteen nopeasti testausta, pitchausta tai ensimmäistä asiakaspalautetta varten.</div>
-            <div class="product-bottom">
-              <span data-en>Commercial track: service</span>
-              <span data-fi>Kaupallinen linja: palvelu</span>
-              <a href="mailto:jere.nevalainen@tech-ant.fi?subject=Prototype%20Inquiry" class="text-link">
-                <span data-en>Request Quote</span>
-                <span data-fi>Pyydä tarjous</span>
-              </a>
-            </div>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section id="media">
-      <div class="container">
-        <div class="section-kicker">
-          <span data-en>Media Layer</span>
-          <span data-fi>Mediakerros</span>
-        </div>
-        <h2 class="section-title reveal">
-          <span data-en>Technical storytelling that makes the brand stick.</span>
-          <span data-fi>Tekninen tarinankerronta, joka tekee brändistä muistettavan.</span>
-        </h2>
-        <p class="section-copy reveal reveal-delay-1" data-en>
-          Customers do not only buy a product. They buy confidence in the person, process and technical direction behind it. That is where media earns its place.
-        </p>
-        <p class="section-copy reveal reveal-delay-1" data-fi>
-          Asiakas ei osta vain tuotetta. Hän ostaa luottamusta henkilöön, prosessiin ja tekniseen suuntaan sen takana. Siinä kohtaa media ansaitsee paikkansa.
-        </p>
-
-        <div class="media-grid">
-          <article class="story-card card reveal">
-            <span class="card-index" data-en>Channel</span>
-            <span class="card-index" data-fi>Kanava</span>
-            <h3 data-en>Bilingual technical media</h3>
-            <h3 data-fi>Kaksikielinen tekninen media</h3>
-            <p data-en>The YouTube side of Tech-Ant builds authority around inventors, innovation, process videos and technical projects in both Finnish and English.</p>
-            <p data-fi>Tech-Antin YouTube-puoli rakentaa auktoriteettia keksijöiden, innovaatioiden, prosessivideoiden ja teknisten projektien ympärille sekä suomeksi että englanniksi.</p>
-            <ul class="story-list">
-              <li data-en>Inventor stories with technical framing</li>
-              <li data-fi>Keksijätarinat teknisellä kehystyksellä</li>
-              <li data-en>Build logs that turn development into trust</li>
-              <li data-fi>Kehityslokit, jotka muuttavat tekemisen luottamukseksi</li>
-              <li data-en>Brand visibility beyond a static portfolio page</li>
-              <li data-fi>Brändin näkyvyys portfoliota pidemmälle</li>
-            </ul>
-            <a href="https://www.youtube.com/@The_tech-ant" target="_blank" rel="noopener noreferrer" class="text-link" style="margin-top:1.2rem;">
-              <span data-en>Open YouTube Channel</span>
-              <span data-fi>Avaa YouTube-kanava</span>
-            </a>
-          </article>
-
-          <article class="story-card card reveal reveal-delay-1">
-            <span class="card-index" data-en>Fit</span>
-            <span class="card-index" data-fi>Sopivuus</span>
-            <h3 data-en>Why this matters commercially</h3>
-            <h3 data-fi>Miksi tämä merkitsee kaupallisesti</h3>
-            <p data-en>The media layer is not decoration. It helps future customers, sponsors and collaborators understand the seriousness and direction of the work.</p>
-            <p data-fi>Mediakerros ei ole koriste. Se auttaa tulevia asiakkaita, sponsoreita ja yhteistyökumppaneita ymmärtämään työn vakavuuden ja suunnan.</p>
-            <div class="story-split">
-              <div class="mini-panel">
-                <span class="card-index" data-en>Audience</span>
-                <span class="card-index" data-fi>Yleisö</span>
-                <strong data-en>FI + EN technical viewers</strong>
-                <strong data-fi>FI + EN tekninen yleisö</strong>
-                <p data-en>Broader visibility without losing the Finnish engineering identity.</p>
-                <p data-fi>Laajempi näkyvyys ilman että suomalainen insinööri-identiteetti katoaa.</p>
-              </div>
-              <div class="mini-panel">
-                <span class="card-index" data-en>Partner Fit</span>
-                <span class="card-index" data-fi>Kumppanuus</span>
-                <strong data-en>AI, CAD, robotics and manufacturing</strong>
-                <strong data-fi>AI, CAD, robotiikka ja valmistus</strong>
-                <p data-en>Natural fit for technical brands that want authentic maker-to-market visibility.</p>
-                <p data-fi>Luonteva sopivuus teknisille brändeille, jotka haluavat aitoa näkyvyyttä makerista markkinaan.</p>
-              </div>
-            </div>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section id="lab">
-      <div class="container">
-        <div class="section-kicker">
-          <span data-en>Interactive Lab</span>
-          <span data-fi>Interaktiivinen demoalue</span>
-        </div>
-        <h2 class="section-title reveal">
-          <span data-en>The next layer of the brand is interactive.</span>
-          <span data-fi>Brändin seuraava kerros on interaktiivinen.</span>
-        </h2>
-        <p class="section-copy reveal reveal-delay-1" data-en>
-          The lab now has a stronger front door: a playable orbital physics game for engagement, with Solar System Survey kept as the lighter survey module underneath it.
-        </p>
-        <p class="section-copy reveal reveal-delay-1" data-fi>
-          Labilla on nyt vahvempi etuovi: pelattava ratadynamiikan fysiikkapeli kiinnostuksen herättämiseen, ja Solar System Survey jää sen alle kevyemmäksi survey-moduuliksi.
-        </p>
-
-        <div class="lab-layout">
-          <article class="lab-card card reveal">
-            <span class="card-index" data-en>Featured Physics Game</span>
-            <span class="card-index" data-fi>Pääfysiikkapeli</span>
-            <h3 data-en>Orbital Launch Trainer</h3>
-            <h3 data-fi>Orbital Launch Trainer</h3>
-            <p data-en>A visitor can now do more than watch. This module turns orbital mechanics into a lightweight playable experience that teaches energy, angle, orbit and lunar transfer through interaction.</p>
-            <p data-fi>Kävijä voi nyt tehdä muutakin kuin katsoa. Tämä moduuli muuttaa ratamekaniikan kevyeksi pelattavaksi kokemukseksi, joka opettaa energiaa, kulmaa, kiertorataa ja siirtymää Kuuhun vuorovaikutuksen kautta.</p>
-
-            <div class="demo-viewport">
-              <div class="demo-overlay">
-                <span class="demo-meta" data-en>Module 01 // Physics Game</span>
-                <span class="demo-meta" data-fi>Moduuli 01 // Fysiikkapeli</span>
-                <strong data-en>Launch from the pad, tune injection, reach Earth orbit or push onward to the Moon</strong>
-                <strong data-fi>Laukaise alustalta, säädä injektio ja saavuta Maan rata tai työnnä lento kohti Kuuta</strong>
-                <p data-en>Current role: the most engaging proof that the Tech-Ant lab can teach, impress and hold attention at the same time.</p>
-                <p data-fi>Nykyinen rooli: kiinnostavin todiste siitä, että Tech-Ant-lab voi opettaa, näyttää vaikuttavalta ja pitää huomion yhtä aikaa.</p>
-              </div>
-            </div>
-
-            <a href="orbital-launch.html" class="btn-primary">
-              <span data-en>Open Orbital Launch Trainer</span>
-              <span data-fi>Avaa Orbital Launch Trainer</span>
-            </a>
-            <a href="solarsystem.html" class="text-link" style="margin-top:1rem;">
-              <span data-en>Open Solar System Survey</span>
-              <span data-fi>Avaa Solar System Survey</span>
-            </a>
-          </article>
-
-          <article class="lab-card card reveal reveal-delay-1">
-            <span class="card-index" data-en>Module Stack</span>
-            <span class="card-index" data-fi>Moduulipino</span>
-            <h3 data-en>Survey module live, bigger experiments ahead</h3>
-            <h3 data-fi>Survey-moduuli livenä, suuremmat kokeilut edessä</h3>
-            <p data-en>Solar System Survey stays useful as a lightweight visual module, while the lab expands toward AI mini games, robotics-flavored simulations and branded proof-of-capability pieces.</p>
-            <p data-fi>Solar System Survey pysyy hyödyllisenä kevyenä visuaalisena moduulina, samalla kun lab laajenee AI-minipeleihin, robotiikan suuntaisiin simulaatioihin ja brändättyihin kyvykkyysnäytteisiin.</p>
-            <ul class="lab-list">
-              <li data-en>Solar System Survey stays as the lightweight module 00</li>
-              <li data-fi>Solar System Survey jää kevyeksi moduuliksi 00</li>
-              <li data-en>Physics games can teach orbital basics, energy and control</li>
-              <li data-fi>Fysiikkapelit voivat opettaa kiertoratojen perusteita, energiaa ja ohjausta</li>
-              <li data-en>Future AI experiments can become customer-facing engagement pieces</li>
-              <li data-fi>Tulevat AI-kokeilut voivat muuttua asiakkaille näkyviksi sitouttajiksi</li>
-            </ul>
-            <a href="solarsystem.html" class="text-link" style="margin-top:1.2rem;">
-              <span data-en>Open Solar System Survey</span>
-              <span data-fi>Avaa Solar System Survey</span>
-            </a>
-            <a href="#contact" class="text-link" style="margin-top:1.2rem;">
-              <span data-en>Discuss a custom demo</span>
-              <span data-fi>Keskustele räätälöidystä demosta</span>
-            </a>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section>
-      <div class="container">
-        <div class="section-kicker">
-          <span data-en>Method</span>
-          <span data-fi>Metodi</span>
-        </div>
-        <h2 class="section-title reveal">
-          <span data-en>From signal to product.</span>
-          <span data-fi>Signaalista tuotteeksi.</span>
-        </h2>
-        <p class="section-copy reveal reveal-delay-1" data-en>
-          Customers stay longer when the site explains how work moves. Clear method increases confidence and makes the brand feel deliberate.
-        </p>
-        <p class="section-copy reveal reveal-delay-1" data-fi>
-          Asiakas viihtyy pidempään, kun sivu kertoo miten työ etenee. Selkeä metodi lisää luottamusta ja tekee brändistä harkitun tuntuisen.
-        </p>
-
-        <div class="process-grid">
-          <article class="process-card card reveal">
-            <span class="process-step">01 // Observe</span>
-            <h3 data-en>Find the friction</h3>
-            <h3 data-fi>Etsi kitka</h3>
-            <p data-en>Every strong concept starts from a real technical, ergonomic or interaction problem.</p>
-            <p data-fi>Jokainen vahva konsepti alkaa aidosta teknisestä, ergonomisesta tai vuorovaikutukseen liittyvästä ongelmasta.</p>
-          </article>
-          <article class="process-card card reveal reveal-delay-1">
-            <span class="process-step">02 // Model</span>
-            <h3 data-en>Shape it fast</h3>
-            <h3 data-fi>Muotoile nopeasti</h3>
-            <p data-en>CAD, AI-assisted iteration and technical thinking turn vague direction into a testable structure.</p>
-            <p data-fi>CAD, AI-avusteinen iterointi ja tekninen ajattelu muuttavat epämääräisen suunnan testattavaksi rakenteeksi.</p>
-          </article>
-          <article class="process-card card reveal reveal-delay-2">
-            <span class="process-step">03 // Validate</span>
-            <h3 data-en>Prototype in reality</h3>
-            <h3 data-fi>Prototypoi todellisuudessa</h3>
-            <p data-en>3D production gives fast physical feedback on form, fit, force and usability.</p>
-            <p data-fi>3D-tuotanto antaa nopean fyysisen palautteen muodosta, sopivuudesta, voimasta ja käytettävyydestä.</p>
-          </article>
-          <article class="process-card card reveal reveal-delay-3">
-            <span class="process-step">04 // Amplify</span>
-            <h3 data-en>Package the story</h3>
-            <h3 data-fi>Paketoi tarina</h3>
-            <p data-en>Products, demos and media work together so the result is visible, understandable and commercially useful.</p>
-            <p data-fi>Tuotteet, demot ja media toimivat yhdessä niin, että lopputulos on näkyvä, ymmärrettävä ja kaupallisesti hyödyllinen.</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section>
-      <div class="container">
-        <div class="section-kicker">
-          <span data-en>Founder</span>
-          <span data-fi>Perustaja</span>
-        </div>
-        <div class="about-grid">
-          <article class="about-card card reveal">
-            <span class="card-index" data-en>Jere Nevalainen</span>
-            <span class="card-index" data-fi>Jere Nevalainen</span>
-            <h3 data-en>Engineer, inventor and technical brand builder.</h3>
-            <h3 data-fi>Insinööri, keksijä ja teknisen brändin rakentaja.</h3>
-            <p data-en>Tech-Ant is built around the idea that technical work should not disappear behind vague marketing. It should be visible, precise and commercially useful.</p>
-            <p data-fi>Tech-Ant rakentuu ajatukselle, että tekninen työ ei saa kadota epämääräisen markkinoinnin taakse. Sen pitää olla näkyvää, tarkkaa ja kaupallisesti hyödyllistä.</p>
-            <p data-en>The brand connects engineering work, product ambition, media output and experiments into one coherent public identity.</p>
-            <p data-fi>Brändi yhdistää insinöörityön, tuoteambition, mediasisällön ja kokeilut yhdeksi yhtenäiseksi julkiseksi identiteetiksi.</p>
-          </article>
-
-          <div class="cred-grid reveal reveal-delay-1">
-            <div class="cred-item">
-              <span class="card-index" data-en>Core Strength</span>
-              <span class="card-index" data-fi>Ydinvahvuus</span>
-              <strong data-en>Technical ideas made tangible</strong>
-              <strong data-fi>Tekniset ideat konkreettisiksi</strong>
-              <p data-en>Move from concept to prototype fast enough that commercial momentum survives.</p>
-              <p data-fi>Siirry konseptista prototyyppiin tarpeeksi nopeasti, jotta kaupallinen momentum säilyy.</p>
-            </div>
-            <div class="cred-item">
-              <span class="card-index" data-en>Commercial Lens</span>
-              <span class="card-index" data-fi>Kaupallinen linssi</span>
-              <strong data-en>Products plus narrative</strong>
-              <strong data-fi>Tuotteet plus narratiivi</strong>
-              <p data-en>Not only build the object, but also shape why it matters and how it is understood.</p>
-              <p data-fi>Ei vain rakenneta objektia, vaan myös määritellään miksi se merkitsee ja miten se ymmärretään.</p>
-            </div>
-            <div class="cred-item">
-              <span class="card-index" data-en>Direction</span>
-              <span class="card-index" data-fi>Suunta</span>
-              <strong data-en>AI, robotics and 3D manufacturing</strong>
-              <strong data-fi>AI, robotiikka ja 3D-valmistus</strong>
-              <p data-en>That combination gives the brand a more future-facing signature than a standard 3D printing shop.</p>
-              <p data-fi>Tuo yhdistelmä antaa brändille tulevaisuusorientoituneemman allekirjoituksen kuin tavallinen 3D-tulostuspalvelu.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="contact">
-      <div class="container">
-        <div class="contact-grid">
-          <article class="contact-card card reveal">
-            <div class="section-kicker">
-              <span data-en>Contact</span>
-              <span data-fi>Yhteys</span>
-            </div>
-            <h2 class="section-title" style="max-width:13ch;">
-              <span data-en>Ready to build the next technical layer?</span>
-              <span data-fi>Valmis rakentamaan seuraavan teknisen kerroksen?</span>
-            </h2>
-            <p class="contact-copy" data-en>
-              Tech-Ant is open for prototype work, product discussions, sponsor collaborations, demo concepts and technical media partnerships.
+            <h1 class="display">
+              <span data-en
+                >3D-printed products, prototypes and digital solutions.</span
+              >
+              <span data-fi
+                >3D-tulostettuja tuotteita, prototyyppejä ja digitaalisia
+                ratkaisuja.</span
+              >
+            </h1>
+            <p class="hero-lead" data-en>
+              Tech-Ant builds self-designed physical products, digital products
+              and custom work. It is a one-person studio today, but it is being
+              built deliberately into a reliable, practical brand that can grow.
             </p>
-            <p class="contact-copy" data-fi>
-              Tech-Ant on avoin prototyöprojekteille, tuotekeskusteluille, sponsorikumppanuuksille, demokonsepteille ja teknisen median kumppanuuksille.
+            <p class="hero-lead" data-fi>
+              Tech-Ant tekee itse suunniteltuja fyysisiä tuotteita, digitaalisia
+              tuotteita ja tilaustyötä. Toiminta on tällä hetkellä yhden tekijän
+              studio, mutta sitä rakennetaan määrätietoisesti luotettavaksi ja
+              käytännölliseksi brändiksi, joka voi kasvaa.
             </p>
-            <div class="contact-pills">
-              <div class="contact-pill" data-en>Prototype development</div>
-              <div class="contact-pill" data-fi>Prototyyppikehitys</div>
-              <div class="contact-pill" data-en>Product partnerships</div>
-              <div class="contact-pill" data-fi>Tuotekumppanuudet</div>
-              <div class="contact-pill" data-en>Interactive demos</div>
-              <div class="contact-pill" data-fi>Interaktiiviset demot</div>
-              <div class="contact-pill" data-en>Bilingual technical media</div>
-              <div class="contact-pill" data-fi>Kaksikielinen tekninen media</div>
-            </div>
-            <div class="contact-actions">
-              <a href="mailto:jere.nevalainen@tech-ant.fi?subject=Tech-Ant%20Inquiry" class="btn-primary">
-                <span data-en>Send Email</span>
-                <span data-fi>Lähetä sähköposti</span>
+            <div class="hero-actions">
+              <a href="#capabilities" class="btn-primary">
+                <span data-en>See what I do</span>
+                <span data-fi>Katso mitä teen</span>
               </a>
-              <a href="https://www.youtube.com/@The_tech-ant" target="_blank" rel="noopener noreferrer" class="btn-secondary">
-                <span data-en>Open YouTube</span>
-                <span data-fi>Avaa YouTube</span>
+              <a href="#products" class="btn-secondary">
+                <span data-en>Open catalog</span>
+                <span data-fi>Avaa tuotekatalogi</span>
+              </a>
+              <a href="#lab" class="text-link">
+                <span data-en>Open demos</span>
+                <span data-fi>Avaa demot</span>
               </a>
             </div>
-          </article>
+            <div class="hero-strip">
+              <div class="signal-chip">
+                <span data-en>Designed in-house</span>
+                <span data-fi>Suunniteltu itse</span>
+              </div>
+              <div class="signal-chip">
+                <span data-en>Physical and digital products</span>
+                <span data-fi>Fyysiset ja digitaaliset tuotteet</span>
+              </div>
+              <div class="signal-chip">
+                <span data-en>Finnish / English</span>
+                <span data-fi>Suomi / English</span>
+              </div>
+            </div>
+          </div>
 
-          <div class="contact-side reveal reveal-delay-1">
-            <div class="mini-panel">
-              <span class="card-index" data-en>Best Fit</span>
-              <span class="card-index" data-fi>Paras sopivuus</span>
-              <strong data-en>AI, robotics, CAD, manufacturing and wellness</strong>
-              <strong data-fi>AI, robotiikka, CAD, valmistus ja hyvinvointi</strong>
-              <p data-en>Especially strong fit for brands that want credible technical visibility and not generic influencer packaging.</p>
-              <p data-fi>Erityisen hyvä sopivuus brändeille, jotka haluavat uskottavaa teknistä näkyvyyttä eivätkä geneeristä vaikuttajapakettia.</p>
+          <aside class="hero-panel card reveal reveal-delay-1">
+            <div class="panel-head">
+              <span data-en>Overview</span>
+              <span data-fi>Yhteenveto</span>
+              <strong data-en>Current focus</strong>
+              <strong data-fi>Nykyinen fokus</strong>
             </div>
-            <div class="mini-panel">
-              <span class="card-index" data-en>Operating Model</span>
-              <span class="card-index" data-fi>Toimintamalli</span>
-              <strong data-en>Traveling / International</strong>
-              <strong data-fi>Liikkuva / kansainvälinen</strong>
-              <p data-en>Working across locations with a Finnish engineering identity and a bilingual outward-facing brand.</p>
-              <p data-fi>Työskentely useissa sijainneissa suomalaisella insinööri-identiteetillä ja kaksikielisellä ulospäin näkyvällä brändillä.</p>
+            <div class="panel-rows">
+              <div class="panel-row">
+                <span data-en>Focus</span>
+                <span data-fi>Fokus</span>
+                <strong data-en
+                  >Physical products, digital products and prototypes</strong
+                >
+                <strong data-fi
+                  >Fyysiset tuotteet, digitaaliset tuotteet ja
+                  prototyypit</strong
+                >
+              </div>
+              <div class="panel-row">
+                <span data-en>Build stack</span>
+                <span data-fi>Työkalut</span>
+                <strong data-en>CAD, 3D print, software and electronics</strong>
+                <strong data-fi
+                  >CAD, 3D-tulostus, ohjelmointi ja elektroniikka</strong
+                >
+              </div>
+              <div class="panel-row">
+                <span data-en>Commercial use</span>
+                <span data-fi>Kaupallinen käyttö</span>
+                <strong data-en
+                  >Own products, custom orders and partnerships</strong
+                >
+                <strong data-fi
+                  >Omat tuotteet, tilaustyöt ja kumppanuudet</strong
+                >
+              </div>
+              <div class="panel-row">
+                <span data-en>Public proof</span>
+                <span data-fi>Julkinen näyttö</span>
+                <strong data-en>YouTube channel and AI-assisted demos</strong>
+                <strong data-fi>YouTube-kanava ja AI-avusteiset demot</strong>
+              </div>
+            </div>
+
+            <div class="hero-stack">
+              <div class="stack-card">
+                <span class="mono" data-en>Track 01</span>
+                <span class="mono" data-fi>Linja 01</span>
+                <h3 data-en>Physical Products</h3>
+                <h3 data-fi>Fyysiset tuotteet</h3>
+                <p data-en>
+                  Self-designed, 3D-printed products built for real use and
+                  small-batch sales.
+                </p>
+                <p data-fi>
+                  Itse suunnitellut 3D-tulostetut tuotteet, jotka tehdään
+                  oikeaan käyttöön ja piensarjamyyntiin.
+                </p>
+              </div>
+              <div class="stack-card">
+                <span class="mono" data-en>Track 02</span>
+                <span class="mono" data-fi>Linja 02</span>
+                <h3 data-en>Digital Products</h3>
+                <h3 data-fi>Digitaaliset tuotteet</h3>
+                <p data-en>
+                  Downloadable tools, technical content and other non-physical
+                  products will appear here as the catalog grows.
+                </p>
+                <p data-fi>
+                  Ladattavat työkalut, tekninen sisältö ja muut ei-fyysiset
+                  tuotteet näkyvät tässä, kun valikoima kasvaa.
+                </p>
+              </div>
+              <div class="stack-card">
+                <span class="mono" data-en>Track 03</span>
+                <span class="mono" data-fi>Linja 03</span>
+                <h3 data-en>Custom Work</h3>
+                <h3 data-fi>Tilaustyö</h3>
+                <p data-en>
+                  Prototype work, design help and small technical projects for
+                  founders and inventors.
+                </p>
+                <p data-fi>
+                  Prototyöt, suunnitteluapu ja pienet tekniset projektit
+                  perustajille ja keksijöille.
+                </p>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="metrics">
+        <div class="metrics-grid">
+          <article class="metric-card reveal">
+            <span class="metric-label" data-en>Operating model</span>
+            <span class="metric-label" data-fi>Toimintamalli</span>
+            <strong data-en>One-person studio, direct communication</strong>
+            <strong data-fi>Yhden tekijän studio, suora yhteys</strong>
+            <p data-en>
+              Less overhead, fewer handoffs and clearer decisions when a project
+              moves from idea to product.
+            </p>
+            <p data-fi>
+              Vähemmän välikäsiä, vähemmän hälyä ja selkeämmät päätökset, kun
+              projekti liikkuu ideasta tuotteeksi.
+            </p>
+          </article>
+          <article class="metric-card reveal reveal-delay-1">
+            <span class="metric-label" data-en>Technical base</span>
+            <span class="metric-label" data-fi>Tekninen pohja</span>
+            <strong data-en>Software, electronics and fabrication</strong>
+            <strong data-fi>Ohjelmointi, elektroniikka ja valmistus</strong>
+            <p data-en>
+              The work combines product design, code and physical build steps
+              when that gives a better result.
+            </p>
+            <p data-fi>
+              Työssä yhdistyvät tuotesuunnittelu, koodi ja fyysiset
+              rakennusvaiheet aina kun se parantaa lopputulosta.
+            </p>
+          </article>
+          <article class="metric-card reveal reveal-delay-2">
+            <span class="metric-label" data-en>Sales tracks</span>
+            <span class="metric-label" data-fi>Myyntilinjat</span>
+            <strong data-en
+              >Physical products, digital products and custom work</strong
+            >
+            <strong data-fi
+              >Fyysiset tuotteet, digitaaliset tuotteet ja tilaustyö</strong
+            >
+            <p data-en>
+              The catalog is built to grow in a clear way, instead of mixing
+              every idea into one page.
+            </p>
+            <p data-fi>
+              Valikoimaa kasvatetaan selkeästi, eikä kaikkia ideoita sekoiteta
+              yhteen sivuun.
+            </p>
+          </article>
+          <article class="metric-card reveal reveal-delay-3">
+            <span class="metric-label" data-en>Public proof</span>
+            <span class="metric-label" data-fi>Julkinen näyttö</span>
+            <strong data-en>Products, YouTube and AI-assisted demos</strong>
+            <strong data-fi>Tuotteet, YouTube ja AI-avusteiset demot</strong>
+            <p data-en>
+              Customers can see the work, the process, outside validation and
+              the technical direction before they buy.
+            </p>
+            <p data-fi>
+              Asiakas näkee työn, prosessin, ulkoisen validoinnin ja teknisen
+              suunnan ennen ostamista.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section id="capabilities">
+        <div class="container">
+          <div class="section-kicker">
+            <span data-en>Capabilities</span>
+            <span data-fi>Osaaminen</span>
+          </div>
+          <h2 class="section-title reveal">
+            <span data-en>Capabilities that become products.</span>
+            <span data-fi>Osaaminen, joka muuttuu tuotteiksi.</span>
+          </h2>
+          <p class="section-copy reveal reveal-delay-1" data-en>
+            Tech-Ant combines electrical engineering, programming, 3D
+            fabrication and product design in one practical workflow. The point
+            is not to list every skill, but to use the right ones when they move
+            a product forward.
+          </p>
+          <p class="section-copy reveal reveal-delay-1" data-fi>
+            Tech-Ant yhdistää sähkötekniikan, ohjelmoinnin, 3D-valmistuksen ja
+            tuotesuunnittelun yhdeksi käytännön työnkuluksi. Tarkoitus ei ole
+            esitellä kaikkea osaamista, vaan käyttää oikeita työkaluja silloin
+            kun ne vievät tuotetta eteenpäin.
+          </p>
+
+          <div class="capabilities-grid">
+            <article class="capability-card card reveal">
+              <span class="card-index">01</span>
+              <h3 data-en>Product Design</h3>
+              <h3 data-fi>Tuotesuunnittelu</h3>
+              <p data-en>
+                From a rough idea to printable geometry and a product that feels
+                intentional in the hand.
+              </p>
+              <p data-fi>
+                Karkeasta ideasta tulostettavaan geometriaan ja tuotteeseen,
+                joka tuntuu harkitulta kädessä.
+              </p>
+              <ul class="capability-list">
+                <li data-en>CAD and ergonomics</li>
+                <li data-fi>CAD ja ergonomia</li>
+                <li data-en>Printability and fit checks</li>
+                <li data-fi>Tulostettavuus ja sopivuus</li>
+              </ul>
+            </article>
+
+            <article class="capability-card card reveal reveal-delay-1">
+              <span class="card-index">02</span>
+              <h3 data-en>3D Fabrication</h3>
+              <h3 data-fi>3D-valmistus</h3>
+              <p data-en>
+                Rapid prototyping, iteration and small-batch production without
+                losing the feeling of a finished product.
+              </p>
+              <p data-fi>
+                Nopea prototypointi, iterointi ja piensarjatuotanto ilman että
+                tuotteen viimeistelty tunne katoaa.
+              </p>
+              <ul class="capability-list">
+                <li data-en>Print-led concept validation</li>
+                <li data-fi>Tulostusvetoinen konseptivalidointi</li>
+                <li data-en>Small-batch readiness</li>
+                <li data-fi>Piensarjavalmius</li>
+              </ul>
+            </article>
+
+            <article class="capability-card card reveal reveal-delay-2">
+              <span class="card-index">03</span>
+              <h3 data-en>Software and Electronics</h3>
+              <h3 data-fi>Ohjelmointi ja elektroniikka</h3>
+              <p data-en>
+                When a product needs code, sensors or control logic, the
+                prototype stack can grow with the idea instead of against it.
+              </p>
+              <p data-fi>
+                Kun tuote tarvitsee koodia, sensoreita tai ohjauslogiikkaa,
+                prototyyppiin voidaan lisätä ne ilman että idea kärsii.
+              </p>
+              <ul class="capability-list">
+                <li data-en>Programming when needed</li>
+                <li data-fi>Ohjelmointi silloin kun tarvitaan</li>
+                <li data-en>Electronics and integration</li>
+                <li data-fi>Elektroniikka ja integrointi</li>
+              </ul>
+            </article>
+
+            <article class="capability-card card reveal reveal-delay-3">
+              <span class="card-index">04</span>
+              <h3 data-en>Public Proof</h3>
+              <h3 data-fi>Julkinen näyttö</h3>
+              <p data-en>
+                YouTube, build logs and AI-assisted demos make the work visible
+                before the first sale.
+              </p>
+              <p data-fi>
+                YouTube, build logit ja AI-avusteiset demot tekevät työstä
+                näkyvää jo ennen ensimmäistä myyntiä.
+              </p>
+              <ul class="capability-list">
+                <li data-en>Technical clarity</li>
+                <li data-fi>Tekninen selkeys</li>
+                <li data-en>Customer-facing demos</li>
+                <li data-fi>Asiakasta varten tehdyt demot</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="products" id="products">
+        <div class="container">
+          <div class="section-kicker">
+            <span data-en>Product Tracks</span>
+            <span data-fi>Tuotelinjat</span>
+          </div>
+          <h2 class="section-title reveal">
+            <span data-en>Commercial tracks with clear status.</span>
+            <span data-fi>Selkeät kaupalliset linjat.</span>
+          </h2>
+          <p class="section-copy reveal reveal-delay-1" data-en>
+            The current catalog is split into physical products, digital
+            products and custom work. Product photos will be added when sales
+            begin, but the catalog already shows what exists, what is coming and
+            what can be ordered now.
+          </p>
+          <p class="section-copy reveal reveal-delay-1" data-fi>
+            Nykyinen valikoima jakautuu fyysisiin tuotteisiin, digitaalisiin
+            tuotteisiin ja tilaustyöhön. Tuotekuvat lisätään, kun myynti alkaa,
+            mutta jo nyt näkee mitä on olemassa, mikä on tulossa ja mitä voi
+            tilata nyt.
+          </p>
+
+          <div class="filters" role="toolbar" aria-label="Product filters">
+            <button class="filter-btn active" type="button" data-filter="all">
+              <span data-en>All</span>
+              <span data-fi>Kaikki</span>
+            </button>
+            <button class="filter-btn" type="button" data-filter="physical">
+              <span data-en>Physical</span>
+              <span data-fi>Fyysiset</span>
+            </button>
+            <button class="filter-btn" type="button" data-filter="digital">
+              <span data-en>Digital</span>
+              <span data-fi>Digitaaliset</span>
+            </button>
+            <button class="filter-btn" type="button" data-filter="service">
+              <span data-en>Custom</span>
+              <span data-fi>Tilaustyö</span>
+            </button>
+          </div>
+
+          <div class="products-grid">
+            <article class="product-card card reveal" data-track="physical">
+              <div class="product-top">
+                <div>
+                  <span class="card-index">01</span>
+                  <h3>Myhierotin</h3>
+                </div>
+                <span class="status-tag status-build" data-en
+                  >In Development</span
+                >
+                <span class="status-tag status-build" data-fi
+                  >Kehityksessä</span
+                >
+              </div>
+              <p data-en>
+                A self-designed back relief product with a simple physical
+                operating logic: body weight, leverage and repeatable
+                positioning.
+              </p>
+              <p data-fi>
+                Itse suunniteltu selkähelpotustuote, jonka toimintalogiikka on
+                yksinkertainen: kehon paino, vipuvoima ja toistettava asettelu.
+              </p>
+              <div class="product-meta">
+                <span class="meta-pill" data-en>Back relief</span>
+                <span class="meta-pill" data-fi>Selkähelpotus</span>
+                <span class="meta-pill" data-en>No electricity</span>
+                <span class="meta-pill" data-fi>Ei sähköä</span>
+                <span class="meta-pill" data-en>3D printed</span>
+                <span class="meta-pill" data-fi>3D-tulostettu</span>
+              </div>
+              <div class="product-fit" data-en>
+                Designed for daily use without expensive powered devices or a
+                complicated setup.
+              </div>
+              <div class="product-fit" data-fi>
+                Suunniteltu päivittäiseen käyttöön ilman kalliita sähkölaitteita
+                tai monimutkaista säätöä.
+              </div>
+              <div class="product-bottom">
+                <span data-en>Commercial track: physical product</span>
+                <span data-fi>Kaupallinen linja: fyysinen tuote</span>
+                <a
+                  href="mailto:jere.nevalainen@tech-ant.fi?subject=Myhierotin%20interest"
+                  class="text-link"
+                >
+                  <span data-en>Ask About Launch</span>
+                  <span data-fi>Kysy julkaisusta</span>
+                </a>
+              </div>
+            </article>
+
+            <article
+              class="product-card card reveal reveal-delay-1"
+              data-track="physical"
+            >
+              <div class="product-top">
+                <div>
+                  <span class="card-index">02</span>
+                  <h3 data-en>Secret Containers</h3>
+                  <h3 data-fi>Secret Containers</h3>
+                </div>
+                <span class="status-tag status-prelaunch" data-en
+                  >Prelaunch</span
+                >
+                <span class="status-tag status-prelaunch" data-fi
+                  >Ennakossa</span
+                >
+              </div>
+              <p data-en>
+                3D-printed desk objects with integrated hidden compartments. The
+                goal is a memorable product moment, not a disposable trinket.
+              </p>
+              <p data-fi>
+                3D-tulostettuja pöytäesineitä integroidulla salalokeroilla.
+                Tavoite on muistettava tuote-elämys, ei kertakäyttöinen koriste.
+              </p>
+              <div class="product-meta">
+                <span class="meta-pill" data-en>Desk object</span>
+                <span class="meta-pill" data-fi>Pöytäesine</span>
+                <span class="meta-pill" data-en>Hidden compartment</span>
+                <span class="meta-pill" data-fi>Salalokero</span>
+                <span class="meta-pill" data-en>Giftable</span>
+                <span class="meta-pill" data-fi>Lahjaksi sopiva</span>
+              </div>
+              <div class="product-fit" data-en>
+                Best suited to people who want novelty with a real product
+                moment, not a generic printed object.
+              </div>
+              <div class="product-fit" data-fi>
+                Sopii ihmisille, jotka haluavat uutuuden tuntua ja oikean
+                tuote-elämyksen, eivät geneeristä tulostettua esinettä.
+              </div>
+              <div class="product-bottom">
+                <span data-en>Commercial track: physical product</span>
+                <span data-fi>Kaupallinen linja: fyysinen tuote</span>
+                <a
+                  href="mailto:jere.nevalainen@tech-ant.fi?subject=Secret%20Containers%20interest"
+                  class="text-link"
+                >
+                  <span data-en>Request update</span>
+                  <span data-fi>Pyydä päivitys</span>
+                </a>
+              </div>
+            </article>
+
+            <article
+              class="product-card card reveal reveal-delay-2"
+              data-track="digital"
+            >
+              <div class="product-top">
+                <div>
+                  <span class="card-index">03</span>
+                  <h3 data-en>Digital Products</h3>
+                  <h3 data-fi>Digitaaliset tuotteet</h3>
+                </div>
+                <span class="status-tag status-build" data-en
+                  >In preparation</span
+                >
+                <span class="status-tag status-build" data-fi
+                  >Valmistelussa</span
+                >
+              </div>
+              <p data-en>
+                Downloadable tools, guides or other non-physical products that
+                support the same product-first mindset as the physical catalog.
+              </p>
+              <p data-fi>
+                Ladattavat työkalut, oppaat tai muut ei-fyysiset tuotteet, jotka
+                tukevat samaa tuotelähtöistä ajattelua kuin fyysinen valikoima.
+              </p>
+              <div class="product-meta">
+                <span class="meta-pill" data-en>Downloads</span>
+                <span class="meta-pill" data-fi>Lataukset</span>
+                <span class="meta-pill" data-en>Tools</span>
+                <span class="meta-pill" data-fi>Työkalut</span>
+                <span class="meta-pill" data-en>Guides</span>
+                <span class="meta-pill" data-fi>Oppaat</span>
+              </div>
+              <div class="product-fit" data-en>
+                As the catalog grows, this is where downloadable and
+                non-physical products will appear.
+              </div>
+              <div class="product-fit" data-fi>
+                Kun valikoima kasvaa, tähän tulevat ladattavat ja ei-fyysiset
+                tuotteet.
+              </div>
+              <div class="product-bottom">
+                <span data-en>Commercial track: digital product</span>
+                <span data-fi>Kaupallinen linja: digitaalinen tuote</span>
+                <a
+                  href="mailto:jere.nevalainen@tech-ant.fi?subject=Digital%20products"
+                  class="text-link"
+                >
+                  <span data-en>Ask about availability</span>
+                  <span data-fi>Kysy saatavuudesta</span>
+                </a>
+              </div>
+            </article>
+
+            <article
+              class="product-card card reveal reveal-delay-3"
+              data-track="service"
+            >
+              <div class="product-top">
+                <div>
+                  <span class="card-index">04</span>
+                  <h3 data-en>Custom Prototype Services</h3>
+                  <h3 data-fi>Tilausprotot ja 3D-palvelut</h3>
+                </div>
+                <span class="status-tag status-active" data-en>Available</span>
+                <span class="status-tag status-active" data-fi>Saatavilla</span>
+              </div>
+              <p data-en>
+                CAD design, technical concepting and 3D prototype production for
+                founders, inventors and small teams.
+              </p>
+              <p data-fi>
+                CAD-suunnittelu, tekninen konseptointi ja 3D-prototuotanto
+                perustajille, keksijöille ja pienille tiimeille.
+              </p>
+              <div class="product-meta">
+                <span class="meta-pill">CAD</span>
+                <span class="meta-pill">FDM</span>
+                <span class="meta-pill" data-en>Rapid prototyping</span>
+                <span class="meta-pill" data-fi>Nopea prototyyppaus</span>
+              </div>
+              <div class="product-fit" data-en>
+                Ideal when you need a convincing physical proof point fast,
+                whether for testing, pitching or early customer feedback.
+              </div>
+              <div class="product-fit" data-fi>
+                Erinomainen silloin kun tarvitset uskottavan fyysisen todisteen
+                nopeasti testausta, pitchausta tai ensimmäistä asiakaspalautetta
+                varten.
+              </div>
+              <div class="product-bottom">
+                <span data-en>Commercial track: service</span>
+                <span data-fi>Kaupallinen linja: palvelu</span>
+                <a
+                  href="mailto:jere.nevalainen@tech-ant.fi?subject=Prototype%20Inquiry"
+                  class="text-link"
+                >
+                  <span data-en>Request Quote</span>
+                  <span data-fi>Pyydä tarjous</span>
+                </a>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="media">
+        <div class="container">
+          <div class="section-kicker">
+            <span data-en>Proof</span>
+            <span data-fi>Näyttö</span>
+          </div>
+          <h2 class="section-title reveal">
+            <span data-en>Visible work that builds trust.</span>
+            <span data-fi>Näkyvä työ rakentaa luottamusta.</span>
+          </h2>
+          <p class="section-copy reveal reveal-delay-1" data-en>
+            The YouTube side of Tech-Ant is not decoration. It shows how the
+            products, repairs, experiments and collaborations are actually made,
+            which is often the fastest way to build trust.
+          </p>
+          <p class="section-copy reveal reveal-delay-1" data-fi>
+            Tech-Antin YouTube-puoli ei ole koristetta. Se näyttää, miten
+            tuotteet, korjaukset, kokeilut ja yhteistyöt oikeasti syntyvät, ja
+            se on usein nopein tapa rakentaa luottamusta.
+          </p>
+
+          <div class="media-grid">
+            <article class="story-card card reveal">
+              <span class="card-index" data-en>Channel</span>
+              <span class="card-index" data-fi>Kanava</span>
+              <h3 data-en>Tech-Ant on YouTube</h3>
+              <h3 data-fi>Tech-Ant YouTubessa</h3>
+              <p data-en>
+                The channel focuses on inventor stories, Tech-Ant projects, 3D
+                printing, repairs and practical engineering builds.
+              </p>
+              <p data-fi>
+                Kanava keskittyy keksijätarinoihin, Tech-Ant-projekteihin,
+                3D-tulostukseen, korjauksiin ja käytännön insinöörirakennelmiin.
+              </p>
+              <ul class="story-list">
+                <li data-en>Inventor stories and build logs</li>
+                <li data-fi>Keksijätarinat ja build logit</li>
+                <li data-en>3D printing, repairs and product experiments</li>
+                <li data-fi>3D-tulostus, korjaukset ja tuotekokeilut</li>
+                <li data-en>Public proof of the work behind the catalog</li>
+                <li data-fi>
+                  Julkinen näyttö katalogin takana olevasta työstä
+                </li>
+              </ul>
+              <a
+                href="https://www.youtube.com/@The_tech-ant"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-link"
+                style="margin-top: 1.2rem"
+              >
+                <span data-en>Open YouTube Channel</span>
+                <span data-fi>Avaa YouTube-kanava</span>
+              </a>
+            </article>
+
+            <article class="story-card card reveal reveal-delay-1">
+              <span class="card-index" data-en>Fit</span>
+              <span class="card-index" data-fi>Sopivuus</span>
+              <h3 data-en>Why it matters commercially</h3>
+              <h3 data-fi>Miksi sillä on kaupallista arvoa</h3>
+              <p data-en>
+                This helps future customers, collaborators and buyers understand
+                the seriousness and direction of the work before they contact
+                Tech-Ant.
+              </p>
+              <p data-fi>
+                Tämä auttaa tulevia asiakkaita, yhteistyökumppaneita ja ostajia
+                ymmärtämään työn vakavuuden ja suunnan jo ennen yhteydenottoa.
+              </p>
+              <div class="story-split">
+                <div class="mini-panel">
+                  <span class="card-index" data-en>Audience</span>
+                  <span class="card-index" data-fi>Yleisö</span>
+                  <strong data-en>FI + EN technical viewers</strong>
+                  <strong data-fi>FI + EN tekninen yleisö</strong>
+                  <p data-en>
+                    Broader visibility without losing the Finnish engineering
+                    identity.
+                  </p>
+                  <p data-fi>
+                    Laajempi näkyvyys ilman että suomalainen
+                    insinööri-identiteetti katoaa.
+                  </p>
+                </div>
+                <div class="mini-panel">
+                  <span class="card-index" data-en>Partner Fit</span>
+                  <span class="card-index" data-fi>Kumppanuus</span>
+                  <strong data-en
+                    >Products, prototypes and technical media</strong
+                  >
+                  <strong data-fi
+                    >Tuotteet, prototyypit ja tekninen media</strong
+                  >
+                  <p data-en>
+                    Natural fit for technical brands that want authentic
+                    maker-to-market visibility.
+                  </p>
+                  <p data-fi>
+                    Luonteva sopivuus teknisille brändeille, jotka haluavat
+                    aitoa näkyvyyttä makerista markkinaan.
+                  </p>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="validation">
+        <div class="container">
+          <div class="section-kicker">
+            <span data-en>Validation</span>
+            <span data-fi>Validointi</span>
+          </div>
+          <h2 class="section-title reveal">
+            <span data-en
+              >External work that backs the technical direction.</span
+            >
+            <span data-fi>Ulkopuolinen työ tukee teknistä suuntaa.</span>
+          </h2>
+          <p class="section-copy reveal reveal-delay-1" data-en>
+            Credibility matters when the studio is still small. The strongest
+            signals come from collaboration, public competition results, user
+            testing and an honest project status.
+          </p>
+          <p class="section-copy reveal reveal-delay-1" data-fi>
+            Uskottavuus on tärkeää, kun studio on vielä pieni. Vahvimmat
+            signaalit tulevat yhteistyöstä, julkisista kilpailutuloksista,
+            käyttäjätestauksesta ja rehellisestä projektitilasta.
+          </p>
+
+          <div class="media-grid">
+            <article class="story-card card reveal">
+              <span class="card-index" data-en>MyHierotin</span>
+              <span class="card-index" data-fi>MyHierotin</span>
+              <h3 data-en>Co-developed and user-tested</h3>
+              <h3 data-fi>Yhteiskehitetty ja käyttäjätestattu</h3>
+              <p data-en>
+                MyHierotin was developed with Paula Hiltunen, supported by the
+                Draft programme, published on Draft Program and later described
+                in a Karelia article about user testing with office workers.
+                That gives the product outside feedback, not just internal
+                iteration.
+              </p>
+              <p data-fi>
+                MyHierotin kehittyi Paula Hiltusen kanssa, sai tukea
+                Draft-ohjelmasta, julkaistiin Draft Programissa ja kuvattiin
+                myöhemmin Karelia-artikkelissa, jossa kerrottiin
+                käyttäjätestauksesta toimistotyöläisillä. Se antaa tuotteelle
+                ulkoista palautetta, ei vain sisäistä iterointia.
+              </p>
+              <ul class="story-list">
+                <li data-en>Draft Program coverage</li>
+                <li data-fi>Draft Program -julkaisu</li>
+                <li data-en>Karelia user testing with office workers</li>
+                <li data-fi>Karelia-käyttäjätestaus toimistotyöläisillä</li>
+                <li data-en>
+                  Body-weight driven, electricity-free product logic
+                </li>
+                <li data-fi>
+                  Kehon painolla toimiva, sähköttömyyteen perustuva
+                  tuotelogiikka
+                </li>
+              </ul>
+              <div class="contact-actions" style="margin-top: 1rem">
+                <a
+                  href="https://draftprogram.com/2025/10/03/myhierotin-uusi-tapa-hoitaa-lihasjumeja/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-link"
+                >
+                  <span data-en>Read Draft article</span>
+                  <span data-fi>Lue Draft-juttu</span>
+                </a>
+                <a
+                  href="https://www.karelia.fi/2026/03/kayttajalahtoisyys-mahdollistaa-uuden-tuotteen-menestymisen/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-link"
+                >
+                  <span data-en>Read Karelia article</span>
+                  <span data-fi>Lue Karelia-juttu</span>
+                </a>
+              </div>
+            </article>
+
+            <article class="story-card card reveal reveal-delay-1">
+              <span class="card-index" data-en>Carrier-ant</span>
+              <span class="card-index" data-fi>Carrier-ant</span>
+              <h3 data-en>Paused after three prototype generations</h3>
+              <h3 data-fi>Jäähdytetty kolmen protosukupolven jälkeen</h3>
+              <p data-en>
+                Carrier-ant has gone through three prototype generations. Two
+                early prototypes are complete, and the track is currently cooled
+                while Tech-Ant focuses on self-sufficiency before research
+                restarts.
+              </p>
+              <p data-fi>
+                Carrier-ant on käynyt läpi kolme prototyyppisukupolvea. Kaksi
+                varhaista prototyyppiä on valmiina, ja projekti on tällä
+                hetkellä jäähdytetty, kun Tech-Ant keskittyy omavaraisuuteen
+                ennen kuin tutkimustyö jatkuu.
+              </p>
+              <div class="story-split">
+                <div class="mini-panel">
+                  <span class="card-index" data-en>Prototype state</span>
+                  <span class="card-index" data-fi>Prototilanne</span>
+                  <strong data-en>2 prototypes complete</strong>
+                  <strong data-fi>2 prototyyppiä valmiina</strong>
+                  <p data-en>
+                    Cooled research track, not an active sales line.
+                  </p>
+                  <p data-fi>
+                    Jäähdytetty tutkimuslinja, ei aktiivinen myyntituote.
+                  </p>
+                </div>
+                <div class="mini-panel">
+                  <span class="card-index" data-en>Reference</span>
+                  <span class="card-index" data-fi>Suositus</span>
+                  <strong data-en>Recommendation letter on file</strong>
+                  <strong data-fi>Suosittelukirje tallessa</strong>
+                  <p data-en>
+                    National Defence University of Finland, Department of
+                    Military Technology.
+                  </p>
+                  <p data-fi>Maanpuolustuskorkeakoulu, sotatekniikan laitos.</p>
+                </div>
+              </div>
+              <p data-en style="margin-top: 1rem">
+                The track is paused, not abandoned. It can return when the
+                operating base and research priorities line up again.
+              </p>
+              <p data-fi style="margin-top: 1rem">
+                Rata on tauolla, ei hylätty. Se voi palata, kun omavaraisuus ja
+                tutkimusprioriteetit osuvat taas yhteen.
+              </p>
+            </article>
+
+            <article class="story-card card reveal reveal-delay-2">
+              <span class="card-index" data-en>IoT competition</span>
+              <span class="card-index" data-fi>IoT-kisa</span>
+              <h3 data-en>Team win in an IoT challenge</h3>
+              <h3 data-fi>Tiimin voitto IoT-kisassa</h3>
+              <p data-en>
+                Tech-Ant won an IoT competition with a team. It is a useful
+                signal because it shows the work can be delivered against a
+                brief, with other people and under public evaluation.
+              </p>
+              <p data-fi>
+                Tech-Ant voitti tiimin kanssa IoT-kisan. Se on hyödyllinen
+                signaali, koska työ tehtiin annetun tehtävän mukaan, yhdessä
+                muiden kanssa ja julkisen arvioinnin alla.
+              </p>
+              <ul class="story-list">
+                <li data-en>Public competition result</li>
+                <li data-fi>Julkinen kilpailutulos</li>
+                <li data-en>Team-based delivery</li>
+                <li data-fi>Tiimityöllä toteutettu</li>
+                <li data-en>IoT / connected-device context</li>
+                <li data-fi>IoT- ja älylaittekonteksti</li>
+              </ul>
+              <div class="contact-actions" style="margin-top: 1rem">
+                <a
+                  href="https://x.com/SchneiderEFI/status/999633930067341312"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-link"
+                >
+                  <span data-en>Open X reference</span>
+                  <span data-fi>Avaa X-viite</span>
+                </a>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="lab">
+        <div class="container">
+          <div class="section-kicker">
+            <span data-en>AI demos</span>
+            <span data-fi>AI-demot</span>
+          </div>
+          <h2 class="section-title reveal">
+            <span data-en>AI-assisted demos that show what we can make.</span>
+            <span data-fi
+              >AI-avusteiset demot näyttävät mitä voimme tehdä.</span
+            >
+          </h2>
+          <p class="section-copy reveal reveal-delay-1" data-en>
+            These are not random games. They are small visitor-facing demo
+            pieces made with modern AI tools to show range, speed and style. The
+            point is simple: this is the kind of demo you can get when the tools
+            are used well.
+          </p>
+          <p class="section-copy reveal reveal-delay-1" data-fi>
+            Nämä eivät ole satunnaisia pelejä. Ne ovat pieniä kävijälle
+            suunnattuja demokokonaisuuksia, jotka on tehty moderneilla
+            AI-työkaluilla näyttämään laajuutta, nopeutta ja tyyliä. Ajatus on
+            yksinkertainen: tällaisia demoja voit saada, kun työkalut osataan
+            käyttää hyvin.
+          </p>
+
+          <div class="lab-layout">
+            <article class="lab-card card reveal">
+              <span class="card-index" data-en>Example Demo</span>
+              <span class="card-index" data-fi>Esimerkkidemo</span>
+              <h3 data-en>Orbital Launch Trainer</h3>
+              <h3 data-fi>Orbital Launch Trainer</h3>
+              <p data-en>
+                A guided launch simulator that turns orbital mechanics into a
+                readable product demo. It shows phase planning, ascent control
+                and orbit insertion through interaction.
+              </p>
+              <p data-fi>
+                Ohjattu laukaisusimulaattori, joka muuttaa ratamekaniikan
+                luettavaksi tuotedemoksi. Se näyttää vaiheistuksen, nousun
+                hallinnan ja rataleikkauksen vuorovaikutuksen kautta.
+              </p>
+
+              <div class="demo-viewport">
+                <div class="demo-overlay">
+                  <span class="demo-meta" data-en
+                    >Module 01 // Guided simulation</span
+                  >
+                  <span class="demo-meta" data-fi
+                    >Moduuli 01 // Ohjattu simulaatio</span
+                  >
+                  <strong data-en
+                    >Launch from the pad, tune the ascent and reach a stable
+                    orbit or a lunar transfer</strong
+                  >
+                  <strong data-fi
+                    >Laukaise alustalta, säädä nousua ja saavuta vakaa rata tai
+                    Kuuhun siirtyvä lento</strong
+                  >
+                  <p data-en>
+                    Current role: an example of how AI-assisted work can turn an
+                    idea into something people can explore.
+                  </p>
+                  <p data-fi>
+                    Nykyinen rooli: esimerkki siitä, miten AI-avusteinen työ voi
+                    muuttaa idean sellaiseksi, jota ihmiset voivat tutkia.
+                  </p>
+                </div>
+              </div>
+
+              <a href="orbital-launch.html" class="btn-primary">
+                <span data-en>Open Orbital Launch Trainer</span>
+                <span data-fi>Avaa Orbital Launch Trainer</span>
+              </a>
+              <a
+                href="solarsystem.html"
+                class="text-link"
+                style="margin-top: 1rem"
+              >
+                <span data-en>Open Solar System Survey</span>
+                <span data-fi>Avaa Solar System Survey</span>
+              </a>
+            </article>
+
+            <article class="lab-card card reveal reveal-delay-1">
+              <span class="card-index" data-en>More examples</span>
+              <span class="card-index" data-fi>Lisää esimerkkejä</span>
+              <h3 data-en>Solar System Survey stays as the lighter example</h3>
+              <h3 data-fi>Solar System Survey jää kevyemmäksi esimerkiksi</h3>
+              <p data-en>
+                Solar System Survey remains a lightweight visual example, while
+                the lab grows toward more visitor-facing demos and AI-assisted
+                concepts.
+              </p>
+              <p data-fi>
+                Solar System Survey pysyy kevyenä visuaalisena esimerkkinä,
+                samalla kun lab kasvaa kohti kävijälle suunnattuja demoja ja
+                AI-avusteisia konsepteja.
+              </p>
+              <ul class="lab-list">
+                <li data-en>
+                  Orbital mechanics can be turned into a visitor-friendly
+                  experience
+                </li>
+                <li data-fi>
+                  Ratamekaniikasta voi tehdä kävijälle helposti lähestyttävän
+                  kokemuksen
+                </li>
+                <li data-en>
+                  Small demos help clients imagine the final product
+                </li>
+                <li data-fi>
+                  Pienet demot auttavat asiakasta hahmottamaan lopputuloksen
+                </li>
+                <li data-en>
+                  AI tools make fast concepting and playful exploration possible
+                </li>
+                <li data-fi>
+                  AI-työkalut mahdollistavat nopean konseptoinnin ja leikillisen
+                  kokeilun
+                </li>
+              </ul>
+              <a
+                href="solarsystem.html"
+                class="text-link"
+                style="margin-top: 1.2rem"
+              >
+                <span data-en>Open Solar System Survey</span>
+                <span data-fi>Avaa Solar System Survey</span>
+              </a>
+              <a href="#contact" class="text-link" style="margin-top: 1.2rem">
+                <span data-en>Discuss a custom AI demo</span>
+                <span data-fi>Keskustele räätälöidystä AI-demosta</span>
+              </a>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="container">
+          <div class="section-kicker">
+            <span data-en>Method</span>
+            <span data-fi>Työtapa</span>
+          </div>
+          <h2 class="section-title reveal">
+            <span data-en>From problem to product.</span>
+            <span data-fi>Ongelma tuotteeksi.</span>
+          </h2>
+          <p class="section-copy reveal reveal-delay-1" data-en>
+            A clear process makes a small studio feel reliable. The work starts
+            with a real problem, moves into a fast prototype and ends with
+            something that can be sold or shown.
+          </p>
+          <p class="section-copy reveal reveal-delay-1" data-fi>
+            Selkeä prosessi tekee pienestä studiosta luotettavan tuntuisen. Työ
+            alkaa oikeasta ongelmasta, etenee nopeaan prototyyppiin ja päätyy
+            johonkin, mitä voi myydä tai näyttää.
+          </p>
+
+          <div class="process-grid">
+            <article class="process-card card reveal">
+              <span class="process-step">01 // Observe</span>
+              <h3 data-en>Find the real problem</h3>
+              <h3 data-fi>Etsi oikea ongelma</h3>
+              <p data-en>
+                Every strong concept starts from a practical technical,
+                ergonomic or commercial need.
+              </p>
+              <p data-fi>
+                Jokainen vahva konsepti alkaa käytännön teknisestä,
+                ergonomisesta tai kaupallisesta tarpeesta.
+              </p>
+            </article>
+            <article class="process-card card reveal reveal-delay-1">
+              <span class="process-step">02 // Model</span>
+              <h3 data-en>Shape it quickly</h3>
+              <h3 data-fi>Muotoile nopeasti</h3>
+              <p data-en>
+                CAD, iteration and technical thinking turn vague direction into
+                a testable structure.
+              </p>
+              <p data-fi>
+                CAD, iterointi ja tekninen ajattelu muuttavat epämääräisen
+                suunnan testattavaksi rakenteeksi.
+              </p>
+            </article>
+            <article class="process-card card reveal reveal-delay-2">
+              <span class="process-step">03 // Validate</span>
+              <h3 data-en>Prototype in reality</h3>
+              <h3 data-fi>Prototypoi todellisuudessa</h3>
+              <p data-en>
+                3D production gives fast physical feedback on form, fit, force
+                and usability.
+              </p>
+              <p data-fi>
+                3D-tuotanto antaa nopean fyysisen palautteen muodosta,
+                sopivuudesta, voimasta ja käytettävyydestä.
+              </p>
+            </article>
+            <article class="process-card card reveal reveal-delay-3">
+              <span class="process-step">04 // Amplify</span>
+              <h3 data-en>Package the result</h3>
+              <h3 data-fi>Paketoi lopputulos</h3>
+              <p data-en>
+                Products, demos and media work together so the result is
+                visible, understandable and commercially useful.
+              </p>
+              <p data-fi>
+                Tuotteet, demot ja media toimivat yhdessä niin, että lopputulos
+                on näkyvä, ymmärrettävä ja kaupallisesti hyödyllinen.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="container">
+          <div class="section-kicker">
+            <span data-en>Background</span>
+            <span data-fi>Tausta</span>
+          </div>
+          <div class="about-grid">
+            <article class="about-card card reveal">
+              <span class="card-index" data-en>Jere Nevalainen</span>
+              <span class="card-index" data-fi>Jere Nevalainen</span>
+              <h3 data-en>Engineer, inventor and product builder.</h3>
+              <h3 data-fi>Insinööri, keksijä ja tuoterakentaja.</h3>
+              <p data-en>
+                Tech-Ant is built around electrical engineering, programming, 3D
+                fabrication and product development. The goal is to make
+                technical work visible, precise and commercially useful without
+                overdoing the marketing.
+              </p>
+              <p data-fi>
+                Tech-Ant rakentuu sähkötekniikan, ohjelmoinnin, 3D-valmistuksen
+                ja tuotekehityksen ympärille. Tavoite on tehdä teknisestä työstä
+                näkyvää, tarkkaa ja kaupallisesti hyödyllistä ilman
+                ylikorostettua markkinointia.
+              </p>
+              <p data-en>
+                The studio is small today, but it is designed to grow through
+                real products, prototypes and proof of work.
+              </p>
+              <p data-fi>
+                Studio on tällä hetkellä pieni, mutta se on rakennettu kasvamaan
+                oikeiden tuotteiden, prototyyppien ja näytön kautta.
+              </p>
+            </article>
+
+            <div class="cred-grid reveal reveal-delay-1">
+              <div class="cred-item">
+                <span class="card-index" data-en>Core Strength</span>
+                <span class="card-index" data-fi>Ydinvahvuus</span>
+                <strong data-en>Technical ideas made tangible</strong>
+                <strong data-fi>Tekniset ideat konkreettisiksi</strong>
+                <p data-en>
+                  Move from concept to prototype fast enough that commercial
+                  momentum survives.
+                </p>
+                <p data-fi>
+                  Siirry konseptista prototyyppiin tarpeeksi nopeasti, jotta
+                  kaupallinen momentum säilyy.
+                </p>
+              </div>
+              <div class="cred-item">
+                <span class="card-index" data-en>Commercial Lens</span>
+                <span class="card-index" data-fi>Kaupallinen linssi</span>
+                <strong data-en>Products plus narrative</strong>
+                <strong data-fi>Tuotteet plus narratiivi</strong>
+                <p data-en>
+                  Not only build the object, but also shape why it matters and
+                  how it is understood.
+                </p>
+                <p data-fi>
+                  Ei vain rakenneta objektia, vaan myös määritellään miksi se
+                  merkitsee ja miten se ymmärretään.
+                </p>
+              </div>
+              <div class="cred-item">
+                <span class="card-index" data-en>Direction</span>
+                <span class="card-index" data-fi>Suunta</span>
+                <strong data-en
+                  >Physical products, digital products and AI demos</strong
+                >
+                <strong data-fi
+                  >Fyysiset tuotteet, digitaaliset tuotteet ja AI-demot</strong
+                >
+                <p data-en>
+                  AI, robotics and product experiments are part of the toolkit
+                  when they improve the result.
+                </p>
+                <p data-fi>
+                  AI, robotiikka ja tuotekokeilut kuuluvat työkalupakkiin
+                  silloin kun ne parantavat lopputulosta.
+                </p>
+              </div>
             </div>
           </div>
         </div>
+      </section>
+
+      <section id="contact">
+        <div class="container">
+          <div class="contact-grid">
+            <article class="contact-card card reveal">
+              <div class="section-kicker">
+                <span data-en>Contact</span>
+                <span data-fi>Yhteys</span>
+              </div>
+              <h2 class="section-title" style="max-width: 13ch">
+                <span data-en>Ready to discuss a product or prototype?</span>
+                <span data-fi
+                  >Haluatko keskustella tuotteesta tai prototyypistä?</span
+                >
+              </h2>
+              <p class="contact-copy" data-en>
+                Tech-Ant is open for product ideas, prototype work, digital
+                products and technical collaborations. If you want a quote or
+                want to talk about a new idea, send a message directly.
+              </p>
+              <p class="contact-copy" data-fi>
+                Tech-Ant on avoin tuoteideoille, prototyöprojekteille,
+                digitaalisille tuotteille ja tekniselle yhteistyölle. Jos haluat
+                tarjouksen tai haluat keskustella uudesta ideasta, lähetä viesti
+                suoraan.
+              </p>
+              <div class="contact-pills">
+                <div class="contact-pill" data-en>Physical products</div>
+                <div class="contact-pill" data-fi>Fyysiset tuotteet</div>
+                <div class="contact-pill" data-en>Digital products</div>
+                <div class="contact-pill" data-fi>Digitaaliset tuotteet</div>
+                <div class="contact-pill" data-en>Custom prototypes</div>
+                <div class="contact-pill" data-fi>Tilausprotot</div>
+                <div class="contact-pill" data-en>YouTube / media</div>
+                <div class="contact-pill" data-fi>YouTube / media</div>
+              </div>
+              <div class="contact-actions">
+                <a
+                  href="mailto:jere.nevalainen@tech-ant.fi?subject=Tech-Ant%20Inquiry"
+                  class="btn-primary"
+                >
+                  <span data-en>Send Email</span>
+                  <span data-fi>Lähetä sähköposti</span>
+                </a>
+                <a
+                  href="https://www.youtube.com/@The_tech-ant"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="btn-secondary"
+                >
+                  <span data-en>Open YouTube</span>
+                  <span data-fi>Avaa YouTube</span>
+                </a>
+              </div>
+            </article>
+
+            <div class="contact-side reveal reveal-delay-1">
+              <div class="mini-panel">
+                <span class="card-index" data-en>Best Fit</span>
+                <span class="card-index" data-fi>Paras sopivuus</span>
+                <strong data-en
+                  >Product-minded people who want a technical partner</strong
+                >
+                <strong data-fi
+                  >Tuotelähtöiset ihmiset, jotka tarvitsevat teknisen
+                  kumppanin</strong
+                >
+                <p data-en>
+                  Good fit for people and teams who want an honest, practical
+                  studio instead of generic marketing packaging.
+                </p>
+                <p data-fi>
+                  Hyvä sopivuus ihmisille ja tiimeille, jotka haluavat
+                  rehellisen, käytännönläheisen studion geneerisen
+                  markkinointipaketin sijaan.
+                </p>
+              </div>
+              <div class="mini-panel">
+                <span class="card-index" data-en>Operating Model</span>
+                <span class="card-index" data-fi>Toimintamalli</span>
+                <strong data-en>Small studio, growing catalog</strong>
+                <strong data-fi>Pieni studio, kasvava valikoima</strong>
+                <p data-en>
+                  Direct communication, clear next steps and a site that grows
+                  with the work itself.
+                </p>
+                <p data-fi>
+                  Suora viestintä, selkeät seuraavat askeleet ja sivu, joka
+                  kasvaa itse työn mukana.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="footer-inner">
+        <div>© 2026 Tech-Ant Oy</div>
+        <div>Jere Nevalainen</div>
+        <div>jere.nevalainen@tech-ant.fi</div>
+        <div>
+          <span data-en>Open internationally</span>
+          <span data-fi>Kansainvälisesti avoin</span>
+        </div>
       </div>
-    </section>
-  </main>
+    </footer>
 
-  <footer>
-    <div class="footer-inner">
-      <div>© 2026 Tech-Ant Oy</div>
-      <div>Jere Nevalainen</div>
-      <div>jere.nevalainen@tech-ant.fi</div>
-      <div>
-        <span data-en>Available internationally</span>
-        <span data-fi>Kansainvälisesti saatavilla</span>
-      </div>
-    </div>
-  </footer>
+    <script>
+      const html = document.documentElement;
+      html.classList.add("js");
 
-  <script>
-    const html = document.documentElement;
-    html.classList.add("js");
+      const opts = document.querySelectorAll("[data-switch]");
+      const nav = document.querySelector("nav");
+      const navToggle = document.getElementById("navToggle");
+      const mobileMenu = document.getElementById("mobileMenu");
+      const mobileMenuLinks = mobileMenu
+        ? mobileMenu.querySelectorAll("a")
+        : [];
+      const filterButtons = document.querySelectorAll(".filter-btn");
+      const productCards = document.querySelectorAll(".product-card");
+      const revealItems = document.querySelectorAll(".reveal");
 
-    const opts = document.querySelectorAll("[data-switch]");
-    const nav = document.querySelector("nav");
-    const navToggle = document.getElementById("navToggle");
-    const mobileMenu = document.getElementById("mobileMenu");
-    const mobileMenuLinks = mobileMenu ? mobileMenu.querySelectorAll("a") : [];
-    const filterButtons = document.querySelectorAll(".filter-btn");
-    const productCards = document.querySelectorAll(".product-card");
-    const revealItems = document.querySelectorAll(".reveal");
+      function setLang(lang) {
+        html.setAttribute("data-lang", lang);
+        html.lang = lang;
+        opts.forEach((opt) =>
+          opt.classList.toggle("active", opt.dataset.switch === lang),
+        );
+        try {
+          localStorage.setItem("ta-lang", lang);
+        } catch (error) {}
+      }
 
-    function setLang(lang) {
-      html.setAttribute("data-lang", lang);
-      html.lang = lang;
-      opts.forEach(opt => opt.classList.toggle("active", opt.dataset.switch === lang));
-      try { localStorage.setItem("ta-lang", lang); } catch (error) {}
-    }
+      function setMobileMenu(open) {
+        if (!nav || !navToggle || !mobileMenu) return;
+        nav.classList.toggle("menu-open", open);
+        mobileMenu.classList.toggle("open", open);
+        navToggle.setAttribute("aria-expanded", String(open));
+        mobileMenu.setAttribute("aria-hidden", String(!open));
+        document.body.classList.toggle("menu-open", open);
+      }
 
-    function setMobileMenu(open) {
-      if (!nav || !navToggle || !mobileMenu) return;
-      nav.classList.toggle("menu-open", open);
-      mobileMenu.classList.toggle("open", open);
-      navToggle.setAttribute("aria-expanded", String(open));
-      mobileMenu.setAttribute("aria-hidden", String(!open));
-      document.body.classList.toggle("menu-open", open);
-    }
-
-    function applyFilter(filter) {
-      filterButtons.forEach(button => {
-        button.classList.toggle("active", button.dataset.filter === filter);
-      });
-      productCards.forEach(card => {
-        const matches = filter === "all" || card.dataset.track === filter;
-        card.classList.toggle("is-hidden", !matches);
-      });
-    }
-
-    let savedLang = "en";
-    try {
-      const stored = localStorage.getItem("ta-lang");
-      if (stored === "en" || stored === "fi") savedLang = stored;
-    } catch (error) {}
-    setLang(savedLang);
-
-    opts.forEach(opt => {
-      opt.addEventListener("click", () => setLang(opt.dataset.switch));
-    });
-
-    filterButtons.forEach(button => {
-      button.addEventListener("click", () => applyFilter(button.dataset.filter));
-    });
-
-    if (navToggle) {
-      navToggle.addEventListener("click", () => {
-        setMobileMenu(!mobileMenu.classList.contains("open"));
-      });
-    }
-
-    mobileMenuLinks.forEach(link => {
-      link.addEventListener("click", () => setMobileMenu(false));
-    });
-
-    window.addEventListener("resize", () => {
-      if (window.innerWidth > 768) setMobileMenu(false);
-    });
-
-    document.addEventListener("keydown", event => {
-      if (event.key === "Escape") setMobileMenu(false);
-    });
-
-    applyFilter("all");
-
-    if ("IntersectionObserver" in window) {
-      const observer = new IntersectionObserver(entries => {
-        entries.forEach(entry => {
-          if (!entry.isIntersecting) return;
-          entry.target.classList.add("is-visible");
-          observer.unobserve(entry.target);
+      function applyFilter(filter) {
+        filterButtons.forEach((button) => {
+          button.classList.toggle("active", button.dataset.filter === filter);
         });
-      }, { threshold: 0.16 });
+        productCards.forEach((card) => {
+          const matches = filter === "all" || card.dataset.track === filter;
+          card.classList.toggle("is-hidden", !matches);
+        });
+      }
 
-      revealItems.forEach(item => observer.observe(item));
-    } else {
-      revealItems.forEach(item => item.classList.add("is-visible"));
-    }
-  </script>
+      let savedLang = "fi";
+      try {
+        const stored = localStorage.getItem("ta-lang");
+        if (stored === "en" || stored === "fi") savedLang = stored;
+      } catch (error) {}
+      setLang(savedLang);
 
-</body>
+      opts.forEach((opt) => {
+        opt.addEventListener("click", () => setLang(opt.dataset.switch));
+      });
+
+      filterButtons.forEach((button) => {
+        button.addEventListener("click", () =>
+          applyFilter(button.dataset.filter),
+        );
+      });
+
+      if (navToggle) {
+        navToggle.addEventListener("click", () => {
+          setMobileMenu(!mobileMenu.classList.contains("open"));
+        });
+      }
+
+      mobileMenuLinks.forEach((link) => {
+        link.addEventListener("click", () => setMobileMenu(false));
+      });
+
+      window.addEventListener("resize", () => {
+        if (window.innerWidth > 768) setMobileMenu(false);
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") setMobileMenu(false);
+      });
+
+      applyFilter("all");
+
+      if ("IntersectionObserver" in window) {
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (!entry.isIntersecting) return;
+              entry.target.classList.add("is-visible");
+              observer.unobserve(entry.target);
+            });
+          },
+          { threshold: 0.16 },
+        );
+
+        revealItems.forEach((item) => observer.observe(item));
+      } else {
+        revealItems.forEach((item) => item.classList.add("is-visible"));
+      }
+    </script>
+  </body>
 </html>
