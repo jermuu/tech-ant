@@ -464,18 +464,18 @@
         max-width: 1180px;
         margin: 0 auto;
         display: grid;
-        grid-template-columns: minmax(0, 1.15fr) minmax(330px, 0.85fr);
+        grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.65fr);
         gap: 2rem;
-        align-items: end;
+        align-items: start;
       }
       .hero-copy {
-        max-width: 720px;
+        max-width: 760px;
       }
       .display {
         font-size: clamp(3.2rem, 8vw, 6.8rem);
         line-height: 0.95;
         margin: 1.35rem 0 1.25rem;
-        max-width: 11ch;
+        max-width: 100%;
         text-wrap: balance;
       }
       .display em {
@@ -1050,6 +1050,47 @@
       .contact-side .mini-panel {
         min-height: 100%;
       }
+      .founder-panel {
+        display: grid;
+        grid-template-columns: 245px minmax(0, 1fr);
+        gap: 1rem;
+        align-items: center;
+      }
+      .founder-avatar {
+        display: block;
+        width: 245px;
+        aspect-ratio: 1;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 1px solid var(--line-strong);
+        background: #0b1322;
+        box-shadow: 0 16px 34px rgba(2, 6, 16, 0.28);
+      }
+      .founder-avatar img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center 20%;
+      }
+      .founder-copy {
+        display: grid;
+        gap: 0.25rem;
+      }
+      .founder-copy strong {
+        display: block;
+        font-size: 1.02rem;
+        margin-top: 0.15rem;
+      }
+      .founder-copy p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.84rem;
+        line-height: 1.55;
+      }
+      .founder-link {
+        width: fit-content;
+      }
 
       footer {
         padding: 2rem 5%;
@@ -1127,6 +1168,13 @@
         }
         .hero {
           padding-top: 7.8rem;
+        }
+        .founder-panel {
+          grid-template-columns: 1fr;
+          justify-items: start;
+        }
+        .founder-avatar {
+          width: 164px;
         }
         .display {
           font-size: clamp(2.8rem, 16vw, 4.3rem);
@@ -1263,11 +1311,12 @@
             </div>
             <h1 class="display">
               <span data-en
-                >3D-printed products, prototypes and digital solutions.</span
+                >3D-printed products,<br />
+                prototypes and digital solutions.</span
               >
               <span data-fi
-                >3D-tulostettuja tuotteita, prototyyppejä ja digitaalisia
-                ratkaisuja.</span
+                >3D-tulostettuja tuotteita,<br />
+                prototyyppejä ja digitaalisia ratkaisuja.</span
               >
             </h1>
             <p class="hero-lead" data-en>
@@ -2398,8 +2447,6 @@
           </div>
           <div class="about-grid">
             <article class="about-card card reveal">
-              <span class="card-index" data-en>Jere Nevalainen</span>
-              <span class="card-index" data-fi>Jere Nevalainen</span>
               <h3 data-en>Engineer, inventor and product builder.</h3>
               <h3 data-fi>Insinööri, keksijä ja tuoterakentaja.</h3>
               <p data-en>
@@ -2532,6 +2579,36 @@
             </article>
 
             <div class="contact-side reveal reveal-delay-1">
+              <div class="mini-panel founder-panel">
+                <picture class="founder-avatar">
+                  <source srcset="jere-portrait.avif" type="image/avif" />
+                  <source srcset="jere-portrait.webp" type="image/webp" />
+                  <img
+                    src="jere-portrait.jpg"
+                    alt="Jere Nevalainen"
+                    width="384"
+                    height="384"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </picture>
+                <div class="founder-copy">
+                  <span class="card-index" data-en>Founder</span>
+                  <span class="card-index" data-fi>Perustaja</span>
+                  <strong>Jere Nevalainen</strong>
+                  <p data-en>Engineer, inventor and product builder.</p>
+                  <p data-fi>Insinööri, keksijä ja tuoterakentaja.</p>
+                  <a
+                    href="https://www.linkedin.com/in/jere-nevalainen-1a89b3127/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-link founder-link"
+                  >
+                    <span data-en>Open LinkedIn</span>
+                    <span data-fi>Avaa LinkedIn</span>
+                  </a>
+                </div>
+              </div>
               <div class="mini-panel">
                 <span class="card-index" data-en>Best Fit</span>
                 <span class="card-index" data-fi>Paras sopivuus</span>
